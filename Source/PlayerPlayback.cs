@@ -5,9 +5,12 @@ using Monocle;
 
 namespace Celeste.Mod.Microlith57.IntContest;
 
+[Tracked]
 public class PlayerPlayback : Entity {
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public static ParticleType P_Appear;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     public record struct State(
         Player.ChaserState Underlying,
@@ -42,7 +45,9 @@ public class PlayerPlayback : Entity {
 
         Add(Light = new(Color.White, 1f, 32, 64));
 
-        Depth = 9008;
+        Add(new AreaSwitch.Activator());
+
+        Depth = 1000;
         Visible = false;
     }
 

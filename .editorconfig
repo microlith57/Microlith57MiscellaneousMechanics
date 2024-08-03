@@ -212,3 +212,6 @@ dotnet_diagnostic.CA2225.severity = none
 # Banned APIs
 dotnet_diagnostic.RS0030.severity = error
 
+
+# CA1051: Do not declare visible instance fields
+dotnet_diagnostic.CA1051.severity = none
