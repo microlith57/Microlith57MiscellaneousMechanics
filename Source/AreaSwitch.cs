@@ -33,16 +33,21 @@ public class AreaSwitch : Entity {
 
         public override void Removed(Entity entity) {
             base.Removed(entity);
+            onRemove();
+        }
+
+        public override void EntityRemoved(Scene scene) {
+            base.EntityRemoved(scene);
+            onRemove();
+        }
+
+        private void onRemove() {
             foreach (var areaSwitch in Activating)
                 areaSwitch.Activators.Remove(this);
             Activating = [];
         }
 
     }
-
-    // todo make these configurable
-    public static readonly float AWARENESS_RADIUS = 64f;
-    public static readonly float ACTIVATION_RADIUS = 32f;
 
     // todo this depend on circumference
     public static readonly int NUM_LINES = 56;
@@ -61,6 +66,9 @@ public class AreaSwitch : Entity {
     public string Flag;
     public List<AreaSwitch> Siblings = [];
 
+    public float Radius;
+    public float AwarenessRange;
+
     private SoundSource TouchSfx;
 
     private static MTexture Border = GFX.Game["objects/touchswitch/container"];
@@ -70,6 +78,10 @@ public class AreaSwitch : Entity {
     private Color InactiveColor;
     private Color ActiveColor;
     private Color FinishColor;
+
+    private Color InactiveLineColor;
+    private Color ActiveLineColor;
+    private Color FinishLineColor;
 
     private float Ease = 0f;
     private float FinishedEase = 0f;
@@ -102,9 +114,16 @@ public class AreaSwitch : Entity {
         Depth = 2000;
         Flag = data.Attr("flag");
 
+        Radius = data.Float("radius", 32f);
+        AwarenessRange = data.Float("radius", 32f);
+
         InactiveColor = Calc.HexToColor(data.Attr("inactiveColor", "5FCDE4"));
         ActiveColor = Calc.HexToColor(data.Attr("activeColor", "FFFFFF"));
         FinishColor = Calc.HexToColor(data.Attr("finishColor", "F141DF"));
+
+        InactiveLineColor = Calc.HexToColor(data.Attr("inactiveLineColor", "5FCDE4"));
+        ActiveLineColor = Calc.HexToColor(data.Attr("activeLineColor", "FFFFFF"));
+        FinishLineColor = Calc.HexToColor(data.Attr("finishLineColor", "F141DF"));
 
         if (int.TryParse(data.Attr("animationLength", "6"), out int frameVal))
             Frames = Enumerable.Range(0, frameVal).ToArray();
@@ -127,7 +146,7 @@ public class AreaSwitch : Entity {
         Add(new VertexLight(Color.White, 0.8f, 16, 32));
         Add(TouchSfx = new SoundSource());
 
-        Collider = new Circle(ACTIVATION_RADIUS);
+        Collider = new Circle(Radius);
 
         Add(StateMachine = new());
         StInactive = StateMachine.AddState<AreaSwitch>(
@@ -212,14 +231,14 @@ public class AreaSwitch : Entity {
                     float angle = (i / (float)NUM_LINES + jiggle + Spin) * Calc.Circle;
 
                     Vector2 relStart = Calc.AngleToVector(angle, 1f);
-                    Vector2 absStart = Position + relStart * ACTIVATION_RADIUS;
+                    Vector2 absStart = Position + relStart * Radius;
 
                     Vector2 offset = relStart * (float)Math.Sin(Scene.TimeActive * 2f + i * 0.6f);
                     if (i % 2 == 0)
                         offset *= -1f;
                     absStart += offset;
 
-                    level.ParticlesBG.Emit(P_Spark, absStart, FinishColor);
+                    level.ParticlesBG.Emit(P_Spark, absStart, FinishLineColor);
                 }
             }
         } else if (Scene.OnInterval(0.03f)) {
@@ -306,12 +325,12 @@ public class AreaSwitch : Entity {
 
         if (Scene is not Level level || Icon.CurrentAnimationID != "spin") return;
 
-        var col = Color.Lerp(InactiveColor, Finished ? FinishColor : ActiveColor, Ease);
+        var col = Color.Lerp(InactiveLineColor, Finished ? FinishLineColor : ActiveLineColor, Ease);
 
         var nearby = level.Tracker.GetComponents<Activator>().Cast<Activator>()
             .SelectMany<Activator, Vector2>(act => {
                 var vec = act.Position - Position;
-                return (vec.Length() > AWARENESS_RADIUS) ? [] : [vec];
+                return (vec.Length() > (Radius + AwarenessRange)) ? [] : [vec];
             })
             .ToList();
 
@@ -320,7 +339,7 @@ public class AreaSwitch : Entity {
             float angle = (i / (float)NUM_LINES + jiggle + Spin) * Calc.Circle;
 
             Vector2 relStart = Calc.AngleToVector(angle, 1f);
-            Vector2 absStart = Position + relStart * ACTIVATION_RADIUS;
+            Vector2 absStart = Position + relStart * Radius;
 
             Vector2 offset = relStart * (float)Math.Sin(Scene.TimeActive * 2f + i * 0.6f);
             if (i % 2 == 0)
@@ -331,7 +350,7 @@ public class AreaSwitch : Entity {
             float t = Ease;
             if (t < 1f)
                 t += (float)Math.Tanh(nearby.Sum((vec) => {
-                    var distFactor = Calc.ClampedMap(vec.Length(), ACTIVATION_RADIUS, AWARENESS_RADIUS, 1f, 0f);
+                    var distFactor = Calc.ClampedMap(vec.Length(), Radius, Radius + AwarenessRange, 1f, 0f);
                     var angleDiff = Calc.AbsAngleDiff(vec.Angle(), angle);
                     var angleFactor = Calc.ClampedMap(angleDiff, 0f, Calc.Circle / 6f, 1f, 0f);
 

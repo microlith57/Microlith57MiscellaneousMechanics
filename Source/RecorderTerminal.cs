@@ -175,6 +175,10 @@ public class RecorderTerminal : Entity {
         if (Scene.Tracker.GetEntity<Player>() is Player player)
             entities.Add(player);
 
+
+        foreach (var box in Scene.Tracker.GetEntities<Box>().Cast<Box>())
+            entities.Add(box);
+
         foreach (var playback in Scene.Tracker.GetEntities<Recording>().Cast<Recording>())
             if (playback.IsPlaying)
                 entities.Add(playback);
@@ -189,6 +193,8 @@ public class RecorderTerminal : Entity {
             if (rec == null) {
                 if (entity is Player or PlayerRecording)
                     rec = new PlayerRecording();
+                else if (entity is Box or BoxRecording)
+                    rec = new BoxRecording();
                 else
                     throw new Exception("should be unreachable");
 

@@ -31,6 +31,8 @@ public class Box : Actor {
     public bool Shattering;
     public bool Dead;
 
+    public bool BonkedH, BonkedV;
+
     private bool IsTutorial;
     private BirdTutorialGui? tutorialGui;
     private float tutorialTimer;
@@ -42,7 +44,9 @@ public class Box : Actor {
         Depth = 100;
         Collider = new Hitbox(8f, 10f, -4f, -10f);
 
-        Add(Sprite = new(GFX.Game["objects/INTcontest24/microlith57/box"]) { Origin = new(11f, 21f) });
+        Add(Sprite = new(GFX.Game["objects/INTcontest24/microlith57/box"]) {
+            Origin = new(11f, 21f)
+        });
 
         Add(Hold = new Holdable {
             PickupCollider = new Hitbox(28f, 28f, -14f, -24f),
@@ -97,6 +101,8 @@ public class Box : Actor {
 
     public override void Update() {
         base.Update();
+
+        BonkedH = BonkedV = false;
 
         if (Scene is not Level level)
             return;
@@ -178,9 +184,8 @@ public class Box : Actor {
         if (!Dead)
             Hold.CheckAgainstColliders();
 
-        if (!Hold.IsHeld) {
+        if (!Hold.IsHeld)
             Surface.MoveTo(Position + new Vector2(-10f, -20f));
-        }
 
         if (tutorialGui != null) {
             if (Hold.IsHeld) {
@@ -263,6 +268,7 @@ public class Box : Actor {
         if (data.Hit is DashSwitch @switch)
             @switch.OnDashCollide(null, Vector2.UnitX * Math.Sign(Speed.X));
 
+        BonkedH = true;
         Audio.Play("event:/char/madeline/grab", Position, "surface_index", SurfaceIndex.Girder);
 
         if (Math.Abs(Speed.X) > 100f)
@@ -275,8 +281,10 @@ public class Box : Actor {
         if (data.Hit is DashSwitch @switch)
             @switch.OnDashCollide(null, Vector2.UnitY * Math.Sign(Speed.Y));
 
-        if (Speed.Y > 0f)
+        if (Speed.Y > 0f) {
+            BonkedV = true;
             Audio.Play("event:/char/madeline/landing", Position, "surface_index", SurfaceIndex.Girder);
+        }
 
         if (Speed.Y > 160f)
             ImpactParticles(data.Direction);
