@@ -42,7 +42,7 @@ public class RecorderTerminal : Entity {
 
     public Color BaseColor;
 
-    public Sprite Sprite;
+    public Sprite ButtonAndStripe;
     public Sprite Screen;
     public ProgressBar Progress;
     public TalkComponent Talker;
@@ -70,8 +70,12 @@ public class RecorderTerminal : Entity {
 
         BaseColor = data.HexColor("color", Calc.HexToColor("ac3232"));
 
-        // todo: recolour button & stripe on side
-        Add(Sprite = new(GFX.Game, "objects/INTcontest24/microlith57/terminal") {
+        Image image = new(GFX.Game["objects/INTcontest24/microlith57/terminal"]);
+        image.JustifyOrigin(new(0.5f, 1f));
+        Add(image);
+
+        Add(ButtonAndStripe = new(GFX.Game, "objects/INTcontest24/microlith57/terminalcolor") {
+            Color = BaseColor,
             Justify = new(0.5f, 1f),
             OnChange = (from, to) => {
                 if (from == "idle" && to == "interact")
@@ -80,9 +84,9 @@ public class RecorderTerminal : Entity {
                     Audio.Play("event:/game/04_cliffside/arrowblock_side_release", Position);
             }
         });
-        Sprite.Add("idle", "", 1f, [0]);
-        Sprite.Add("interact", "", 0.1f, "idle", [1]);
-        Sprite.Play("idle");
+        ButtonAndStripe.Add("idle", "", 1f, [0]);
+        ButtonAndStripe.Add("interact", "", 0.1f, "idle", [1]);
+        ButtonAndStripe.Play("idle");
 
         Add(Screen = new(GFX.Game, "objects/INTcontest24/microlith57/screen") {
             Justify = new(0.5f, 1f)
@@ -171,8 +175,6 @@ public class RecorderTerminal : Entity {
         if (Scene.Tracker.GetEntity<Player>() is Player player)
             entities.Add(player);
 
-        // todo other types
-
         foreach (var playback in Scene.Tracker.GetEntities<Recording>().Cast<Recording>())
             if (playback.IsPlaying)
                 entities.Add(playback);
@@ -191,8 +193,6 @@ public class RecorderTerminal : Entity {
                     throw new Exception("should be unreachable");
 
                 Scene.Add(rec);
-                // todo: ugly hack
-                rec.Scene = Scene;
                 Recordings.Add(rec);
                 rec.BeginRecording(entity);
             }
@@ -281,7 +281,7 @@ public class RecorderTerminal : Entity {
         player.Facing = Facings.Right;
 
         yield return 0.1f;
-        Sprite.Play("interact");
+        ButtonAndStripe.Play("interact");
         yield return 0.1f;
 
         if (StateMachine.State == StIdle)
