@@ -4,7 +4,6 @@ using Monocle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Schema;
 
 using FlagSwitchGate = Celeste.Mod.MaxHelpingHand.Entities.FlagSwitchGate;
 
@@ -17,6 +16,8 @@ public class AreaSwitch : Entity {
     [Tracked]
     public class Activator() : Component(true, false) {
 
+        public Collider? Collider;
+
         public Vector2 Position => Entity.Center;
         public List<AreaSwitch> Activating = [];
 
@@ -24,7 +25,7 @@ public class AreaSwitch : Entity {
             base.Update();
 
             foreach (var areaSwitch in Scene.Tracker.GetEntities<AreaSwitch>().Cast<AreaSwitch>())
-                if (Entity.CollideCheck(areaSwitch))
+                if ((Collider ?? Entity.Collider).Collide(areaSwitch))
                     areaSwitch.Activate(this);
                 else
                     areaSwitch.Deactivate(this);
@@ -39,11 +40,16 @@ public class AreaSwitch : Entity {
 
     }
 
+    // todo make these configurable
     public static readonly float AWARENESS_RADIUS = 64f;
     public static readonly float ACTIVATION_RADIUS = 32f;
 
+    // todo this depend on circumference
     public static readonly int NUM_LINES = 56;
     public static readonly float AWARENESS_SPIKE_SCALE = 4f;
+
+    // todo box-only switch
+    // todo box-destroying switch
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public static ParticleType P_FireInactive;
@@ -51,7 +57,6 @@ public class AreaSwitch : Entity {
     public static ParticleType P_FireFinished => TouchSwitch.P_FireWhite;
     public static ParticleType P_Spark;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-
 
     public string Flag;
     public List<AreaSwitch> Siblings = [];

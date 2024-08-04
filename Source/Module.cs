@@ -63,5 +63,7 @@ public class Module : EverestModule {
 			SpeedMultiplier = 0.1f,
 			Acceleration = new Vector2(0f, 10f)
 		};
+
+        Box.P_Impact ??= new ParticleType(TheoCrystal.P_Impact);
     }
 }
