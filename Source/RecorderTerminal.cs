@@ -1,12 +1,17 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
+using Celeste.Mod.Microlith57.IntContest.Recordings;
+using System.Linq;
+
 namespace Celeste.Mod.Microlith57.IntContest;
 
 [CustomEntity("Microlith57_IntContest24/RecorderTerminal")]
+[Tracked]
 public class RecorderTerminal : Entity {
 
     public class ProgressBar(Vector2 Offset, float Width) : Component(active: false, visible: true) {
@@ -33,6 +38,9 @@ public class RecorderTerminal : Entity {
     public static readonly Color COLOR_IDLE = Color.White * 0.7f;
     public static readonly Color COLOR_RECORDING = Calc.HexToColor("ff8888");
     public static readonly Color COLOR_PLAYBACK = Calc.HexToColor("88ff88");
+    public static readonly Color COLOR_COOLDOWN = Calc.HexToColor("ff8800");
+
+    public Color BaseColor;
 
     public Sprite Sprite;
     public Sprite Screen;
@@ -41,17 +49,28 @@ public class RecorderTerminal : Entity {
     public VertexLight Light;
     public StateMachine StateMachine;
 
-    public PlayerPlayback? PlayerPlayback;
+    public List<Recording> Recordings = [];
+
+    public List<float> TimeStamps = [];
+    public float Duration => TimeStamps.Count > 0 ? TimeStamps[^1] : 0;
+    public int FrameCount => TimeStamps.Count;
+
+    public float Time = 0f;
+    public int FrameIndex = 0;
 
     private bool gracePeriod = false;
 
     public static int StIdle;
     public static int StRecording;
     public static int StPlayback;
+    public static int StCooldown;
 
     public RecorderTerminal(EntityData data, Vector2 offset) : base(data.Position + offset) {
         Depth = 2000;
 
+        BaseColor = data.HexColor("color", Calc.HexToColor("ac3232"));
+
+        // todo: recolour button & stripe on side
         Add(Sprite = new(GFX.Game, "objects/INTcontest24/microlith57/terminal") {
             Justify = new(0.5f, 1f),
             OnChange = (from, to) => {
@@ -103,21 +122,26 @@ public class RecorderTerminal : Entity {
             onUpdate: e => e.PlaybackUpdate(),
             begin: e => e.PlaybackBegin()
         );
+        StCooldown = StateMachine.AddState<RecorderTerminal>(
+            "Cooldown",
+            onUpdate: e => e.CooldownUpdate(),
+            begin: e => e.CooldownBegin(),
+            end: e => e.CooldownEnd()
+        );
         StateMachine.State = StIdle;
     }
 
     public override void Update() {
         base.Update();
 
-        Talker.Enabled = (
-            Scene.Tracker.GetEntity<Player>() is Player player
-            && (player.Position - Position).Length() <= PROMPT_RANGE
-        );
+        Talker.Enabled = StateMachine.State != StCooldown &&
+                         Scene.Tracker.GetEntity<Player>() is Player player &&
+                         (player.Position - Position).Length() <= PROMPT_RANGE;
     }
 
     private void IdleBegin() {
-        PlayerPlayback?.EndPlayback();
-        PlayerPlayback = null;
+        Recordings.ForEach(r => r.EndPlayback(remove: true));
+        Recordings.Clear();
 
         Screen.Play("idle");
         Light.Color = COLOR_IDLE;
@@ -127,43 +151,123 @@ public class RecorderTerminal : Entity {
 
 
     private void RecordingBegin() {
-        PlayerPlayback?.EndPlayback();
-        PlayerPlayback = new(Position, []);
+        Recordings.ForEach(r => r.EndPlayback(remove: true));
+        Recordings.Clear();
+
+        TimeStamps.Clear();
+        FrameIndex = 0;
+        Time = 0f;
+        TimeStamps.Add(Time);
 
         Screen.Play("recording");
         Progress.Color = Light.Color = COLOR_RECORDING;
     }
     private int RecordingUpdate() {
-        var player = Scene.Tracker.GetEntity<Player>();
-
-        if (PlayerPlayback == null ||
-            (PlayerPlayback.Duration >= MAX_DURATION && !gracePeriod) ||
-            player == null)
+        if (Duration >= MAX_DURATION && !gracePeriod)
             return StIdle;
 
-        PlayerPlayback.Observe(player);
+        var entities = new List<Entity>();
 
-        Progress.Progress = PlayerPlayback.Duration / MAX_DURATION;
+        if (Scene.Tracker.GetEntity<Player>() is Player player)
+            entities.Add(player);
+
+        // todo other types
+
+        foreach (var playback in Scene.Tracker.GetEntities<Recording>().Cast<Recording>())
+            if (playback.IsPlaying)
+                entities.Add(playback);
+
+        entities = [.. entities.OrderBy(e => e.actualDepth)];
+
+        var recordings = Recordings.Where(r => r.IsRecording).ToList();
+
+        foreach (var entity in entities) {
+            var rec = recordings.Find(rec => rec.RecordingOf == entity);
+
+            if (rec == null) {
+                if (entity is Player or PlayerRecording)
+                    rec = new PlayerRecording();
+                else
+                    throw new Exception("should be unreachable");
+
+                Scene.Add(rec);
+                // todo: ugly hack
+                rec.Scene = Scene;
+                Recordings.Add(rec);
+                rec.BeginRecording(entity);
+            }
+
+            rec.Observe(FrameIndex, BaseColor);
+
+            recordings.Remove(rec); // remove from the temp list since we've dealt with it
+        }
+
+        foreach (var remaining in recordings)
+            remaining.EndRecording();
+
+        FrameIndex += 1;
+        Time += Engine.DeltaTime;
+        TimeStamps.Add(Time);
+
+        Progress.Progress = Duration / MAX_DURATION;
 
         return StRecording;
     }
 
 
     private void PlaybackBegin() {
-        PlayerPlayback ??= new(Position, []);
-        Scene.Add(PlayerPlayback);
-        PlayerPlayback.BeginPlayback();
+        Time = 0f;
+        FrameIndex = 0;
 
         Screen.Play("playback");
         Progress.Color = Light.Color = COLOR_PLAYBACK;
     }
     private int PlaybackUpdate() {
-        if (PlayerPlayback == null || !PlayerPlayback.Playing)
-            return StIdle;
+        if (FrameIndex >= FrameCount || Time >= Duration)
+            return StCooldown;
 
-        Progress.Progress = PlayerPlayback.Time / PlayerPlayback.Duration;
+        foreach (var recording in Recordings) {
+            var inBounds = FrameIndex >= recording.FirstFrame && FrameIndex <= recording.LastFrame;
+
+            if (!recording.IsPlaying && inBounds)
+                recording.BeginPlayback();
+            else if (recording.IsPlaying && !inBounds)
+                recording.EndPlayback(remove: false);
+
+            if (recording.IsPlaying)
+                recording.FrameIndex = FrameIndex;
+        }
+
+        Time += Engine.DeltaTime;
+        while ((FrameIndex + 1) < FrameCount && Time >= TimeStamps[FrameIndex + 1])
+            FrameIndex++;
+
+        Progress.Progress = Time / Duration;
 
         return StPlayback;
+    }
+
+
+    private void CooldownBegin() {
+        Recordings.ForEach(r => r.EndPlayback(remove: true));
+        Recordings.Clear();
+
+        Screen.Visible = Light.Visible = false;
+        Progress.Progress = 1f;
+    }
+    private int CooldownUpdate() {
+        if (Scene.Tracker.GetEntities<RecorderTerminal>()
+                         .Cast<RecorderTerminal>()
+                         .All(t => t.StateMachine.State == StIdle ||
+                                   t.StateMachine.State == StCooldown))
+            return StIdle;
+
+        Progress.Color = (Scene.TimeActive % 1f < 0.5f) ? COLOR_COOLDOWN : Color.Transparent;
+
+        return StCooldown;
+    }
+    private void CooldownEnd() {
+        Screen.Visible = Light.Visible = true;
     }
 
 
@@ -184,8 +288,8 @@ public class RecorderTerminal : Entity {
             StateMachine.State = StRecording;
         else if (StateMachine.State == StRecording)
             StateMachine.State = StPlayback;
-        else
-            StateMachine.State = StIdle;
+        else if (StateMachine.State == StPlayback)
+            StateMachine.State = StCooldown;
 
         player.StateMachine.Locked = false;
         player.StateMachine.State = Player.StNormal;

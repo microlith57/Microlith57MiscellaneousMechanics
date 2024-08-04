@@ -3,98 +3,109 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest;
+namespace Celeste.Mod.Microlith57.IntContest.Recordings;
 
 [Tracked]
-public class PlayerPlayback : Entity {
-
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    public static ParticleType P_Appear;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-
+public class PlayerRecording : Recording {
     public record struct State(
         Player.ChaserState Underlying,
         Vector2 LightOffset,
-        float TimeStamp
+        Color Color,
+        Rectangle Collider
     ) { }
 
-    public List<State> Timeline;
+    public List<State> Timeline = [];
+    public int FrameOffset = 0;
+    public override int? FirstFrame => Timeline.Count > 0 ? FrameOffset : null;
+    public override int? LastFrame => Timeline.Count > 0 ? FirstFrame!.Value + Timeline.Count - 1 : null;
+
+    private int currentFrame;
+    public override int FrameIndex {
+        get => currentFrame;
+        set => SetFrame(currentFrame = value);
+    }
+
+    public State CurrentState => Timeline[FrameIndex - FrameOffset];
 
     public PlayerSprite Sprite;
     public PlayerHair Hair;
     public VertexLight Light;
 
-    public int FrameIndex = 0;
-    public int FrameCount => Timeline.Count;
-
-    public float Time = 0f;
-    public float Duration => FrameCount == 0 ? 0 : Timeline[^1].TimeStamp;
-
-    public bool Playing => Visible;
-
-    public PlayerPlayback(Vector2 start, List<State>? timeline = null) {
-        Collider = new Hitbox(8f, 11f, -4f, -11f);
-        Timeline = timeline ?? [];
-        Position = start;
-
+    public PlayerRecording() {
         Sprite = new PlayerSprite(PlayerSpriteMode.Playback);
         Add(Hair = new PlayerHair(Sprite));
         Add(Sprite);
 
-        Collider = new Hitbox(8f, 4f, -4f, -4f);
+        Collider = new Hitbox(8f, 11f, -4f, -11f);
 
         Add(Light = new(Color.White, 1f, 32, 64));
 
         Add(new AreaSwitch.Activator());
 
         Depth = 1000;
-        Visible = false;
     }
 
-    public void Observe(Player player) {
-        var chaserState = player.ChaserStates[^1];
-        float time = FrameCount == 0 ? 0f : chaserState.TimeStamp - Timeline[0].Underlying.TimeStamp;
-
-        Timeline.Add(new(
-            Underlying: chaserState,
-            LightOffset: player.Light.Position,
-            TimeStamp: time
-        ));
-    }
-
-    public void BeginPlayback() {
-        Audio.Play("event:/new_content/char/tutorial_ghost/appear", Position);
-        Visible = true;
-
-        FrameIndex = 0;
-        Time = 0f;
-        SetFrame(0);
-        for (int i = 0; i < 10; i++) {
-            Hair.AfterUpdate();
+    public override void Observe(int currentFrame, Color baseColor) {
+        if (Timeline.Count == 0)
+            FrameOffset = currentFrame;
+        else if (currentFrame != LastFrame + 1) {
+#if DEBUG
+            throw new Exception("tried to record a player with non-contiguous lifetime");
+#else
+            return null
+#endif
         }
 
-        if (Scene is Level level)
-            level.Particles.Emit(P_Appear, 12, Center, Vector2.One * 6f, Sprite.Color);
+        if (RecordingOf is Player player) {
+            Timeline.Add(new(
+                Underlying: player.ChaserStates[^1],
+                LightOffset: player.Light.Position,
+                Color: baseColor,
+                Collider: new(
+                    (int)player.Collider.Position.X,
+                    (int)player.Collider.Position.Y,
+                    (int)player.Collider.Width,
+                    (int)player.Collider.Height
+                )
+            ));
+        } else if (RecordingOf is PlayerRecording recording) {
+            Timeline.Add(recording.CurrentState);
+        }
     }
 
-    public void EndPlayback() {
+    public override void BeginPlayback() {
+        base.BeginPlayback();
+
+        for (int i = 0; i < 10; i++)
+            Hair.AfterUpdate();
+
+        if (Scene is Level level) {
+            Audio.Play("event:/new_content/char/tutorial_ghost/appear", Position);
+            level.Particles.Emit(P_Appear, 12, Center, Vector2.One * 6f, Sprite.Color);
+        }
+    }
+
+    public override void EndPlayback(bool remove) {
         if (Visible)
             Audio.Play("event:/new_content/char/tutorial_ghost/disappear", Position);
 
         if (Scene is Level level)
             level.Particles.Emit(P_Appear, 12, Center, Vector2.One * 6f, Sprite.Color);
 
-        Visible = false;
-        RemoveSelf();
+        base.EndPlayback(remove);
     }
 
     public void SetFrame(int index) {
-        State state = Timeline[index];
+        State state = Timeline[index - FrameOffset];
 
         string currentAnimationID = Sprite.CurrentAnimationID;
         bool onGround = Scene != null && CollideCheck<Solid>(Position + new Vector2(0f, 1f));
 
         Position = state.Underlying.Position;
+        Collider.Position.X = state.Collider.X;
+        Collider.Position.Y = state.Collider.Y;
+        Collider.Width = state.Collider.Width;
+        Collider.Height = state.Collider.Height;
 
         var anim = state.Underlying.Animation;
         if (anim != null && anim != Sprite.CurrentAnimationID && Sprite.Has(anim))
@@ -104,7 +115,7 @@ public class PlayerPlayback : Entity {
         if (Sprite.Scale.X != 0f)
             Hair.Facing = (Facings)Math.Sign(Sprite.Scale.X);
 
-        Sprite.Color = Hair.Color = state.Underlying.HairColor;
+        Sprite.Color = Hair.Color = state.Color;
 
         Light.Position = state.LightOffset;
 
@@ -175,20 +186,7 @@ public class PlayerPlayback : Entity {
     public override void Update() {
         base.Update();
 
-        if (!Visible)
-            return;
-
-        if (FrameIndex >= Timeline.Count - 1 || Time >= Duration) {
-            EndPlayback();
-            return;
-        }
-
-        SetFrame(FrameIndex);
-        Time += Engine.DeltaTime;
-        while (FrameIndex < Timeline.Count - 1 && Time >= Timeline[FrameIndex + 1].TimeStamp)
-            FrameIndex++;
-
-        if (Scene != null && Scene.OnInterval(0.1f))
+        if (Visible && Scene != null && Scene.OnInterval(0.1f))
             TrailManager.Add(Position, Sprite, Hair, Sprite.Scale, Hair.Color, Depth + 1);
     }
 }

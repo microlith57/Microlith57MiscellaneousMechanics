@@ -33,7 +33,7 @@ public class Module : EverestModule {
     public override void LoadContent(bool firstLoad) {
         base.LoadContent(firstLoad);
 
-        PlayerPlayback.P_Appear ??= new ParticleType
+        Recordings.Recording.P_Appear ??= new ParticleType
 		{
 			FadeMode = ParticleType.FadeModes.Late,
 			Size = 1f,

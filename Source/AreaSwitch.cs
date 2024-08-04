@@ -77,9 +77,9 @@ public class AreaSwitch : Entity {
     private BloomPoint Bloom;
 
     public StateMachine StateMachine;
-    public int StInactive;
-    public int StActive;
-    public int StFinished;
+    public static int StInactive;
+    public static int StActive;
+    public static int StFinished;
 
     public List<Activator> Activators = [];
     public bool Activated => Activators.Count > 0;

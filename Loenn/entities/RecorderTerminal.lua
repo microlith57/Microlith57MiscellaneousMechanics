@@ -6,6 +6,15 @@ RecorderTerminal.texture = "objects/INTcontest24/microlith57/terminal00"
 RecorderTerminal.justification = {0.5, 1.0}
 RecorderTerminal.placements = {
     name = "normal",
+    data = {
+        color = "ac3232"
+    }
+}
+
+RecorderTerminal.fieldInformation = {
+    color = {
+        fieldType = "color"
+    }
 }
 
 return RecorderTerminal
