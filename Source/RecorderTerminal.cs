@@ -175,7 +175,6 @@ public class RecorderTerminal : Entity {
         if (Scene.Tracker.GetEntity<Player>() is Player player)
             entities.Add(player);
 
-
         foreach (var box in Scene.Tracker.GetEntities<Box>().Cast<Box>())
             entities.Add(box);
 
@@ -191,8 +190,10 @@ public class RecorderTerminal : Entity {
             var rec = recordings.Find(rec => rec.RecordingOf == entity);
 
             if (rec == null) {
-                if (entity is Player or PlayerRecording)
-                    rec = new PlayerRecording();
+                if (entity is Player p)
+                    rec = new PlayerRecording(p.Hair.Nodes.Count);
+                else if (entity is PlayerRecording pr)
+                    rec = new PlayerRecording(pr.Hair.Nodes.Count);
                 else if (entity is Box or BoxRecording)
                     rec = new BoxRecording();
                 else

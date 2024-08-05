@@ -31,39 +31,39 @@ public class Module : EverestModule {
     public override void LoadContent(bool firstLoad) {
         base.LoadContent(firstLoad);
 
-        Recordings.Recording.P_Appear ??= new ParticleType
-		{
-			FadeMode = ParticleType.FadeModes.Late,
-			Size = 1f,
-			Direction = 0f,
-			DirectionRange = (float)Math.PI * 2f,
-			SpeedMin = 5f,
-			SpeedMax = 10f,
-			LifeMin = 0.6f,
-			LifeMax = 1.2f,
-			SpeedMultiplier = 0.3f
-		};
+        Recordings.Recording.P_Appear ??= new ParticleType {
+            FadeMode = ParticleType.FadeModes.Late,
+            Size = 1f,
+            Direction = 0f,
+            DirectionRange = (float)Math.PI * 2f,
+            SpeedMin = 5f,
+            SpeedMax = 10f,
+            LifeMin = 0.6f,
+            LifeMax = 1.2f,
+            SpeedMultiplier = 0.3f
+        };
 
         AreaSwitch.P_FireInactive ??= new ParticleType(TouchSwitch.P_FireWhite) {
             Size = 0.25f
         };
 
-        AreaSwitch.P_Spark ??= new ParticleType
-		{
-			Color = Color.White,
-			Color2 = Color.White,
-			ColorMode = ParticleType.ColorModes.Blink,
-			FadeMode = ParticleType.FadeModes.Late,
-			Size = 1f,
-			LifeMin = 0.4f,
-			LifeMax = 0.8f,
-			SpeedMin = 10f,
-			SpeedMax = 20f,
+        AreaSwitch.P_Spark ??= new ParticleType {
+            Color = Color.White,
+            Color2 = Color.White,
+            ColorMode = ParticleType.ColorModes.Blink,
+            FadeMode = ParticleType.FadeModes.Late,
+            Size = 1f,
+            LifeMin = 0.4f,
+            LifeMax = 0.8f,
+            SpeedMin = 10f,
+            SpeedMax = 20f,
             DirectionRange = Calc.Circle,
-			SpeedMultiplier = 0.1f,
-			Acceleration = new Vector2(0f, 10f)
-		};
+            SpeedMultiplier = 0.1f,
+            Acceleration = new Vector2(0f, 10f)
+        };
 
-        Box.P_Impact ??= new ParticleType(TheoCrystal.P_Impact);
+        Box.P_Impact ??= new ParticleType(TheoCrystal.P_Impact) {
+            Color = Color.White
+        };
     }
 }

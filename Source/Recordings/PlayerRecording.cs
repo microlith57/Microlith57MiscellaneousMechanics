@@ -11,7 +11,8 @@ public class PlayerRecording : Recording {
         Player.ChaserState Underlying,
         Vector2 LightOffset,
         Color Color,
-        Rectangle Collider
+        Rectangle Collider,
+        Vector2[] HairNodes
     ) { }
 
     public List<State> Timeline = [];
@@ -31,9 +32,9 @@ public class PlayerRecording : Recording {
     public PlayerHair Hair;
     public VertexLight Light;
 
-    public PlayerRecording() {
-        Sprite = new PlayerSprite(PlayerSpriteMode.Playback);
-        Add(Hair = new PlayerHair(Sprite));
+    public PlayerRecording(int hairCount) {
+        Sprite = new PlayerSprite(PlayerSpriteMode.Playback) { HairCount = hairCount };
+        Add(Hair = new PlayerHair(Sprite) { Active = false });
         Add(Sprite);
 
         Collider = new Hitbox(8f, 11f, -4f, -11f);
@@ -66,7 +67,8 @@ public class PlayerRecording : Recording {
                     (int)player.Collider.Position.Y,
                     (int)player.Collider.Width,
                     (int)player.Collider.Height
-                )
+                ),
+                HairNodes: [.. player.Hair.Nodes]
             ));
         } else if (RecordingOf is PlayerRecording recording) {
             Timeline.Add(recording.CurrentState);
@@ -76,21 +78,17 @@ public class PlayerRecording : Recording {
     public override void BeginPlayback() {
         base.BeginPlayback();
 
-        for (int i = 0; i < 10; i++)
-            Hair.AfterUpdate();
-
-        if (Scene is Level level) {
+        if (Scene is Level level && Visible) {
             Audio.Play("event:/new_content/char/tutorial_ghost/appear", Position);
             level.Particles.Emit(P_Appear, 12, Center, Vector2.One * 6f, Sprite.Color);
         }
     }
 
     public override void EndPlayback(bool remove) {
-        if (Visible)
+        if (Scene is Level level && Visible) {
             Audio.Play("event:/new_content/char/tutorial_ghost/disappear", Position);
-
-        if (Scene is Level level)
             level.Particles.Emit(P_Appear, 12, Center, Vector2.One * 6f, Sprite.Color);
+        }
 
         base.EndPlayback(remove);
     }
@@ -116,6 +114,9 @@ public class PlayerRecording : Recording {
             Hair.Facing = (Facings)Math.Sign(Sprite.Scale.X);
 
         Sprite.Color = Hair.Color = state.Color;
+
+        for (int i = 0; i < state.HairNodes.Length; i++)
+            Hair.Nodes[i] = state.HairNodes[i];
 
         Light.Position = state.LightOffset;
 

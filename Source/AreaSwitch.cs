@@ -20,7 +20,7 @@ public class AreaSwitch : Entity {
 
         public Collider? Collider;
 
-        public Vector2 Position => Entity.Center;
+        public Vector2 Position => Collider?.Bounds.Center.ToVector2() ?? Entity.Center;
         public List<AreaSwitch> Activating = [];
 
         public override void Update() {
@@ -235,9 +235,11 @@ public class AreaSwitch : Entity {
         StateMachine.Locked = true;
 
         if (Mode == ActivationMode.DestroysBox) {
-            var activator = Activators.First(a => a.Entity is Box);
-            shattering = (Box)activator.Entity;
-            shattering.Shattering = true;
+            var activator = Activators.FirstOrDefault(a => a.Entity is Box);
+            if (activator?.Entity is Box box) {
+                shattering = box;
+                shattering.Shattering = true;
+            }
         }
     }
 
@@ -428,8 +430,10 @@ public class AreaSwitch : Entity {
             if (t < 1f)
                 t += (float)Math.Tanh(nearby.Sum((vec) => {
                     var distFactor = Calc.ClampedMap(vec.Length(), Radius, Radius + AwarenessRange, 1f, 0f);
+
+                    var angleContributionFloor = Calc.ClampedMap(vec.Length(), 0f, Radius, 1f, 0f);
                     var angleDiff = Calc.AbsAngleDiff(vec.Angle(), angle);
-                    var angleFactor = Calc.ClampedMap(angleDiff, 0f, Calc.Circle / 6f, 1f, 0f);
+                    var angleFactor = Calc.ClampedMap(angleDiff, 0f, Calc.Circle / 6f, 1f, angleContributionFloor);
 
                     return distFactor * angleFactor;
                 }) * AWARENESS_SPIKE_SCALE);
