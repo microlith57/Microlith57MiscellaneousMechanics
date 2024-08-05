@@ -48,6 +48,10 @@ public class AreaSwitch : Entity {
             Activating = [];
         }
 
+        public override void DebugRender(Camera camera) {
+            if (Collider != null)
+                Draw.HollowRect(Collider, Color.Magenta);
+        }
     }
 
     public enum ActivationMode {
@@ -57,9 +61,6 @@ public class AreaSwitch : Entity {
     }
 
     public static readonly float AWARENESS_SPIKE_SCALE = 4f;
-
-    // todo box-only switch
-    // todo box-destroying switch
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public static ParticleType P_FireInactive;
@@ -334,7 +335,8 @@ public class AreaSwitch : Entity {
             (Scene as Level)!.Particles.Emit(P_FireActive, Position + Calc.AngleToVector(dir, 6f), ActiveColor, dir);
         }
 
-        TouchSfx.Play("event:/game/general/touchswitch_any");
+        TouchSfx.Play("event:/game/04_cliffside/arrowblock_side_depress");
+        // TouchSfx.Play("event:/game/general/touchswitch_any");
     }
 
     public bool Senses(Activator activator) {

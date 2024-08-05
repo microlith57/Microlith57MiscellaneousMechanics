@@ -14,6 +14,9 @@ public class Box : Actor {
     public static ParticleType P_Impact;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
+    public static readonly Vector2 PICKUP_SPEED_SOFT_CAP = new(80f, 80f);
+    public static readonly float PICKUP_SPEED_SOFT_CAP_FACTOR = 0.8f;
+
     public Vector2 Speed;
     public Holdable Hold;
     public Image Sprite;
@@ -351,23 +354,31 @@ public class Box : Actor {
     }
 
     private void OnPickup() {
+        Player holder = Hold.Holder;
+
+        var excessSpeedX = Math.Max(Math.Abs(holder.Speed.X) - PICKUP_SPEED_SOFT_CAP.X, 0f);
+        holder.Speed.X -= Math.Sign(holder.Speed.X) * excessSpeedX * PICKUP_SPEED_SOFT_CAP_FACTOR;
+
+        var excessSpeedY = Math.Max(Math.Abs(holder.Speed.Y) - PICKUP_SPEED_SOFT_CAP.Y, 0f);
+        holder.Speed.Y -= Math.Sign(holder.Speed.Y) * excessSpeedY * PICKUP_SPEED_SOFT_CAP_FACTOR;
+
         Speed = Vector2.Zero;
         AddTag(Tags.Persistent);
         Surface.AddTag(Tags.Persistent);
         Surface.Collidable = false;
     }
 
-    private void OnRelease(Vector2 force) {
+    private void OnRelease(Vector2 dir) {
         RemoveTag(Tags.Persistent);
         Surface.AddTag(Tags.Persistent);
         Surface.Collidable = true;
         Surface.Position = Position + new Vector2(-10f, -20f);
 
-        if (force.X != 0f && force.Y == 0f)
-            force.Y = -0.4f;
-        Speed = force * 200f;
+        if (dir.X != 0f && dir.Y == 0f)
+            dir.Y = -0.4f;
+        Speed = dir * 100f;
         if (Speed != Vector2.Zero)
-            NoGravityTimer = 0.1f;
+            NoGravityTimer = 0.05f;
     }
 
     public void Die() {
