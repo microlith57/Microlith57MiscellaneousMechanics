@@ -29,7 +29,9 @@ public class Box : Actor {
     private Vector2 prevLiftSpeed;
     private Vector2 previousPosition;
 
+    // todo: make it shake when it's shattering
     public bool Shattering;
+    // todo: make it die properly
     public bool Dead;
 
     public bool BonkedH, BonkedV;
