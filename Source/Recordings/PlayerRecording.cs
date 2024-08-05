@@ -190,4 +190,5 @@ public class PlayerRecording : Recording {
         if (Visible && Scene != null && Scene.OnInterval(0.1f))
             TrailManager.Add(Position, Sprite, Hair, Sprite.Scale, Hair.Color, Depth + 1);
     }
+
 }

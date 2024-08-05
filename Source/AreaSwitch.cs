@@ -241,6 +241,9 @@ public class AreaSwitch : Entity {
                 shattering.Shattering = true;
             }
         }
+
+        Collidable = false;
+        Activators.Clear();
     }
 
     private int FinishedUpdate() {
@@ -447,6 +450,13 @@ public class AreaSwitch : Entity {
             else
                 Draw.Line(absStart, absEnd, color);
         }
+    }
+
+    public override void DebugRender(Camera camera) {
+        base.DebugRender(camera);
+
+        foreach (var activator in Activators)
+            Draw.Line(Position, activator.Position, Color.Magenta);
     }
 
 }

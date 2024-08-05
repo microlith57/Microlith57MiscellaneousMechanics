@@ -303,4 +303,18 @@ public class RecorderTerminal : Entity {
         gracePeriod = false;
     }
 
+    public override void DebugRender(Camera camera) {
+        base.DebugRender(camera);
+
+        if (StateMachine.State == StRecording)
+            foreach (var rec in Recordings)
+                if (rec.RecordingOf != null)
+                    Draw.Line(Position, rec.RecordingOf.Center, BaseColor);
+
+        else if (StateMachine.State == StPlayback)
+            foreach (var rec2 in Recordings)
+                if (rec2.Visible)
+                    Draw.Line(Position, rec2.Center, BaseColor);
+    }
+
 }

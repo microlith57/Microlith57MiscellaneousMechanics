@@ -89,7 +89,7 @@ public class Box : Actor {
 
         Scene.Add(Surface);
 
-        if (IsTutorial)
+        if (IsTutorial && !(Scene as Level)!.Session.GetFlag("pickup_box_tutorial_done"))
             Scene.Add(tutorialGui = new(
                 this, new Vector2(0f, -24f),
                 Dialog.Clean("tutorial_carry"),
@@ -195,6 +195,7 @@ public class Box : Actor {
 
         if (tutorialGui != null) {
             if (Hold.IsHeld) {
+                (Scene as Level)!.Session.SetFlag("pickup_box_tutorial_done");
                 tutorialTimer = 0f;
                 tutorialGui.Open = false;
                 tutorialGui.RemoveSelf();
