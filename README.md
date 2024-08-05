@@ -6,6 +6,14 @@
 - maddie's helping hand: flag touch switch
 - kami `kami.bin`: pausing playback
 
+## todo
+
+- custom box debris
+  - metal plating + grav rocks
+
+- sounds!!!
+- rain ambience!!!
+
 ## planning
 
 ### manor
