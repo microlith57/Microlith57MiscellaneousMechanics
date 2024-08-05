@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -23,9 +24,11 @@ public class Module : EverestModule {
     }
 
     public override void Load() {
+        On.Celeste.Player.DustParticleFromSurfaceIndex += hookDustParticle;
     }
 
     public override void Unload() {
+        On.Celeste.Player.DustParticleFromSurfaceIndex -= hookDustParticle;
     }
 
     public override void LoadContent(bool firstLoad) {
@@ -66,4 +69,17 @@ public class Module : EverestModule {
             Color = Color.White
         };
     }
+
+    private static ConditionalWeakTable<Platform, ParticleType> platformDustOverrides = [];
+    public static void OverrideDust(Platform platform, ParticleType particle) => platformDustOverrides.AddOrUpdate(platform, particle);
+
+    private static ParticleType hookDustParticle(On.Celeste.Player.orig_DustParticleFromSurfaceIndex orig, Player self, int index) {
+        if (index == SurfaceIndex.Glitch) {
+            var platform = SurfaceIndex.GetPlatformByPriority(self.CollideAll<Platform>(self.Position + Vector2.UnitY));
+            if (platformDustOverrides.TryGetValue(platform, out var particle))
+                return particle;
+        }
+        return orig(self, index);
+    }
+
 }

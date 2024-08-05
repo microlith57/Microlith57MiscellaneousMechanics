@@ -41,6 +41,7 @@ public class RecorderTerminal : Entity {
     public static readonly Color COLOR_COOLDOWN = Calc.HexToColor("ff8800");
 
     public Color BaseColor;
+    public ParticleType BaseDust;
 
     public Sprite ButtonAndStripe;
     public Sprite Screen;
@@ -69,6 +70,10 @@ public class RecorderTerminal : Entity {
         Depth = 2000;
 
         BaseColor = data.HexColor("color", Calc.HexToColor("ac3232"));
+        BaseDust = new ParticleType(ParticleTypes.SparkyDust) {
+            Color = BaseColor,
+            Color2 = Color.White
+        };
 
         Image image = new(GFX.Game["objects/INTcontest24/microlith57/terminal"]);
         image.JustifyOrigin(new(0.5f, 1f));
@@ -141,6 +146,8 @@ public class RecorderTerminal : Entity {
         Talker.Enabled = StateMachine.State != StCooldown &&
                          Scene.Tracker.GetEntity<Player>() is Player player &&
                          (player.Position - Position).Length() <= PROMPT_RANGE;
+
+        BaseDust.Color = BaseColor;
     }
 
     private void IdleBegin() {
@@ -194,8 +201,10 @@ public class RecorderTerminal : Entity {
                     rec = new PlayerRecording(p.Hair.Nodes.Count);
                 else if (entity is PlayerRecording pr)
                     rec = new PlayerRecording(pr.Hair.Nodes.Count);
-                else if (entity is Box or BoxRecording)
-                    rec = new BoxRecording();
+                else if (entity is Box)
+                    rec = new BoxRecording(BaseDust);
+                else if (entity is BoxRecording br)
+                    rec = new BoxRecording(br.Dust);
                 else
                     throw new Exception("should be unreachable");
 

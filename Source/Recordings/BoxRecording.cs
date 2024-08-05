@@ -28,9 +28,10 @@ public class BoxRecording : Recording {
 
     public Image Sprite;
     public VertexLight Light;
+    public ParticleType Dust;
     public JumpThru Surface;
 
-    public BoxRecording() {
+    public BoxRecording(ParticleType dust) {
         Depth = 1010;
 
         Add(Sprite = new(GFX.Game["objects/INTcontest24/microlith57/box_playback"]) {
@@ -41,11 +42,13 @@ public class BoxRecording : Recording {
         Add(Light = new(Collider.Center, Color.White, 1f, 24, 48));
         Add(new AreaSwitch.Activator());
 
+        Dust = dust;
         Surface = new(Position + new Vector2(-10f, -20f), 20, safe: false) {
             Depth = 1009,
             SurfaceSoundIndex = SurfaceIndex.Glitch,
             Collidable = false
         };
+        Module.OverrideDust(Surface, Dust);
     }
 
     public override void Added(Scene scene) {
