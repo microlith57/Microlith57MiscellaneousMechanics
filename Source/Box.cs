@@ -107,7 +107,11 @@ public class Box : Actor {
         if (Scene is not Level level)
             return;
 
-        if (Shattering || Dead) return;
+        if (Shattering || Dead) {
+            Surface.Collidable = false;
+            Hold.cannotHoldTimer = 0.1f;
+            return;
+        }
 
         if (Hold.IsHeld)
             prevLiftSpeed = Vector2.Zero;
@@ -184,7 +188,9 @@ public class Box : Actor {
         if (!Dead)
             Hold.CheckAgainstColliders();
 
-        if (!Hold.IsHeld)
+        if (Hold.IsHeld)
+            Surface.Position = Position + new Vector2(-10f, -20f);
+        else
             Surface.MoveTo(Position + new Vector2(-10f, -20f));
 
         if (tutorialGui != null) {
@@ -203,10 +209,18 @@ public class Box : Actor {
         }
     }
 
-    public IEnumerator Shatter() {
-        Shattering = true;
-        yield return 1f;
-        // todo
+    public void Shatter() {
+        var center = Position + new Vector2(0f, -10f);
+        Audio.Play("event:/game/general/wall_break_stone", center);
+
+        for (int i = 0; i < 7; i++) {
+            var pos = Calc.Round(new(Calc.Random.NextFloat(12f) + 4f, Calc.Random.NextFloat(12f) + 4f));
+            var debris = new Debris().orig_Init(TopLeft + pos, '1').BlastFrom(center);
+            debris.image.Texture = GFX.Game["debris/7"];
+            Scene.Add(debris);
+        }
+
+        RemoveSelf();
     }
 
     public void ExplodeLaunch(Vector2 from) {
@@ -364,6 +378,11 @@ public class Box : Actor {
         Sprite.Visible = false;
         Depth = -1000000;
         AllowPushing = false;
+    }
+
+    public override void Removed(Scene scene) {
+        base.Removed(scene);
+        Surface.RemoveSelf();
     }
 
 }

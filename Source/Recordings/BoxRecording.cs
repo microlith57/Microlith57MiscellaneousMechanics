@@ -113,4 +113,9 @@ public class BoxRecording : Recording {
         if (state.BonkV)
             Audio.Play("event:/new_content/char/tutorial_ghost/land", Position);
     }
+
+    public override void Removed(Scene scene) {
+        base.Removed(scene);
+        Surface.RemoveSelf();
+    }
 }

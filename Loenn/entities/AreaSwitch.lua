@@ -10,16 +10,69 @@ AreaSwitch.placements = {
         name = "area_switch",
         data = {
             flag = "area_switch",
+            persistent = "false",
+            activationMode = "Anything",
+            container = "objects/touchswitch/container",
             icon = "objects/touchswitch/icon",
             animationLength = 6,
             inactiveColor = "5FCDE4",
             activeColor = "FFFFFF",
-            finishColor = "F141DF"
+            finishColor = "F141DF",
+            inactiveLineColor = "5FCDE4",
+            activeLineColor = "FFFFFF",
+            finishLineColor = "F141DF",
+            radius = 32,
+            awareness = 32
+        }
+    },
+    {
+        name = "box_switch",
+        data = {
+            flag = "area_switch",
+            persistent = "false",
+            activationMode = "BoxOnly",
+            container = "objects/INTcontest24/microlith57/touchswitch/container_box",
+            icon = "objects/touchswitch/icon",
+            animationLength = 6,
+            inactiveColor = "5FCDE4",
+            activeColor = "FFFFFF",
+            finishColor = "F141DF",
+            inactiveLineColor = "5FCDE4",
+            activeLineColor = "FFFFFF",
+            finishLineColor = "F141DF",
+            radius = 32,
+            awareness = 32
+        }
+    },
+    {
+        name = "box_destroyer",
+        data = {
+            flag = "area_switch",
+            persistent = "false",
+            activationMode = "DestroysBox",
+            container = "objects/INTcontest24/microlith57/touchswitch/container_box",
+            icon = "objects/touchswitch/icon",
+            animationLength = 6,
+            inactiveColor = "5FCDE4",
+            activeColor = "FFFFFF",
+            finishColor = "F141DF",
+            inactiveLineColor = "5FCDE4",
+            activeLineColor = "FFFFFF",
+            finishLineColor = "F141DF",
+            radius = 32,
+            awareness = 32
         }
     }
 }
 
 AreaSwitch.fieldInformation = {
+    activationMode = {
+        options = {
+            "Anything",
+            "BoxOnly",
+            "DestroysBox"
+        }
+    },
     inactiveColor = {
         fieldType = "color"
     },
@@ -29,13 +82,23 @@ AreaSwitch.fieldInformation = {
     finishColor = {
         fieldType = "color"
     },
+    inactiveLineColor = {
+        fieldType = "color"
+    },
+    activeLineColor = {
+        fieldType = "color"
+    },
+    finishLineColor = {
+        fieldType = "color"
+    },
     animationLength = {
         fieldType = "integer"
     }
 }
 
 function AreaSwitch.sprite(room, entity)
-    local containerSprite = drawableSprite.fromTexture("objects/touchswitch/container", entity)
+    local containerResource = entity.container ~= "" and entity.container or "objects/touchswitch/conatiner"
+    local containerSprite = drawableSprite.fromTexture(containerResource, entity)
 
     local iconResource = (entity.icon ~= "" and entity.icon or "objects/touchswitch/icon") .. "00"
     local iconSprite = drawableSprite.fromTexture(iconResource, entity)

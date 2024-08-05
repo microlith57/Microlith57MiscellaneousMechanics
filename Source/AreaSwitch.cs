@@ -1,7 +1,9 @@
 using Celeste.Mod.Entities;
+using Celeste.Mod.Microlith57.IntContest.Recordings;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,7 +27,7 @@ public class AreaSwitch : Entity {
             base.Update();
 
             foreach (var areaSwitch in Scene.Tracker.GetEntities<AreaSwitch>().Cast<AreaSwitch>())
-                if ((Collider ?? Entity.Collider).Collide(areaSwitch))
+                if (areaSwitch.Accepts(this) && (Collider ?? Entity.Collider).Collide(areaSwitch))
                     areaSwitch.Activate(this);
                 else
                     areaSwitch.Deactivate(this);
@@ -49,8 +51,12 @@ public class AreaSwitch : Entity {
 
     }
 
-    // todo this depend on circumference
-    public static readonly int NUM_LINES = 56;
+    public enum ActivationMode {
+        Anything,
+        BoxOnly,
+        DestroysBox
+    }
+
     public static readonly float AWARENESS_SPIKE_SCALE = 4f;
 
     // todo box-only switch
@@ -64,34 +70,38 @@ public class AreaSwitch : Entity {
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     public string Flag;
+    public bool Persistent;
     public List<AreaSwitch> Siblings = [];
+
+    public ActivationMode Mode;
 
     public float Radius;
     public float AwarenessRange;
+    public int NumLines;
 
-    private SoundSource TouchSfx;
+    public SoundSource TouchSfx;
 
-    private static MTexture Border = GFX.Game["objects/touchswitch/container"];
-    private Sprite Icon;
-    private int[] Frames;
+    public MTexture Container;
+    public Sprite Icon;
+    public int[] Frames;
 
-    private Color InactiveColor;
-    private Color ActiveColor;
-    private Color FinishColor;
+    public Color InactiveColor;
+    public Color ActiveColor;
+    public Color FinishColor;
 
-    private Color InactiveLineColor;
-    private Color ActiveLineColor;
-    private Color FinishLineColor;
+    public Color InactiveLineColor;
+    public Color ActiveLineColor;
+    public Color FinishLineColor;
 
-    private float Ease = 0f;
-    private float FinishedEase = 0f;
-    private float Spin = 0f;
-    private Wiggler Wiggler;
-    private Vector2 Pulse = Vector2.One;
+    public float Ease = 0f;
+    public float FinishedEase = 0f;
+    public float Spin = 0f;
+    public Wiggler Wiggler;
+    public Vector2 Pulse = Vector2.One;
 
-    private float Timer = 0f;
+    public float Timer = 0f;
 
-    private BloomPoint Bloom;
+    public BloomPoint Bloom;
 
     public StateMachine StateMachine;
     public static int StInactive;
@@ -101,21 +111,26 @@ public class AreaSwitch : Entity {
     public List<Activator> Activators = [];
     public bool Activated => Activators.Count > 0;
 
-    private bool Finished {
+    public bool Finished {
         get => StateMachine.State == StFinished;
         set {
             if (value)
                 StateMachine.State = StFinished;
         }
     }
+    private Box? shattering;
 
     public AreaSwitch(EntityData data, Vector2 offset) : base(data.Position + offset) {
 
         Depth = 2000;
         Flag = data.Attr("flag");
+        Persistent = data.Bool("persistent");
+
+        Mode = data.Enum("activationMode", ActivationMode.Anything);
 
         Radius = data.Float("radius", 32f);
-        AwarenessRange = data.Float("radius", 32f);
+        AwarenessRange = data.Float("awareness", 32f);
+        NumLines = (int)(Calc.Circle * Radius / 3.6f);
 
         InactiveColor = Calc.HexToColor(data.Attr("inactiveColor", "5FCDE4"));
         ActiveColor = Calc.HexToColor(data.Attr("activeColor", "FFFFFF"));
@@ -130,7 +145,9 @@ public class AreaSwitch : Entity {
         else
             Frames = [0, 1, 2, 3, 4, 5];
 
-        Add(Icon = new Sprite(GFX.Game, "objects/touchswitch/icon"));
+        Container = GFX.Game[data.Attr("container", "objects/touchswitch/container")];
+
+        Add(Icon = new Sprite(GFX.Game, data.Attr("icon", "objects/touchswitch/icon")));
         Icon.Add("idle", "", 0f, 0);
         Icon.Add("spin", "", 0.1f, new Chooser<string>("spin", 1f), Frames);
         Icon.Play("spin");
@@ -162,7 +179,7 @@ public class AreaSwitch : Entity {
         StFinished = StateMachine.AddState<AreaSwitch>(
             "Finished",
             onUpdate: s => s.FinishedUpdate(),
-            begin: s => s.StateMachine.Locked = true
+            begin: s => s.OnFinished()
         );
         StateMachine.State = StInactive;
 
@@ -214,21 +231,58 @@ public class AreaSwitch : Entity {
     private int InactiveUpdate() => StInactive;
     private int ActiveUpdate() => StActive;
 
+    private void OnFinished() {
+        StateMachine.Locked = true;
+
+        if (Mode == ActivationMode.DestroysBox) {
+            var activator = Activators.First(a => a.Entity is Box);
+            shattering = (Box)activator.Entity;
+            shattering.Shattering = true;
+        }
+    }
+
     private int FinishedUpdate() {
         if (Scene is not Level level) return StFinished;
 
         if (Icon.Rate > 0.1f) {
             Icon.Rate -= 2f * Engine.DeltaTime;
+
+            if (shattering != null) {
+                var fac = Calc.ClampedMap(Icon.Rate, 4f, 0.1f, 0f, 1f);
+
+                {
+                    var force = Calc.ClampedMap(fac, 0f, 0.5f, 60f, 0f);
+                    var boxPos = shattering.Position + new Vector2(0f, -10f);
+                    var delta = Position - boxPos;
+                    force *= (float)Math.Atan(delta.Length() / Radius);
+                    shattering.Speed += delta.SafeNormalize() * force;
+                }
+                {
+                    var damp = Calc.ClampedMap(fac, 0.25f, 0.75f, 0.1f, 1f);
+                    shattering.Speed = Calc.Approach(shattering.Speed, Vector2.Zero, shattering.Speed.Length() * Engine.DeltaTime * damp);
+                    shattering.Position += shattering.Speed * Engine.DeltaTime;
+                }
+                {
+                    var guide = Calc.ClampedMap(fac, 0.5f, 1f, 0.2f, 1f);
+                    var boxPos = shattering.Position + new Vector2(0f, -10f);
+                    var delta = Position - boxPos;
+                    // force *= (float)Math.Pow((double)delta.Length() / 32, 2);
+                    // shattering.Position += delta.SafeNormalize() * force;
+                    shattering.Position += delta * guide;
+                }
+            }
+
             if (Icon.Rate <= 0.1f) {
                 Icon.Rate = 0.1f;
                 Wiggler.Start();
                 Icon.Play("idle");
                 level.Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
+                shattering?.Shatter();
+                shattering = null;
 
-
-                for (int i = 0; i < NUM_LINES; i++) {
+                for (int i = 0; i < NumLines; i++) {
                     float jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
-                    float angle = (i / (float)NUM_LINES + jiggle + Spin) * Calc.Circle;
+                    float angle = (i / (float)NumLines + jiggle + Spin) * Calc.Circle;
 
                     Vector2 relStart = Calc.AngleToVector(angle, 1f);
                     Vector2 absStart = Position + relStart * Radius;
@@ -279,6 +333,26 @@ public class AreaSwitch : Entity {
         TouchSfx.Play("event:/game/general/touchswitch_any");
     }
 
+    public bool Senses(Activator activator) {
+        switch (Mode) {
+            case ActivationMode.Anything:
+                return true;
+            case ActivationMode.BoxOnly:
+                return activator.Entity is Box or BoxRecording;
+            case ActivationMode.DestroysBox:
+                return activator.Entity is Box;
+            default:
+                return false;
+        }
+    }
+
+    public bool Accepts(Activator activator) {
+        if (Mode == ActivationMode.DestroysBox)
+            return activator.Entity is Box box && !box.Hold.IsHeld;
+
+        return Senses(activator);
+    }
+
     public void Activate(Activator activator) {
         if (Finished || Activators.Contains(activator)) return;
 
@@ -305,7 +379,8 @@ public class AreaSwitch : Entity {
 
         if (Scene is not Level level) return;
 
-        level.Session.SetFlag(Flag);
+        if (Persistent)
+            level.Session.SetFlag(Flag);
 
         foreach (var s in Siblings)
             s.Finished = true;
@@ -319,8 +394,8 @@ public class AreaSwitch : Entity {
     }
 
     public override void Render() {
-        Border.DrawCentered(Position + new Vector2(0f, -1f), Color.Black);
-        Border.DrawCentered(Position, Icon.Color, Pulse);
+        Container.DrawCentered(Position + new Vector2(0f, -1f), Color.Black);
+        Container.DrawCentered(Position, Icon.Color, Pulse);
         base.Render();
 
         if (Scene is not Level level || Icon.CurrentAnimationID != "spin") return;
@@ -329,14 +404,16 @@ public class AreaSwitch : Entity {
 
         var nearby = level.Tracker.GetComponents<Activator>().Cast<Activator>()
             .SelectMany<Activator, Vector2>(act => {
+                if (!Senses(act)) return [];
+
                 var vec = act.Position - Position;
                 return (vec.Length() > (Radius + AwarenessRange)) ? [] : [vec];
             })
             .ToList();
 
-        for (int i = 0; i < NUM_LINES; i++) {
+        for (int i = 0; i < NumLines; i++) {
             float jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
-            float angle = (i / (float)NUM_LINES + jiggle + Spin) * Calc.Circle;
+            float angle = (i / (float)NumLines + jiggle + Spin) * Calc.Circle;
 
             Vector2 relStart = Calc.AngleToVector(angle, 1f);
             Vector2 absStart = Position + relStart * Radius;
