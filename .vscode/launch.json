@@ -11,7 +11,7 @@
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/../../Celeste.dll",
       "cwd": "${workspaceFolder}/../../",
-      "console": "internalConsole",
+      "console": "integratedTerminal",
       "stopAtEntry": false,
       "linux": {
         "env": {

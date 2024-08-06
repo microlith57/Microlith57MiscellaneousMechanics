@@ -11,6 +11,8 @@
 - custom box debris
   - metal plating + grav rocks
 
+- playbacks open doors
+
 - sounds!!!
 - rain ambience!!!
 
