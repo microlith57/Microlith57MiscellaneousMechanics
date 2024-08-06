@@ -99,7 +99,7 @@ public class Module : EverestModule {
     private static ParticleType hookDustParticle(On.Celeste.Player.orig_DustParticleFromSurfaceIndex orig, Player self, int index) {
         if (index == SurfaceIndex.Glitch) {
             var platform = SurfaceIndex.GetPlatformByPriority(self.CollideAll<Platform>(self.Position + Vector2.UnitY));
-            if (platformDustOverrides.TryGetValue(platform, out var particle))
+            if (platform != null && platformDustOverrides.TryGetValue(platform, out var particle))
                 return particle;
         }
         return orig(self, index);
