@@ -38,7 +38,7 @@ public class Box : Actor {
     private Vector2 previousPosition;
 
     // todo: make it shake when it's shattering
-    public bool Shattering;
+    public bool ShouldShatter, Shattering;
     // todo: make it die properly
     public bool Dead;
 
@@ -91,6 +91,8 @@ public class Box : Actor {
 
         // todo: do something about transitions
         // Tag = Tags.TransitionUpdate;
+
+        Add(new TransitionListener() { OnOutBegin = () => ShouldShatter = true });
     }
 
     public Box(EntityData data, Vector2 offset)
@@ -126,6 +128,11 @@ public class Box : Actor {
 
         if (Scene is not Level level)
             return;
+
+        if (ShouldShatter) {
+            Shatter();
+            return;
+        }
 
         if (Shattering || Dead) {
             Surface.Collidable = false;
@@ -212,6 +219,7 @@ public class Box : Actor {
     }
 
     public void Shatter() {
+        Shattering = true;
         var center = Position + new Vector2(0f, -10f);
         Audio.Play("event:/game/general/wall_break_stone", center);
 
@@ -387,6 +395,7 @@ public class Box : Actor {
     public override void Removed(Scene scene) {
         base.Removed(scene);
         Surface.RemoveSelf();
+        tutorialGui?.RemoveSelf();
     }
 
 }

@@ -182,11 +182,11 @@ public class RecorderTerminal : Entity {
         if (Scene.Tracker.GetEntity<Player>() is Player player)
             entities.Add(player);
 
-        foreach (var box in Scene.Tracker.GetEntities<Box>().Cast<Box>())
+        foreach (var box in Scene.Tracker.GetEntities<Box>())
             entities.Add(box);
 
-        foreach (var playback in Scene.Tracker.GetEntities<Recording>().Cast<Recording>())
-            if (playback.IsPlaying)
+        foreach (var playback in Scene.Tracker.GetEntities<Recording>())
+            if (((Recording)playback).IsPlaying)
                 entities.Add(playback);
 
         entities = [.. entities.OrderBy(e => e.actualDepth)];
@@ -273,9 +273,8 @@ public class RecorderTerminal : Entity {
     }
     private int CooldownUpdate() {
         if (Scene.Tracker.GetEntities<RecorderTerminal>()
-                         .Cast<RecorderTerminal>()
-                         .All(t => t.StateMachine.State == StIdle ||
-                                   t.StateMachine.State == StCooldown))
+                         .All(t => ((RecorderTerminal)t).StateMachine.State == StIdle ||
+                                   ((RecorderTerminal)t).StateMachine.State == StCooldown))
             return StIdle;
 
         Progress.Color = (Scene.TimeActive % 1f < 0.5f) ? COLOR_COOLDOWN : Color.Transparent;
@@ -289,6 +288,7 @@ public class RecorderTerminal : Entity {
 
     public IEnumerator OnInteract(Player player) {
         player.StateMachine.State = Player.StDummy;
+        player.ForceCameraUpdate = true;
         player.StateMachine.Locked = true;
         gracePeriod = true;
 
@@ -308,6 +308,7 @@ public class RecorderTerminal : Entity {
             StateMachine.State = StCooldown;
 
         player.StateMachine.Locked = false;
+        player.ForceCameraUpdate = false;
         player.StateMachine.State = Player.StNormal;
         gracePeriod = false;
     }
@@ -320,10 +321,10 @@ public class RecorderTerminal : Entity {
                 if (rec.RecordingOf != null)
                     Draw.Line(Position, rec.RecordingOf.Center, BaseColor);
 
-        else if (StateMachine.State == StPlayback)
-            foreach (var rec2 in Recordings)
-                if (rec2.Visible)
-                    Draw.Line(Position, rec2.Center, BaseColor);
+                else if (StateMachine.State == StPlayback)
+                    foreach (var rec2 in Recordings)
+                        if (rec2.Visible)
+                            Draw.Line(Position, rec2.Center, BaseColor);
     }
 
 }

@@ -25,7 +25,7 @@ public class AreaSwitch : Entity {
         public override void Update() {
             base.Update();
 
-            foreach (var areaSwitch in Scene.Tracker.GetEntities<AreaSwitch>().Cast<AreaSwitch>())
+            foreach (AreaSwitch areaSwitch in Scene.Tracker.GetEntities<AreaSwitch>())
                 if (areaSwitch.Accepts(this) && (Collider ?? Entity.Collider).Collide(areaSwitch))
                     areaSwitch.Activate(this);
                 else
@@ -208,7 +208,7 @@ public class AreaSwitch : Entity {
 
             player.Add(new Activator());
 
-        foreach (var @switch in Scene.Tracker.GetEntities<AreaSwitch>().Cast<AreaSwitch>())
+        foreach (AreaSwitch @switch in Scene.Tracker.GetEntities<AreaSwitch>())
             if (Flag == @switch.Flag)
                 Siblings.Add(@switch);
     }
@@ -391,7 +391,7 @@ public class AreaSwitch : Entity {
         foreach (var s in Siblings)
             s.Finished = true;
 
-        foreach (var gate in level.Tracker.GetEntities<FlagSwitchGate>().Cast<FlagSwitchGate>())
+        foreach (FlagSwitchGate gate in level.Tracker.GetEntities<FlagSwitchGate>())
             if (gate.Flag == Flag)
                 gate.Trigger();
 
@@ -400,19 +400,28 @@ public class AreaSwitch : Entity {
     }
 
     public override void Render() {
+        if (Scene is not Level level) return;
+
+        bool drawArea = Icon.CurrentAnimationID == "spin";
+        var col = Color.Lerp(InactiveLineColor, Finished ? FinishLineColor : ActiveLineColor, Ease);
+
+        // if (drawArea && Mode == ActivationMode.DestroysBox) {
+        //     float diag = Radius / (float)Math.Sqrt(2f);
+        //     Draw.Line(Position + new Vector2(-diag, -diag), Position + new Vector2(diag, diag), col);
+        //     Draw.Line(Position + new Vector2(-diag, diag), Position + new Vector2(diag, -diag), col);
+        // }
+
         Container.DrawCentered(Position + new Vector2(0f, -1f), Color.Black);
         Container.DrawCentered(Position, Icon.Color, Pulse);
         base.Render();
 
-        if (Scene is not Level level || Icon.CurrentAnimationID != "spin") return;
+        if (!drawArea) return;
 
-        var col = Color.Lerp(InactiveLineColor, Finished ? FinishLineColor : ActiveLineColor, Ease);
+        var nearby = level.Tracker.GetComponents<Activator>()
+            .SelectMany<Component, Vector2>(act => {
+                if (!Senses((Activator)act)) return [];
 
-        var nearby = level.Tracker.GetComponents<Activator>().Cast<Activator>()
-            .SelectMany<Activator, Vector2>(act => {
-                if (!Senses(act)) return [];
-
-                var vec = act.Position - Position;
+                var vec = ((Activator)act).Position - Position;
                 return (vec.Length() > (Radius + AwarenessRange)) ? [] : [vec];
             })
             .ToList();
