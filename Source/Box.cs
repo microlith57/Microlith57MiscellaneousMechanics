@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -13,20 +14,27 @@ public class Box : Actor {
     public static ParticleType P_Impact;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-    public static readonly Vector2 PICKUP_SPEED_SOFT_CAP = new(80f, 80f);
-    public static readonly float PICKUP_SPEED_SOFT_CAP_FACTOR = 0.8f;
+    [Tracked]
+    public class BoxSurface(Box box) : Component(false, false) {
+        public Box Box = box;
+    }
+
+    public static readonly float PICKUP_SPEED_SOFT_CAP = 80f;
+    public static readonly float PICKUP_SPEED_SOFT_CAP_FACTOR = 0.4f;
+
+    public string RemoveIfFlag = "";
 
     public Vector2 Speed;
     public Holdable Hold;
     public Image Sprite;
     public JumpThru Surface;
 
-    private Collision onCollideH;
-    private Collision onCollideV;
+    public Hitbox MainCollider, FullSizeCollider, PickupCollider, PickupColliderStacked;
+
+    private Collision onCollideH, onCollideV;
 
     public float NoGravityTimer;
 
-    private Vector2 prevLiftSpeed;
     private Vector2 previousPosition;
 
     // todo: make it shake when it's shattering
@@ -40,19 +48,21 @@ public class Box : Actor {
     private BirdTutorialGui? tutorialGui;
     private float tutorialTimer;
 
-    public Box(Vector2 position, Vector2 speed = default, bool tutorial = false) : base(position) {
+    public Box(Vector2 position, Vector2 speed = default) : base(position) {
         previousPosition = Position;
-        IsTutorial = tutorial;
 
         Depth = 100;
-        Collider = new Hitbox(8f, 10f, -4f, -10f);
+        Collider = MainCollider = new Hitbox(8f, 10f, -4f, -10f);
+        FullSizeCollider = new Hitbox(20f, 20f, -10f, -20f);
 
         Add(Sprite = new(GFX.Game["objects/INTcontest24/microlith57/box"]) {
             Origin = new(11f, 21f)
         });
 
+        PickupCollider = new Hitbox(28f, 28f, -14f, -24f);
+        PickupColliderStacked = new Hitbox(28f, 20f, -14f, -16f);
         Add(Hold = new Holdable {
-            PickupCollider = new Hitbox(28f, 28f, -14f, -24f),
+            PickupCollider = PickupCollider,
             SlowFall = false,
             SlowRun = true,
             OnPickup = OnPickup,
@@ -67,16 +77,17 @@ public class Box : Actor {
         onCollideV = OnCollideV;
         LiftSpeedGraceTime = 0.1f;
 
+        Add(new VertexLight(FullSizeCollider.Center, Color.White, 1f, 24, 48));
+
         var activatorCollider = new Hitbox(20f, 20f, -10f, -20f);
         activatorCollider.Added(this);
-
-        Add(new VertexLight(activatorCollider.Center, Color.White, 1f, 24, 48));
         Add(new AreaSwitch.Activator() { Collider = activatorCollider });
 
         Surface = new(Position + new Vector2(-10f, -20f), 20, safe: false) {
             Depth = 99,
             SurfaceSoundIndex = SurfaceIndex.Girder
         };
+        Surface.Add(new BoxSurface(this));
 
         // todo: do something about transitions
         // Tag = Tags.TransitionUpdate;
@@ -84,11 +95,17 @@ public class Box : Actor {
 
     public Box(EntityData data, Vector2 offset)
         : this(data.Position + offset,
-               new(data.Float("speedX"), data.Float("speedY")),
-               data.Bool("tutorial")) { }
+               new(data.Float("speedX"), data.Float("speedY"))) {
+        RemoveIfFlag = data.Attr("removeIfFlag");
+        IsTutorial = data.Bool("tutorial");
+    }
 
     public override void Added(Scene scene) {
         base.Added(scene);
+
+        if (!string.IsNullOrEmpty(RemoveIfFlag) && (Scene as Level)!.Session.GetFlag(RemoveIfFlag)) {
+            RemoveSelf(); return;
+        }
 
         Scene.Add(Surface);
 
@@ -116,29 +133,26 @@ public class Box : Actor {
             return;
         }
 
-        if (Hold.IsHeld)
-            prevLiftSpeed = Vector2.Zero;
-        else {
+        if (!Hold.IsHeld) {
+            Collider = FullSizeCollider;
+            bool boxOnTop = CollideCheck<Box>(Position - 4f * Vector2.UnitY);
+            Hold.PickupCollider = boxOnTop ? PickupColliderStacked : PickupCollider;
+            Collider = MainCollider;
+
             if (OnGround()) {
-                float target = (!OnGround(Position + Vector2.UnitX * 3f)) ? 20f : (OnGround(Position - Vector2.UnitX * 3f) ? 0f : (-20f));
+                bool pitLeft = !OnGround(Position - Vector2.UnitX * 3f);
+                bool pitRight = !OnGround(Position + Vector2.UnitX * 3f);
+
+                bool wallLeft = CollideCheck<Solid>(Position - 4f * Vector2.UnitX);
+                bool wallRight = CollideCheck<Solid>(Position + 4f * Vector2.UnitX);
+
+                float target = 0f;
+                if (pitRight || wallLeft)
+                    target = 20f;
+                else if (pitLeft || wallRight)
+                    target = -20f;
+
                 Speed.X = Calc.Approach(Speed.X, target, 800f * Engine.DeltaTime);
-                Vector2 liftSpeed = LiftSpeed;
-                if (liftSpeed == Vector2.Zero && prevLiftSpeed != Vector2.Zero) {
-                    Speed = prevLiftSpeed;
-                    prevLiftSpeed = Vector2.Zero;
-                    Speed.Y = Math.Min(Speed.Y * 0.6f, 0f);
-                    if (Speed.X != 0f && Speed.Y == 0f) {
-                        Speed.Y = -60f;
-                    }
-                    if (Speed.Y < 0f) {
-                        NoGravityTimer = 0.15f;
-                    }
-                } else {
-                    prevLiftSpeed = liftSpeed;
-                    if (liftSpeed.Y < 0f && Speed.Y < 0f) {
-                        Speed.Y = 0f;
-                    }
-                }
             } else if (Hold.ShouldHaveGravity) {
                 float num = 800f;
                 if (Math.Abs(Speed.Y) <= 30f) {
@@ -158,43 +172,27 @@ public class Box : Actor {
             previousPosition = ExactPosition;
             MoveH(Speed.X * Engine.DeltaTime, onCollideH);
             MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
-            if (Center.X > level.Bounds.Right) {
-                MoveH(32f * Engine.DeltaTime);
-                if (Left - 8f > level.Bounds.Right) {
-                    RemoveSelf();
-                }
+            if (Right > level.Bounds.Right) {
+                Right = level.Bounds.Right;
+                Speed.X *= -0.4f;
             } else if (Left < level.Bounds.Left) {
                 Left = level.Bounds.Left;
                 Speed.X *= -0.4f;
             } else if (Top < level.Bounds.Top - 4) {
                 Top = level.Bounds.Top + 4;
                 Speed.Y = 0f;
-            } else if (Bottom > level.Bounds.Bottom && SaveData.Instance.Assists.Invincible) {
-                Bottom = level.Bounds.Bottom;
-                Speed.Y = -300f;
-                Audio.Play("event:/game/general/assist_screenbottom", Position);
-            } else if (Top > level.Bounds.Bottom) {
+            } else if (Top > level.Bounds.Bottom + 48f) {
                 Die();
             }
             if (X < level.Bounds.Left + 10) {
                 MoveH(32f * Engine.DeltaTime);
-            }
-            Player entity = Scene.Tracker.GetEntity<Player>();
-            TempleGate templeGate = CollideFirst<TempleGate>();
-            if (templeGate != null && entity != null) {
-                templeGate.Collidable = false;
-                MoveH(Math.Sign(entity.X - X) * 32 * Engine.DeltaTime);
-                templeGate.Collidable = true;
             }
         }
 
         if (!Dead)
             Hold.CheckAgainstColliders();
 
-        if (Hold.IsHeld)
-            Surface.Position = Position + new Vector2(-10f, -20f);
-        else
-            Surface.MoveTo(Position + new Vector2(-10f, -20f));
+        Surface.MoveTo(Position + new Vector2(-10f, -20f));
 
         if (tutorialGui != null) {
             if (Hold.IsHeld) {
@@ -357,22 +355,16 @@ public class Box : Actor {
     private void OnPickup() {
         Player holder = Hold.Holder;
 
-        var excessSpeedX = Math.Max(Math.Abs(holder.Speed.X) - PICKUP_SPEED_SOFT_CAP.X, 0f);
-        holder.Speed.X -= Math.Sign(holder.Speed.X) * excessSpeedX * PICKUP_SPEED_SOFT_CAP_FACTOR;
-
-        var excessSpeedY = Math.Max(Math.Abs(holder.Speed.Y) - PICKUP_SPEED_SOFT_CAP.Y, 0f);
-        holder.Speed.Y -= Math.Sign(holder.Speed.Y) * excessSpeedY * PICKUP_SPEED_SOFT_CAP_FACTOR;
+        holder.Speed = holder.Speed.SoftCap(PICKUP_SPEED_SOFT_CAP, PICKUP_SPEED_SOFT_CAP_FACTOR);
 
         Speed = Vector2.Zero;
         AddTag(Tags.Persistent);
         Surface.AddTag(Tags.Persistent);
-        Surface.Collidable = false;
     }
 
     private void OnRelease(Vector2 dir) {
         RemoveTag(Tags.Persistent);
         Surface.AddTag(Tags.Persistent);
-        Surface.Collidable = true;
         Surface.Position = Position + new Vector2(-10f, -20f);
 
         if (dir.X != 0f && dir.Y == 0f)

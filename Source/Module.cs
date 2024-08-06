@@ -24,10 +24,14 @@ public class Module : EverestModule {
     }
 
     public override void Load() {
+        On.Celeste.Player.Update += hookPlayerUpdate;
+        On.Celeste.Player.IsRiding_JumpThru += hookPlayerIsRiding;
         On.Celeste.Player.DustParticleFromSurfaceIndex += hookDustParticle;
     }
 
     public override void Unload() {
+        On.Celeste.Player.Update -= hookPlayerUpdate;
+        On.Celeste.Player.IsRiding_JumpThru -= hookPlayerIsRiding;
         On.Celeste.Player.DustParticleFromSurfaceIndex -= hookDustParticle;
     }
 
@@ -68,6 +72,25 @@ public class Module : EverestModule {
         Box.P_Impact ??= new ParticleType(TheoCrystal.P_Impact) {
             Color = Color.White
         };
+    }
+
+    private static void hookPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {
+        if (self.Holding?.Entity is Box box) {
+            bool was_collidable = box.Surface.Collidable;
+            box.Surface.Collidable = false;
+
+            orig(self);
+
+            box.Surface.Collidable = was_collidable;
+        } else
+            orig(self);
+    }
+
+    private static bool hookPlayerIsRiding(On.Celeste.Player.orig_IsRiding_JumpThru orig, Player self, JumpThru jumpthru) {
+        if (self.Holding?.Entity is Box box && jumpthru == box.Surface)
+            return false;
+        else
+            return orig(self, jumpthru);
     }
 
     private static ConditionalWeakTable<Platform, ParticleType> platformDustOverrides = [];
