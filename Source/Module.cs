@@ -76,18 +76,18 @@ public class Module : EverestModule {
 
     private static void hookPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {
         if (self.Holding?.Entity is Box box) {
-            bool was_collidable = box.Surface.Collidable;
-            box.Surface.Collidable = false;
+            bool was_collidable = box.TopSurface.Collidable;
+            box.TopSurface.Collidable = false;
 
             orig(self);
 
-            box.Surface.Collidable = was_collidable;
+            box.TopSurface.Collidable = was_collidable;
         } else
             orig(self);
     }
 
     private static bool hookPlayerIsRiding(On.Celeste.Player.orig_IsRiding_JumpThru orig, Player self, JumpThru jumpthru) {
-        if (self.Holding?.Entity is Box box && jumpthru == box.Surface)
+        if (self.Holding?.Entity is Box box && jumpthru == box.TopSurface)
             return false;
         else
             return orig(self, jumpthru);

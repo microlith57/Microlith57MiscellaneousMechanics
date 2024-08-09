@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
 
+using Celeste.Mod.GravityHelper.Components;
+using GravityType = Celeste.Mod.GravityHelper.GravityType;
+
 namespace Celeste.Mod.Microlith57.IntContest.Recordings;
 
 [Tracked]
 public class PlayerRecording : Recording {
     public record struct State(
         Player.ChaserState Underlying,
+        bool Inverted,
         Vector2 LightOffset,
         Color Color,
         Rectangle Collider,
@@ -28,11 +32,14 @@ public class PlayerRecording : Recording {
 
     public State CurrentState => Timeline[FrameIndex - FrameOffset];
 
+    public GravityComponent Gravity;
     public PlayerSprite Sprite;
     public PlayerHair Hair;
     public VertexLight Light;
 
     public PlayerRecording(int hairCount) {
+        Add(Gravity = new GravityComponent());
+
         Sprite = new PlayerSprite(PlayerSpriteMode.Playback) { HairCount = hairCount };
         Add(Hair = new PlayerHair(Sprite) { Active = false });
         Add(Sprite);
@@ -58,8 +65,11 @@ public class PlayerRecording : Recording {
         }
 
         if (RecordingOf is Player player) {
+            GravityComponent? grav = player.Get<GravityComponent>();
+
             Timeline.Add(new(
                 Underlying: player.ChaserStates[^1],
+                Inverted: grav?.ShouldInvert ?? false,
                 LightOffset: player.Light.Position,
                 Color: baseColor,
                 Collider: new(
@@ -109,7 +119,12 @@ public class PlayerRecording : Recording {
         if (anim != null && anim != Sprite.CurrentAnimationID && Sprite.Has(anim))
             Sprite.Play(anim, restart: true);
 
+        Gravity.SetGravity(state.Inverted ? GravityType.Inverted : GravityType.Normal);
+
         Sprite.Scale = state.Underlying.Scale;
+        if (state.Inverted)
+            Sprite.Scale.Y = -Sprite.Scale.Y;
+
         if (Sprite.Scale.X != 0f)
             Hair.Facing = (Facings)Math.Sign(Sprite.Scale.X);
 

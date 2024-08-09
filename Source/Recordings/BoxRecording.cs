@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -9,6 +10,7 @@ namespace Celeste.Mod.Microlith57.IntContest.Recordings;
 public class BoxRecording : Recording {
     public record struct State(
         Vector2 Position,
+        bool Inverted,
         bool BonkH, bool BonkV,
         Color Color
     ) { }
@@ -68,11 +70,13 @@ public class BoxRecording : Recording {
         }
 
         if (RecordingOf is Box box) {
+            GravityComponent? grav = box.Get<GravityComponent>();
+
             Timeline.Add(new(
-                box.Position,
-                box.BonkedH,
-                box.BonkedV,
-                baseColor
+                Position: box.Position,
+                Inverted: grav?.ShouldInvert ?? false,
+                BonkH: box.BonkedH, BonkV: box.BonkedV,
+                Color: baseColor
             ));
         } else if (RecordingOf is BoxRecording recording) {
             Timeline.Add(recording.CurrentState);
@@ -106,8 +110,12 @@ public class BoxRecording : Recording {
         State state = Timeline[index - FrameOffset];
 
         Position = state.Position;
-        Surface.MoveTo(Position + new Vector2(-10f, -20f));
 
+        Collider.Position = state.Inverted ? new(-10f, 0f) : new(-10f, -20f);
+
+        Surface.MoveTo(Collider.TopLeft);
+
+        Sprite.Scale.Y = state.Inverted ? -1 : 1;
         Sprite.Color = state.Color;
 
         if (state.BonkH)

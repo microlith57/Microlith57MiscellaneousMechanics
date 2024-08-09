@@ -10,3 +10,5 @@
     Version: 1.2.16
   - Name: ExtendedVariantMode
     Version: 0.39.0
+  - Name: GravityHelper
+    Version: 1.2.18

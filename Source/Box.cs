@@ -1,6 +1,8 @@
 using System;
-using System.Linq;
 using Celeste.Mod.Entities;
+using Celeste.Mod.GravityHelper;
+using Celeste.Mod.GravityHelper.Components;
+using Celeste.Mod.GravityHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -14,11 +16,6 @@ public class Box : Actor {
     public static ParticleType P_Impact;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-    [Tracked]
-    public class BoxSurface(Box box) : Component(false, false) {
-        public Box Box = box;
-    }
-
     public static readonly float PICKUP_SPEED_SOFT_CAP = 80f;
     public static readonly float PICKUP_SPEED_SOFT_CAP_FACTOR = 0.4f;
 
@@ -26,10 +23,13 @@ public class Box : Actor {
 
     public Vector2 Speed;
     public Holdable Hold;
+    public GravityComponent Gravity;
     public Image Sprite;
-    public JumpThru Surface;
+    public JumpThru TopSurface;
+    public UpsideDownJumpThru BottomSurface;
+    public VertexLight Light;
 
-    public Hitbox MainCollider, FullSizeCollider, PickupCollider, PickupColliderStacked;
+    public Hitbox MainCollider, FullSizeCollider, PickupCollider, PickupColliderStacked, ActivatorCollider;
 
     private Collision onCollideH, onCollideV;
 
@@ -77,20 +77,30 @@ public class Box : Actor {
         onCollideV = OnCollideV;
         LiftSpeedGraceTime = 0.1f;
 
-        Add(new VertexLight(FullSizeCollider.Center, Color.White, 1f, 24, 48));
+        Add(Light = new(FullSizeCollider.Center, Color.White, 1f, 24, 48));
 
-        var activatorCollider = new Hitbox(20f, 20f, -10f, -20f);
-        activatorCollider.Added(this);
-        Add(new AreaSwitch.Activator() { Collider = activatorCollider });
+        ActivatorCollider = new Hitbox(20f, 20f, -10f, -20f);
+        ActivatorCollider.Added(this);
+        Add(new AreaSwitch.Activator() { Collider = ActivatorCollider });
 
-        Surface = new(Position + new Vector2(-10f, -20f), 20, safe: false) {
+        TopSurface = new(Position + new Vector2(-10f, -20f), 20, safe: false) {
             Depth = 99,
             SurfaceSoundIndex = SurfaceIndex.Girder
         };
-        Surface.Add(new BoxSurface(this));
 
-        // todo: do something about transitions
-        // Tag = Tags.TransitionUpdate;
+        var bottomSurfaceData = new EntityData() {
+            Name = "GravityHelper/UpsideDownJumpThru",
+            Position = Position,
+            Width = 20,
+            Values = []
+        };
+        bottomSurfaceData.Values.Add("modVersion", "1.2.18");
+        bottomSurfaceData.Values.Add("pluginVersion", "1");
+        bottomSurfaceData.Values.Add("surfaceIndex", SurfaceIndex.Girder);
+        BottomSurface = new(bottomSurfaceData, Vector2.Zero) {
+            Depth = 99,
+            Visible = false
+        };
 
         Add(new TransitionListener() { OnOutBegin = () => ShouldShatter = true });
     }
@@ -109,7 +119,8 @@ public class Box : Actor {
             RemoveSelf(); return;
         }
 
-        Scene.Add(Surface);
+        Scene.Add(TopSurface);
+        Scene.Add(BottomSurface);
 
         if (IsTutorial && !(Scene as Level)!.Session.GetFlag("pickup_box_tutorial_done"))
             Scene.Add(tutorialGui = new(
@@ -119,6 +130,14 @@ public class Box : Actor {
                 BirdTutorialGui.ButtonPrompt.Grab) {
                 Open = false
             });
+    }
+
+    public override void Awake(Scene scene) {
+        base.Awake(scene);
+
+        Gravity = Get<GravityComponent>();
+        Gravity.UpdateColliders = OnGravityChange_Colliders;
+        Gravity.UpdateVisuals = OnGravityChange_Visuals;
     }
 
     public override void Update() {
@@ -135,7 +154,8 @@ public class Box : Actor {
         }
 
         if (Shattering || Dead) {
-            Surface.Collidable = false;
+            TopSurface.Collidable = false;
+            BottomSurface.Collidable = false;
             Hold.cannotHoldTimer = 0.1f;
             return;
         }
@@ -179,18 +199,27 @@ public class Box : Actor {
             previousPosition = ExactPosition;
             MoveH(Speed.X * Engine.DeltaTime, onCollideH);
             MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
+
             if (Right > level.Bounds.Right) {
                 Right = level.Bounds.Right;
                 Speed.X *= -0.4f;
             } else if (Left < level.Bounds.Left) {
                 Left = level.Bounds.Left;
                 Speed.X *= -0.4f;
-            } else if (Top < level.Bounds.Top - 4) {
-                Top = level.Bounds.Top + 4;
-                Speed.Y = 0f;
-            } else if (Top > level.Bounds.Bottom + 48f) {
-                Die();
+            } else if (!Gravity.ShouldInvert) {
+                if (Top < level.Bounds.Top - 4) {
+                    Top = level.Bounds.Top + 4;
+                    Speed.Y = 0f;
+                } else if (Top > level.Bounds.Bottom + 48f)
+                    Die();
+            } else {
+                if (Bottom > level.Bounds.Bottom + 4) {
+                    Bottom = level.Bounds.Bottom - 4;
+                    Speed.Y = 0f;
+                } else if (Bottom < level.Bounds.Top - 48f)
+                    Die();
             }
+
             if (X < level.Bounds.Left + 10) {
                 MoveH(32f * Engine.DeltaTime);
             }
@@ -199,7 +228,11 @@ public class Box : Actor {
         if (!Dead)
             Hold.CheckAgainstColliders();
 
-        Surface.MoveTo(Position + new Vector2(-10f, -20f));
+        TopSurface.Collidable = !Gravity.ShouldInvert;
+        BottomSurface.Collidable = Gravity.ShouldInvert;
+
+        TopSurface.MoveTo(Position + FullSizeCollider.TopLeft);
+        BottomSurface.MoveTo(Position + FullSizeCollider.BottomLeft + new Vector2(0f, -BottomSurface.Height - 3f));
 
         if (tutorialGui != null) {
             if (Hold.IsHeld) {
@@ -216,6 +249,27 @@ public class Box : Actor {
             if (tutorialGui != null)
                 tutorialGui.Open = tutorialTimer > 0.25f;
         }
+    }
+
+    public void OnGravityChange_Colliders(GravityChangeArgs args) {
+        if (args.NewValue != GravityType.Inverted) {
+            MainCollider.Position = new(-4f, -10f);
+            FullSizeCollider.Position = new(-10f, -20f);
+            PickupCollider.Position = new(-14f, -24f);
+            PickupColliderStacked.Position = new(-14f, -16f);
+            ActivatorCollider.Position = new(-10f, -20f);
+        } else {
+            MainCollider.Position = new(-4f, 0f);
+            FullSizeCollider.Position = new(-10f, 0f);
+            PickupCollider.Position = new(-14f, -4f);
+            PickupColliderStacked.Position = new(-14f, -4f);
+            ActivatorCollider.Position = new(-10f, 0f);
+        }
+    }
+
+    public void OnGravityChange_Visuals(GravityChangeArgs args) {
+        Sprite.Scale.Y = (args.NewValue == GravityType.Inverted) ? -1 : 1;
+        Light.Position = FullSizeCollider.Center;
     }
 
     public void Shatter() {
@@ -367,13 +421,14 @@ public class Box : Actor {
 
         Speed = Vector2.Zero;
         AddTag(Tags.Persistent);
-        Surface.AddTag(Tags.Persistent);
+        TopSurface.AddTag(Tags.Persistent);
+        BottomSurface.AddTag(Tags.Persistent);
     }
 
     private void OnRelease(Vector2 dir) {
         RemoveTag(Tags.Persistent);
-        Surface.AddTag(Tags.Persistent);
-        Surface.Position = Position + new Vector2(-10f, -20f);
+        TopSurface.RemoveTag(Tags.Persistent);
+        BottomSurface.RemoveTag(Tags.Persistent);
 
         if (dir.X != 0f && dir.Y == 0f)
             dir.Y = -0.4f;
@@ -394,7 +449,7 @@ public class Box : Actor {
 
     public override void Removed(Scene scene) {
         base.Removed(scene);
-        Surface.RemoveSelf();
+        TopSurface.RemoveSelf();
         tutorialGui?.RemoveSelf();
     }
 
