@@ -1,14 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
 
-using Celeste.Mod.Microlith57.IntContest.Recordings;
-using System.Linq;
-
-namespace Celeste.Mod.Microlith57.IntContest;
+namespace Celeste.Mod.Microlith57.IntContest.Entities;
 
 [CustomEntity("Microlith57_IntContest24/RecorderTerminal")]
 [Tracked]
@@ -20,7 +19,7 @@ public class RecorderTerminal : Entity {
 
         public Vector2 Position => Entity.Position + Offset;
         public float EffectiveWidth => (float)Math.Floor(Width * Progress);
-        public float Remainder => Math.Clamp((Width * Progress) - EffectiveWidth, 0f, 1f);
+        public float Remainder => Math.Clamp(Width * Progress - EffectiveWidth, 0f, 1f);
 
         public override void Render() {
             if (EffectiveWidth > 0f)
@@ -255,7 +254,7 @@ public class RecorderTerminal : Entity {
         }
 
         Time += Engine.DeltaTime;
-        while ((FrameIndex + 1) < FrameCount && Time >= TimeStamps[FrameIndex + 1])
+        while (FrameIndex + 1 < FrameCount && Time >= TimeStamps[FrameIndex + 1])
             FrameIndex++;
 
         Progress.Progress = Time / Duration;
@@ -277,7 +276,7 @@ public class RecorderTerminal : Entity {
                                    ((RecorderTerminal)t).StateMachine.State == StCooldown))
             return StIdle;
 
-        Progress.Color = (Scene.TimeActive % 1f < 0.5f) ? COLOR_COOLDOWN : Color.Transparent;
+        Progress.Color = Scene.TimeActive % 1f < 0.5f ? COLOR_COOLDOWN : Color.Transparent;
 
         return StCooldown;
     }

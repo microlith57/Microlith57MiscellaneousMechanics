@@ -4,7 +4,7 @@ using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest.Recordings;
+namespace Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
 
 [Tracked]
 public class BoxRecording : Recording {
@@ -68,7 +68,7 @@ public class BoxRecording : Recording {
         }
 
         if (RecordingOf is Box box) {
-            GravityComponent? grav = box.Get<GravityComponent>();
+            var grav = box.Get<GravityComponent>();
 
             Timeline.Add(new(
                 Position: box.Position,
@@ -105,7 +105,7 @@ public class BoxRecording : Recording {
     }
 
     public void SetFrame(int index) {
-        State state = Timeline[index - FrameOffset];
+        var state = Timeline[index - FrameOffset];
 
         Position = state.Position;
 

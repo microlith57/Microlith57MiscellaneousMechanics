@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using Celeste.Mod.GravityHelper.Components;
 using Celeste.Mod.GravityHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest;
+namespace Celeste.Mod.Microlith57.IntContest.Entities;
 
 [Tracked]
 public class BoxSurface : Component {

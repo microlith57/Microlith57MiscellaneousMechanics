@@ -1,5 +1,4 @@
 using Celeste.Mod.Entities;
-using Celeste.Mod.Microlith57.IntContest.Recordings;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
@@ -8,7 +7,9 @@ using System.Linq;
 
 using FlagSwitchGate = Celeste.Mod.MaxHelpingHand.Entities.FlagSwitchGate;
 
-namespace Celeste.Mod.Microlith57.IntContest;
+using Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+
+namespace Celeste.Mod.Microlith57.IntContest.Entities;
 
 [CustomEntity("Microlith57_IntContest24/AreaSwitch")]
 [Tracked]
@@ -140,7 +141,7 @@ public class AreaSwitch : Entity {
         ActiveLineColor = Calc.HexToColor(data.Attr("activeLineColor", "FFFFFF"));
         FinishLineColor = Calc.HexToColor(data.Attr("finishLineColor", "F141DF"));
 
-        if (int.TryParse(data.Attr("animationLength", "6"), out int frameVal))
+        if (int.TryParse(data.Attr("animationLength", "6"), out var frameVal))
             Frames = Enumerable.Range(0, frameVal).ToArray();
         else
             Frames = [0, 1, 2, 3, 4, 5];
@@ -217,7 +218,7 @@ public class AreaSwitch : Entity {
         base.Update();
 
         Timer += Engine.DeltaTime * 8f;
-        Ease = Calc.Approach(Ease, (Finished || Activated) ? 1f : 0f, Engine.DeltaTime * 2f);
+        Ease = Calc.Approach(Ease, Finished || Activated ? 1f : 0f, Engine.DeltaTime * 2f);
         FinishedEase = Calc.Approach(FinishedEase, Finished ? 1f : 0f, Engine.DeltaTime * 2f);
 
         Spin += Engine.DeltaTime * 0.05f * Ease;
@@ -285,14 +286,14 @@ public class AreaSwitch : Entity {
                 shattering?.Shatter();
                 shattering = null;
 
-                for (int i = 0; i < NumLines; i++) {
-                    float jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
-                    float angle = (i / (float)NumLines + jiggle + Spin) * Calc.Circle;
+                for (var i = 0; i < NumLines; i++) {
+                    var jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
+                    var angle = (i / (float)NumLines + jiggle + Spin) * Calc.Circle;
 
-                    Vector2 relStart = Calc.AngleToVector(angle, 1f);
-                    Vector2 absStart = Position + relStart * Radius;
+                    var relStart = Calc.AngleToVector(angle, 1f);
+                    var absStart = Position + relStart * Radius;
 
-                    Vector2 offset = relStart * (float)Math.Sin(Scene.TimeActive * 2f + i * 0.6f);
+                    var offset = relStart * (float)Math.Sin(Scene.TimeActive * 2f + i * 0.6f);
                     if (i % 2 == 0)
                         offset *= -1f;
                     absStart += offset;
@@ -301,7 +302,7 @@ public class AreaSwitch : Entity {
                 }
             }
         } else if (Scene.OnInterval(0.03f)) {
-            Vector2 position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
+            var position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
             level.ParticlesBG.Emit(P_FireFinished, position, FinishColor);
         }
 
@@ -314,8 +315,8 @@ public class AreaSwitch : Entity {
         if (Scene is not Level)
             return;
 
-        for (int i = 0; i < 24; i++) {
-            float dir = Calc.Random.NextFloat((float)Math.PI * 2f);
+        for (var i = 0; i < 24; i++) {
+            var dir = Calc.Random.NextFloat((float)Math.PI * 2f);
             (Scene as Level)!.Particles.Emit(P_FireInactive, Position + Calc.AngleToVector(dir, 6f), InactiveColor, dir);
         }
 
@@ -330,8 +331,8 @@ public class AreaSwitch : Entity {
         if (Scene is not Level)
             return;
 
-        for (int i = 0; i < 32; i++) {
-            float dir = Calc.Random.NextFloat((float)Math.PI * 2f);
+        for (var i = 0; i < 32; i++) {
+            var dir = Calc.Random.NextFloat((float)Math.PI * 2f);
             (Scene as Level)!.Particles.Emit(P_FireActive, Position + Calc.AngleToVector(dir, 6f), ActiveColor, dir);
         }
 
@@ -402,7 +403,7 @@ public class AreaSwitch : Entity {
     public override void Render() {
         if (Scene is not Level level) return;
 
-        bool drawArea = Icon.CurrentAnimationID == "spin";
+        var drawArea = Icon.CurrentAnimationID == "spin";
         var col = Color.Lerp(InactiveLineColor, Finished ? FinishLineColor : ActiveLineColor, Ease);
 
         // if (drawArea && Mode == ActivationMode.DestroysBox) {
@@ -422,24 +423,24 @@ public class AreaSwitch : Entity {
                 if (!Senses((Activator)act)) return [];
 
                 var vec = ((Activator)act).Position - Position;
-                return (vec.Length() > (Radius + AwarenessRange)) ? [] : [vec];
+                return vec.Length() > Radius + AwarenessRange ? [] : [vec];
             })
             .ToList();
 
-        for (int i = 0; i < NumLines; i++) {
-            float jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
-            float angle = (i / (float)NumLines + jiggle + Spin) * Calc.Circle;
+        for (var i = 0; i < NumLines; i++) {
+            var jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
+            var angle = (i / (float)NumLines + jiggle + Spin) * Calc.Circle;
 
-            Vector2 relStart = Calc.AngleToVector(angle, 1f);
-            Vector2 absStart = Position + relStart * Radius;
+            var relStart = Calc.AngleToVector(angle, 1f);
+            var absStart = Position + relStart * Radius;
 
-            Vector2 offset = relStart * (float)Math.Sin(Scene.TimeActive * 2f + i * 0.6f);
+            var offset = relStart * (float)Math.Sin(Scene.TimeActive * 2f + i * 0.6f);
             if (i % 2 == 0)
                 offset *= -1f;
 
-            absStart = Calc.Round(absStart + offset);
+            absStart = (absStart + offset).Round();
 
-            float t = Ease;
+            var t = Ease;
             if (t < 1f)
                 t += (float)Math.Tanh(nearby.Sum((vec) => {
                     var distFactor = Calc.ClampedMap(vec.Length(), Radius, Radius + AwarenessRange, 1f, 0f);
@@ -452,8 +453,8 @@ public class AreaSwitch : Entity {
                 }) * AWARENESS_SPIKE_SCALE);
             t *= 1 - FinishedEase;
 
-            Vector2 absEnd = Calc.Round(absStart - relStart * Calc.ClampedMap(t, 0f, 1f, 1f, 3f));
-            Color color = col * Calc.ClampedMap(t, 0f, 1f, 0.6f, 1f);
+            var absEnd = (absStart - relStart * Calc.ClampedMap(t, 0f, 1f, 1f, 3f)).Round();
+            var color = col * Calc.ClampedMap(t, 0f, 1f, 0.6f, 1f);
 
             if (t < 0.4f)
                 Draw.Point(absStart, color);

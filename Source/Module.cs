@@ -5,6 +5,9 @@ using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
+using Celeste.Mod.Microlith57.IntContest.Entities;
+using Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+
 namespace Celeste.Mod.Microlith57.IntContest;
 
 public class Module : EverestModule {
@@ -40,7 +43,7 @@ public class Module : EverestModule {
     public override void LoadContent(bool firstLoad) {
         base.LoadContent(firstLoad);
 
-        Recordings.Recording.P_Appear ??= new ParticleType {
+        Recording.P_Appear ??= new ParticleType {
             FadeMode = ParticleType.FadeModes.Late,
             Size = 1f,
             Direction = 0f,

@@ -6,7 +6,7 @@ using Monocle;
 using Celeste.Mod.GravityHelper.Components;
 using GravityType = Celeste.Mod.GravityHelper.GravityType;
 
-namespace Celeste.Mod.Microlith57.IntContest.Recordings;
+namespace Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
 
 [Tracked]
 public class PlayerRecording : Recording {
@@ -65,7 +65,7 @@ public class PlayerRecording : Recording {
         }
 
         if (RecordingOf is Player player) {
-            GravityComponent? grav = player.Get<GravityComponent>();
+            var grav = player.Get<GravityComponent>();
 
             Timeline.Add(new(
                 Underlying: player.ChaserStates[^1],
@@ -104,10 +104,10 @@ public class PlayerRecording : Recording {
     }
 
     public void SetFrame(int index) {
-        State state = Timeline[index - FrameOffset];
+        var state = Timeline[index - FrameOffset];
 
-        string currentAnimationID = Sprite.CurrentAnimationID;
-        bool onGround = Scene != null && CollideCheck<Solid>(Position + new Vector2(0f, 1f));
+        var currentAnimationID = Sprite.CurrentAnimationID;
+        var onGround = Scene != null && CollideCheck<Solid>(Position + new Vector2(0f, 1f));
 
         Position = state.Underlying.Position;
         Collider.Position.X = state.Collider.X;
@@ -130,7 +130,7 @@ public class PlayerRecording : Recording {
 
         Sprite.Color = Hair.Color = state.Color;
 
-        for (int i = 0; i < state.HairNodes.Length; i++)
+        for (var i = 0; i < state.HairNodes.Length; i++)
             Hair.Nodes[i] = state.HairNodes[i];
 
         Light.Position = state.LightOffset;
@@ -144,8 +144,8 @@ public class PlayerRecording : Recording {
         if (currentAnimationID == Sprite.CurrentAnimationID)
             return;
 
-        string animID = Sprite.CurrentAnimationID;
-        int animFrame = Sprite.CurrentAnimationFrame;
+        var animID = Sprite.CurrentAnimationID;
+        var animFrame = Sprite.CurrentAnimationFrame;
         switch (animID) {
             case "jumpFast":
             case "jumpSlow":

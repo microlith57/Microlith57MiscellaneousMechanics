@@ -5,7 +5,7 @@ using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest;
+namespace Celeste.Mod.Microlith57.IntContest.Entities;
 
 [CustomEntity("Microlith57_IntContest24/Box")]
 [Tracked]
@@ -145,19 +145,19 @@ public class Box : Actor {
 
         if (!Hold.IsHeld) {
             Collider = FullSizeCollider;
-            bool boxOnTop = CollideCheck<Box>(Position - 4f * Vector2.UnitY);
+            var boxOnTop = CollideCheck<Box>(Position - 4f * Vector2.UnitY);
             Hold.PickupCollider = boxOnTop ? PickupColliderStacked : PickupCollider;
             Collider = MainCollider;
             FullSizeCollider.Added(this);
 
             if (OnGround()) {
-                bool pitLeft = !OnGround(Position - Vector2.UnitX * 3f);
-                bool pitRight = !OnGround(Position + Vector2.UnitX * 3f);
+                var pitLeft = !OnGround(Position - Vector2.UnitX * 3f);
+                var pitRight = !OnGround(Position + Vector2.UnitX * 3f);
 
-                bool wallLeft = CollideCheck<Solid>(Position - 4f * Vector2.UnitX);
-                bool wallRight = CollideCheck<Solid>(Position + 4f * Vector2.UnitX);
+                var wallLeft = CollideCheck<Solid>(Position - 4f * Vector2.UnitX);
+                var wallRight = CollideCheck<Solid>(Position + 4f * Vector2.UnitX);
 
-                float target = 0f;
+                var target = 0f;
                 if (pitRight || wallLeft)
                     target = 20f;
                 else if (pitLeft || wallRight)
@@ -165,11 +165,11 @@ public class Box : Actor {
 
                 Speed.X = Calc.Approach(Speed.X, target, 800f * Engine.DeltaTime);
             } else if (Hold.ShouldHaveGravity) {
-                float num = 800f;
+                var num = 800f;
                 if (Math.Abs(Speed.Y) <= 30f) {
                     num *= 0.5f;
                 }
-                float num2 = 350f;
+                var num2 = 350f;
                 if (Speed.Y < 0f) {
                     num2 *= 0.5f;
                 }
@@ -252,7 +252,7 @@ public class Box : Actor {
     }
 
     public void OnGravityChange_Visuals(GravityChangeArgs args) {
-        Sprite.Scale.Y = (args.NewValue == GravityType.Inverted) ? -1 : 1;
+        Sprite.Scale.Y = args.NewValue == GravityType.Inverted ? -1 : 1;
         Light.Position = FullSizeCollider.Center;
     }
 
@@ -261,7 +261,7 @@ public class Box : Actor {
         var center = Position + new Vector2(0f, -10f);
         Audio.Play("event:/game/general/wall_break_stone", center);
 
-        for (int i = 0; i < 7; i++) {
+        for (var i = 0; i < 7; i++) {
             var pos = Calc.Round(new(Calc.Random.NextFloat(12f) + 4f, Calc.Random.NextFloat(12f) + 4f));
             var debris = new Debris().orig_Init(TopLeft + pos, '1').BlastFrom(center);
             debris.image.Texture = GFX.Game["debris/7"];
@@ -290,7 +290,7 @@ public class Box : Actor {
 
             return;
 
-        int dir = Math.Sign(X - spinner.X);
+        var dir = Math.Sign(X - spinner.X);
         if (dir == 0)
             dir = 1;
 
@@ -398,8 +398,7 @@ public class Box : Actor {
     }
 
     private void OnPickup() {
-        Player holder = Hold.Holder;
-
+        var holder = Hold.Holder;
         holder.Speed = holder.Speed.SoftCap(PICKUP_SPEED_SOFT_CAP, PICKUP_SPEED_SOFT_CAP_FACTOR);
 
         Speed = Vector2.Zero;
