@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -75,19 +77,35 @@ public class Module : EverestModule {
     }
 
     private static void hookPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {
-        if (self.Holding?.Entity is Box box) {
-            bool was_collidable = box.TopSurface.Collidable;
-            box.TopSurface.Collidable = false;
+        bool invert = self.Get<GravityComponent>()?.ShouldInvert ?? false;
 
-            orig(self);
+        Dictionary<BoxSurface, (bool, bool)> boxesWithOrigCollidableStates = [];
+        foreach (BoxSurface boxSurface in self.Scene.Tracker.GetComponents<BoxSurface>()) {
+            boxesWithOrigCollidableStates.Add(boxSurface, (boxSurface.CollidableTop, boxSurface.CollidableBot));
 
-            box.TopSurface.Collidable = was_collidable;
-        } else
-            orig(self);
+            if (self.Holding?.Entity == boxSurface.Entity)
+                boxSurface.Collidable = false;
+            else if (!invert)
+                boxSurface.CollidableBot = false;
+            else
+                boxSurface.CollidableTop = false;
+        }
+
+        orig(self);
+
+        foreach ((var surface, (var wasCollidableTop, var wasCollidableBot)) in boxesWithOrigCollidableStates) {
+            surface.CollidableTop = wasCollidableTop;
+            surface.CollidableBot = wasCollidableBot;
+        }
     }
 
     private static bool hookPlayerIsRiding(On.Celeste.Player.orig_IsRiding_JumpThru orig, Player self, JumpThru jumpthru) {
-        if (self.Holding?.Entity is Box box && jumpthru == box.TopSurface)
+        bool invert = self.Get<GravityComponent>()?.ShouldInvert ?? false;
+
+        if (self.Holding?.Entity is Box box && (jumpthru == box.Surface.SurfaceTop || jumpthru == box.Surface.SurfaceBot))
+            return false;
+        else if (jumpthru.Get<BoxSurface.BelongsToBox>() is { } belongsToBox &&
+                 ((belongsToBox.IsTop && invert) || (belongsToBox.IsBot && !invert)))
             return false;
         else
             return orig(self, jumpthru);
@@ -98,7 +116,10 @@ public class Module : EverestModule {
 
     private static ParticleType hookDustParticle(On.Celeste.Player.orig_DustParticleFromSurfaceIndex orig, Player self, int index) {
         if (index == SurfaceIndex.Glitch) {
-            var platform = SurfaceIndex.GetPlatformByPriority(self.CollideAll<Platform>(self.Position + Vector2.UnitY));
+            bool invert = self.Get<GravityComponent>()?.ShouldInvert ?? false;
+            var pos = self.Position + (invert ? -Vector2.UnitY : Vector2.UnitY);
+            var platform = SurfaceIndex.GetPlatformByPriority(self.CollideAll<Platform>(pos));
+
             if (platform != null && platformDustOverrides.TryGetValue(platform, out var particle))
                 return particle;
         }

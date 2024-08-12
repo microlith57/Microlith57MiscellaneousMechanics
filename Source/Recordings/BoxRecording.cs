@@ -31,7 +31,7 @@ public class BoxRecording : Recording {
     public Image Sprite;
     public VertexLight Light;
     public ParticleType Dust;
-    public JumpThru Surface;
+    public BoxSurface Surface;
 
     public BoxRecording(ParticleType dust) {
         Depth = 1010;
@@ -45,17 +45,15 @@ public class BoxRecording : Recording {
         Add(new AreaSwitch.Activator());
 
         Dust = dust;
-        Surface = new(Position + new Vector2(-10f, -20f), 20, safe: false) {
-            Depth = 1009,
-            SurfaceSoundIndex = SurfaceIndex.Glitch,
-            Collidable = false
-        };
-        Module.OverrideDust(Surface, Dust);
-    }
 
-    public override void Added(Scene scene) {
-        base.Added(scene);
-        Scene.Add(Surface);
+        Add(Surface = new BoxSurface(
+            Collider,
+            width: 20,
+            depth: 1011,
+            surfaceIndex: SurfaceIndex.Glitch
+        ));
+        Module.OverrideDust(Surface.SurfaceTop, Dust);
+        Module.OverrideDust(Surface.SurfaceBot, Dust);
     }
 
     public override void Observe(int currentFrame, Color baseColor) {
@@ -112,8 +110,7 @@ public class BoxRecording : Recording {
         Position = state.Position;
 
         Collider.Position = state.Inverted ? new(-10f, 0f) : new(-10f, -20f);
-
-        Surface.MoveTo(Collider.TopLeft);
+        Surface.Move();
 
         Sprite.Scale.Y = state.Inverted ? -1 : 1;
         Sprite.Color = state.Color;
@@ -123,10 +120,5 @@ public class BoxRecording : Recording {
 
         if (state.BonkV)
             Audio.Play("event:/new_content/char/tutorial_ghost/land", Position);
-    }
-
-    public override void Removed(Scene scene) {
-        base.Removed(scene);
-        Surface.RemoveSelf();
     }
 }
