@@ -27,7 +27,7 @@ public class PlayerRecording : Recording {
     private int currentFrame;
     public override int FrameIndex {
         get => currentFrame;
-        set => SetFrame(currentFrame = value);
+        set => SetFrame(currentFrame = value, false);
     }
 
     public State CurrentState => Timeline[FrameIndex - FrameOffset];
@@ -56,13 +56,8 @@ public class PlayerRecording : Recording {
     public override void Observe(int currentFrame, Color baseColor) {
         if (Timeline.Count == 0)
             FrameOffset = currentFrame;
-        else if (currentFrame != LastFrame + 1) {
-#if DEBUG
+        else if (currentFrame != LastFrame + 1)
             throw new Exception("tried to record a player with non-contiguous lifetime");
-#else
-            return null
-#endif
-        }
 
         if (RecordingOf is Player player) {
             var grav = player.Get<GravityComponent>();
@@ -87,23 +82,15 @@ public class PlayerRecording : Recording {
 
     public override void BeginPlayback() {
         base.BeginPlayback();
-
-        if (Scene is Level level && Visible) {
-            Audio.Play("event:/new_content/char/tutorial_ghost/appear", Position);
-            level.Particles.Emit(P_Appear, 12, Center, Vector2.One * 6f, Sprite.Color);
-        }
+        AppearEffect(Center, 12, Vector2.One * 6f, Sprite.Color);
     }
 
     public override void EndPlayback(bool remove) {
-        if (Scene is Level level && Visible) {
-            Audio.Play("event:/new_content/char/tutorial_ghost/disappear", Position);
-            level.Particles.Emit(P_Appear, 12, Center, Vector2.One * 6f, Sprite.Color);
-        }
-
+        DisappearEffect(Center, 12, Vector2.One * 6f, Sprite.Color);
         base.EndPlayback(remove);
     }
 
-    public void SetFrame(int index) {
+    public void SetFrame(int index, bool silent) {
         var state = Timeline[index - FrameOffset];
 
         var currentAnimationID = Sprite.CurrentAnimationID;
@@ -135,7 +122,7 @@ public class PlayerRecording : Recording {
 
         Light.Position = state.LightOffset;
 
-        if (Scene == null)
+        if (silent || Scene == null)
             return;
 
         if (!onGround && CollideCheck<Solid>(Position + new Vector2(0f, 1f)))
@@ -155,13 +142,12 @@ public class PlayerRecording : Recording {
                 Audio.Play("event:/new_content/char/tutorial_ghost/dreamblock_sequence", Position);
                 break;
             case "dash":
-                if (state.Underlying.DashDirection.Y != 0f) {
+                if (state.Underlying.DashDirection.Y != 0f)
                     Audio.Play("event:/new_content/char/tutorial_ghost/jump_super", Position);
-                } else if (state.Underlying.Scale.X > 0f) {
+                else if (state.Underlying.Scale.X > 0f)
                     Audio.Play("event:/new_content/char/tutorial_ghost/dash_red_right", Position);
-                } else {
+                else
                     Audio.Play("event:/new_content/char/tutorial_ghost/dash_red_left", Position);
-                }
 
                 break;
             case "climbUp":

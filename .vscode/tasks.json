@@ -19,7 +19,7 @@
       "isBuildCommand": true,
       "presentation": {
         "echo": true,
-        "reveal": "silent",
+        "reveal": "always",
         "showReuseMessage": true,
         "clear": false
       }

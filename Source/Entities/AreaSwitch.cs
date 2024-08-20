@@ -8,12 +8,15 @@ using System.Linq;
 using FlagSwitchGate = Celeste.Mod.MaxHelpingHand.Entities.FlagSwitchGate;
 
 using Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+using System.Collections;
 
 namespace Celeste.Mod.Microlith57.IntContest.Entities;
 
 [CustomEntity("Microlith57_IntContest24/AreaSwitch")]
 [Tracked]
 public class AreaSwitch : Entity {
+
+    #region --- Util ---
 
     [Tracked]
     public class Activator() : Component(true, false) {
@@ -61,14 +64,15 @@ public class AreaSwitch : Entity {
         DestroysBox
     }
 
-    public static readonly float AWARENESS_SPIKE_SCALE = 4f;
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public static ParticleType P_FireInactive;
     public static ParticleType P_FireActive => TouchSwitch.P_FireWhite;
     public static ParticleType P_FireFinished => TouchSwitch.P_FireWhite;
     public static ParticleType P_Spark;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
+    #endregion
+    #region --- State ---
 
     public string Flag;
     public bool Persistent;
@@ -119,7 +123,9 @@ public class AreaSwitch : Entity {
                 StateMachine.State = StFinished;
         }
     }
-    private Box? shattering;
+
+    #endregion
+    #region --- Init ---
 
     public AreaSwitch(EntityData data, Vector2 offset) : base(data.Position + offset) {
 
@@ -180,12 +186,12 @@ public class AreaSwitch : Entity {
         StFinished = StateMachine.AddState<AreaSwitch>(
             "Finished",
             onUpdate: s => s.FinishedUpdate(),
-            begin: s => s.OnFinished()
+            begin: s => s.OnFinished(),
+            coroutine: s => s.FinishedRoutine()
         );
         StateMachine.State = StInactive;
 
     }
-
 
     public override void Added(Scene scene) {
         if (scene is not Level level) return;
@@ -214,6 +220,9 @@ public class AreaSwitch : Entity {
                 Siblings.Add(@switch);
     }
 
+    #endregion
+    #region --- Behaviour ---
+
     public override void Update() {
         base.Update();
 
@@ -227,117 +236,6 @@ public class AreaSwitch : Entity {
         Icon.Color *= 0.5f + ((float)Math.Sin(Timer) + 1f) / 2f * (1f - Ease) * 0.5f + 0.5f * Ease;
 
         Bloom.Alpha = Ease;
-    }
-
-    private int InactiveUpdate() => StInactive;
-    private int ActiveUpdate() => StActive;
-
-    private void OnFinished() {
-        StateMachine.Locked = true;
-
-        if (Mode == ActivationMode.DestroysBox) {
-            var activator = Activators.FirstOrDefault(a => a.Entity is Box);
-            if (activator?.Entity is Box box) {
-                shattering = box;
-                shattering.Shattering = true;
-            }
-        }
-
-        Collidable = false;
-        Activators.Clear();
-    }
-
-    private int FinishedUpdate() {
-        if (Scene is not Level level) return StFinished;
-
-        if (Icon.Rate > 0.1f) {
-            Icon.Rate -= 2f * Engine.DeltaTime;
-
-            if (shattering != null) {
-                var fac = Calc.ClampedMap(Icon.Rate, 4f, 0.1f, 0f, 1f);
-
-                {
-                    var force = Calc.ClampedMap(fac, 0f, 0.5f, 60f, 0f);
-                    var boxPos = shattering.Position + new Vector2(0f, -10f);
-                    var delta = Position - boxPos;
-                    force *= (float)Math.Atan(delta.Length() / Radius);
-                    shattering.Speed += delta.SafeNormalize() * force;
-                }
-                {
-                    var damp = Calc.ClampedMap(fac, 0.25f, 0.75f, 0.1f, 1f);
-                    shattering.Speed = Calc.Approach(shattering.Speed, Vector2.Zero, shattering.Speed.Length() * Engine.DeltaTime * damp);
-                    shattering.Position += shattering.Speed * Engine.DeltaTime;
-                }
-                {
-                    var guide = Calc.ClampedMap(fac, 0.5f, 1f, 0.2f, 1f);
-                    var boxPos = shattering.Position + new Vector2(0f, -10f);
-                    var delta = Position - boxPos;
-                    // force *= (float)Math.Pow((double)delta.Length() / 32, 2);
-                    // shattering.Position += delta.SafeNormalize() * force;
-                    shattering.Position += delta * guide;
-                }
-            }
-
-            if (Icon.Rate <= 0.1f) {
-                Icon.Rate = 0.1f;
-                Wiggler.Start();
-                Icon.Play("idle");
-                level.Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
-                shattering?.Shatter();
-                shattering = null;
-
-                for (var i = 0; i < NumLines; i++) {
-                    var jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
-                    var angle = (i / (float)NumLines + jiggle + Spin) * Calc.Circle;
-
-                    var relStart = Calc.AngleToVector(angle, 1f);
-                    var absStart = Position + relStart * Radius;
-
-                    var offset = relStart * (float)Math.Sin(Scene.TimeActive * 2f + i * 0.6f);
-                    if (i % 2 == 0)
-                        offset *= -1f;
-                    absStart += offset;
-
-                    level.ParticlesBG.Emit(P_Spark, absStart, FinishLineColor);
-                }
-            }
-        } else if (Scene.OnInterval(0.03f)) {
-            var position = Position + new Vector2(0f, 1f) + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
-            level.ParticlesBG.Emit(P_FireFinished, position, FinishColor);
-        }
-
-        return StFinished;
-    }
-
-    private void OnDeactivated() {
-        Icon.Rate = 1f;
-
-        if (Scene is not Level)
-            return;
-
-        for (var i = 0; i < 24; i++) {
-            var dir = Calc.Random.NextFloat((float)Math.PI * 2f);
-            (Scene as Level)!.Particles.Emit(P_FireInactive, Position + Calc.AngleToVector(dir, 6f), InactiveColor, dir);
-        }
-
-        TouchSfx.Play("event:/game/04_cliffside/arrowblock_side_release");
-    }
-
-    private void OnActivated() {
-        Icon.Rate = 4f;
-
-        Wiggler.Start();
-
-        if (Scene is not Level)
-            return;
-
-        for (var i = 0; i < 32; i++) {
-            var dir = Calc.Random.NextFloat((float)Math.PI * 2f);
-            (Scene as Level)!.Particles.Emit(P_FireActive, Position + Calc.AngleToVector(dir, 6f), ActiveColor, dir);
-        }
-
-        TouchSfx.Play("event:/game/04_cliffside/arrowblock_side_depress");
-        // TouchSfx.Play("event:/game/general/touchswitch_any");
     }
 
     public bool Senses(Activator activator) {
@@ -360,6 +258,36 @@ public class AreaSwitch : Entity {
         return Senses(activator);
     }
 
+    #region > Inactive
+
+    public void Deactivate(Activator activator) {
+        if (Finished) return;
+
+        Activators.Remove(activator);
+        activator.Activating.Remove(this);
+
+        if (Activators.Count == 0)
+            StateMachine.State = StInactive;
+    }
+
+    private int InactiveUpdate() => StInactive;
+    private void OnDeactivated() {
+        Icon.Rate = 1f;
+
+        if (Scene is not Level)
+            return;
+
+        for (var i = 0; i < 24; i++) {
+            var dir = Calc.Random.NextFloat((float)Math.PI * 2f);
+            (Scene as Level)!.Particles.Emit(P_FireInactive, Position + Calc.AngleToVector(dir, 6f), InactiveColor, dir);
+        }
+
+        TouchSfx.Play("event:/game/04_cliffside/arrowblock_side_release");
+    }
+
+    #endregion
+    #region > Active
+
     public void Activate(Activator activator) {
         if (Finished || Activators.Contains(activator)) return;
 
@@ -371,15 +299,26 @@ public class AreaSwitch : Entity {
             Finish();
     }
 
-    public void Deactivate(Activator activator) {
-        if (Finished) return;
+    private int ActiveUpdate() => StActive;
+    private void OnActivated() {
+        Icon.Rate = 4f;
 
-        Activators.Remove(activator);
-        activator.Activating.Remove(this);
+        Wiggler.Start();
 
-        if (Activators.Count == 0)
-            StateMachine.State = StInactive;
+        if (Scene is not Level)
+            return;
+
+        for (var i = 0; i < 32; i++) {
+            var dir = Calc.Random.NextFloat((float)Math.PI * 2f);
+            (Scene as Level)!.Particles.Emit(P_FireActive, Position + Calc.AngleToVector(dir, 6f), ActiveColor, dir);
+        }
+
+        TouchSfx.Play("event:/game/04_cliffside/arrowblock_side_depress");
+        // TouchSfx.Play("event:/game/general/touchswitch_any");
     }
+
+    #endregion
+    #region > Finished
 
     public void Finish() {
         if (Finished) return;
@@ -400,23 +339,101 @@ public class AreaSwitch : Entity {
         SoundEmitter.Play("event:/game/general/touchswitch_last_oneshot");
     }
 
+    private void OnFinished() {
+        StateMachine.Locked = true;
+        Collidable = false;
+    }
+    private int FinishedUpdate() {
+        if (Scene is Level level && Icon.Rate <= 0.1f && Scene.OnInterval(0.03f)) {
+            var pos = Position + Vector2.UnitY + Calc.AngleToVector(Calc.Random.NextAngle(), 5f);
+            level.ParticlesBG.Emit(P_FireFinished, pos, FinishColor);
+        }
+
+        return StFinished;
+    }
+    private IEnumerator FinishedRoutine() {
+        if (Scene is not Level level || Icon.Rate <= 0.1f) yield break;
+
+        var box = Mode == ActivationMode.DestroysBox
+                ? Activators.FirstOrDefault(a => a.Entity is Box)?.Entity as Box
+                : null;
+
+        if (box != null)
+            box.Shattering = true;
+
+        Activators.Clear();
+
+        float fac = 0f;
+
+        for (; fac < 0.4f; fac += Engine.DeltaTime / 1.95f) {
+            Icon.Rate = Calc.ClampedMap(fac, 0f, 1f, 4f, 0.1f);
+
+            if (box != null)
+                AttractBox(box, fac);
+
+            yield return null;
+        }
+
+        if (box != null)
+            box.Shaking = true;
+
+        for (; fac < 1f; fac += Engine.DeltaTime / 1.95f) {
+            Icon.Rate = Calc.ClampedMap(fac, 0f, 1f, 4f, 0.1f);
+
+            if (box != null)
+                AttractBox(box, fac);
+
+            yield return null;
+        }
+
+        Icon.Play("idle");
+        Icon.Rate = 0.1f;
+
+        box?.Shatter();
+
+        Wiggler.Start();
+        level.Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
+        LineParticles(level, FinishLineColor);
+    }
+
+    private void AttractBox(Box box, float fac) {
+        {
+            var force = Calc.ClampedMap(fac, 0f, 0.5f, 60f, 0f);
+            var boxPos = box.Position + (box.Inverted ? new Vector2(0f, 10f) : new Vector2(0f, -10f));
+            var delta = Position - boxPos;
+            force *= (float)Math.Atan(delta.Length() / Radius);
+            box.Speed += delta.SafeNormalize() * force;
+        }
+        {
+            var damp = Calc.ClampedMap(fac, 0.25f, 0.75f, 0.1f, 1f);
+            box.Speed = Calc.Approach(box.Speed, Vector2.Zero, box.Speed.Length() * Engine.DeltaTime * damp);
+            box.Position += box.Speed * Engine.DeltaTime;
+        }
+        {
+            var guide = Calc.ClampedMap(fac, 0.5f, 1f, 0.2f, 1f);
+            var boxPos = box.Position + (box.Inverted ? new Vector2(0f, 10f) : new Vector2(0f, -10f));
+            var delta = Position - boxPos;
+            box.Position += delta * guide;
+        }
+    }
+
+    #endregion
+    #endregion
+    #region --- Rendering ---
+
     public override void Render() {
-        if (Scene is not Level level) return;
-
-        var drawArea = Icon.CurrentAnimationID == "spin";
         var col = Color.Lerp(InactiveLineColor, Finished ? FinishLineColor : ActiveLineColor, Ease);
-
-        // if (drawArea && Mode == ActivationMode.DestroysBox) {
-        //     float diag = Radius / (float)Math.Sqrt(2f);
-        //     Draw.Line(Position + new Vector2(-diag, -diag), Position + new Vector2(diag, diag), col);
-        //     Draw.Line(Position + new Vector2(-diag, diag), Position + new Vector2(diag, -diag), col);
-        // }
 
         Container.DrawCentered(Position + new Vector2(0f, -1f), Color.Black);
         Container.DrawCentered(Position, Icon.Color, Pulse);
         base.Render();
 
-        if (!drawArea) return;
+        if (Icon.CurrentAnimationID == "spin")
+            DrawLines(col);
+    }
+
+    private void DrawLines(Color col) {
+        if (Scene is not Level level) return;
 
         var nearby = level.Tracker.GetComponents<Activator>()
             .SelectMany<Component, Vector2>(act => {
@@ -427,8 +444,9 @@ public class AreaSwitch : Entity {
             })
             .ToList();
 
+        var jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
+
         for (var i = 0; i < NumLines; i++) {
-            var jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
             var angle = (i / (float)NumLines + jiggle + Spin) * Calc.Circle;
 
             var relStart = Calc.AngleToVector(angle, 1f);
@@ -450,7 +468,7 @@ public class AreaSwitch : Entity {
                     var angleFactor = Calc.ClampedMap(angleDiff, 0f, Calc.Circle / 6f, 1f, angleContributionFloor);
 
                     return distFactor * angleFactor;
-                }) * AWARENESS_SPIKE_SCALE);
+                }) * 4f);
             t *= 1 - FinishedEase;
 
             var absEnd = (absStart - relStart * Calc.ClampedMap(t, 0f, 1f, 1f, 3f)).Round();
@@ -458,8 +476,27 @@ public class AreaSwitch : Entity {
 
             if (t < 0.4f)
                 Draw.Point(absStart, color);
-            else
+            else if (absEnd.Y <= absStart.Y)
                 Draw.Line(absStart, absEnd, color);
+            else
+                Draw.Line(absEnd, absStart, color);
+        }
+    }
+
+    private void LineParticles(Level level, Color col) {
+        var jiggle = (float)Math.Sin(Scene.TimeActive * 0.5f) * 0.02f;
+        for (var i = 0; i < NumLines; i++) {
+            var angle = (i / (float)NumLines + jiggle + Spin) * Calc.Circle;
+
+            var rel = Calc.AngleToVector(angle, 1f);
+            var abs = Position + rel * Radius;
+
+            var offset = rel * (float)Math.Sin(Scene.TimeActive * 2f + i * 0.6f);
+            if (i % 2 == 0)
+                offset *= -1f;
+            abs += offset;
+
+            level.ParticlesBG.Emit(P_Spark, abs, col);
         }
     }
 
@@ -469,5 +506,7 @@ public class AreaSwitch : Entity {
         foreach (var activator in Activators)
             Draw.Line(Position, activator.Position, Color.Magenta);
     }
+
+    #endregion
 
 }

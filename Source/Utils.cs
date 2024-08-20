@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -13,5 +14,7 @@ public static class Utils {
 
     public static Vector2 SoftCap(this Vector2 vec, float magnitude, float softness)
         => vec.SafeNormalize() * SoftCap(vec.Length(), magnitude, softness);
+
+    public static IEnumerator<T> GetEnumerator<T>(this IEnumerator<T> enumerator) => enumerator;
 
 }

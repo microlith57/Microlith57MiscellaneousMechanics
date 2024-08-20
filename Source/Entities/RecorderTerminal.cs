@@ -65,6 +65,8 @@ public class RecorderTerminal : Entity {
     public static int StPlayback;
     public static int StCooldown;
 
+    #region --- Init ---
+
     public RecorderTerminal(EntityData data, Vector2 offset) : base(data.Position + offset) {
         Depth = 2000;
 
@@ -139,6 +141,9 @@ public class RecorderTerminal : Entity {
         StateMachine.State = StIdle;
     }
 
+    #endregion
+    #region --- Behaviour ---
+
     public override void Update() {
         base.Update();
 
@@ -148,6 +153,52 @@ public class RecorderTerminal : Entity {
 
         BaseDust.Color = BaseColor;
     }
+
+    public IEnumerator OnInteract(Player player) {
+        player.StateMachine.State = Player.StDummy;
+        player.ForceCameraUpdate = true;
+        player.StateMachine.Locked = true;
+        gracePeriod = true;
+
+        yield return player.DummyRunTo(Position.X - 16f);
+        yield return player.DummyWalkToExact((int)(Position.X - 16f));
+        player.Facing = Facings.Right;
+
+        yield return 0.1f;
+        ButtonAndStripe.Play("interact");
+        yield return 0.1f;
+
+        if (StateMachine.State == StIdle)
+            StateMachine.State = StRecording;
+        else if (StateMachine.State == StRecording)
+            StateMachine.State = StPlayback;
+        else if (StateMachine.State == StPlayback)
+            StateMachine.State = StCooldown;
+
+        player.StateMachine.Locked = false;
+        player.ForceCameraUpdate = false;
+        player.StateMachine.State = Player.StNormal;
+        gracePeriod = false;
+    }
+
+    #region Rendering
+
+    public override void DebugRender(Camera camera) {
+        base.DebugRender(camera);
+
+        if (StateMachine.State == StRecording)
+            foreach (var rec in Recordings)
+                if (rec.RecordingOf != null)
+                    Draw.Line(Position, rec.RecordingOf.Center, BaseColor);
+
+                else if (StateMachine.State == StPlayback)
+                    foreach (var rec2 in Recordings)
+                        if (rec2.Visible)
+                            Draw.Line(Position, rec2.Center, BaseColor);
+    }
+
+    #endregion
+    #region > Idle
 
     private void IdleBegin() {
         Recordings.ForEach(r => r.EndPlayback(remove: true));
@@ -159,6 +210,8 @@ public class RecorderTerminal : Entity {
     }
     private int IdleUpdate() => StIdle;
 
+    #endregion
+    #region > Recording
 
     private void RecordingBegin() {
         Recordings.ForEach(r => r.EndPlayback(remove: true));
@@ -229,6 +282,8 @@ public class RecorderTerminal : Entity {
         return StRecording;
     }
 
+    #endregion
+    #region > Playback
 
     private void PlaybackBegin() {
         Time = 0f;
@@ -262,6 +317,8 @@ public class RecorderTerminal : Entity {
         return StPlayback;
     }
 
+    #endregion
+    #region > Cooldown
 
     private void CooldownBegin() {
         Recordings.ForEach(r => r.EndPlayback(remove: true));
@@ -284,46 +341,7 @@ public class RecorderTerminal : Entity {
         Screen.Visible = Light.Visible = true;
     }
 
-
-    public IEnumerator OnInteract(Player player) {
-        player.StateMachine.State = Player.StDummy;
-        player.ForceCameraUpdate = true;
-        player.StateMachine.Locked = true;
-        gracePeriod = true;
-
-        yield return player.DummyRunTo(Position.X - 16f);
-        yield return player.DummyWalkToExact((int)(Position.X - 16f));
-        player.Facing = Facings.Right;
-
-        yield return 0.1f;
-        ButtonAndStripe.Play("interact");
-        yield return 0.1f;
-
-        if (StateMachine.State == StIdle)
-            StateMachine.State = StRecording;
-        else if (StateMachine.State == StRecording)
-            StateMachine.State = StPlayback;
-        else if (StateMachine.State == StPlayback)
-            StateMachine.State = StCooldown;
-
-        player.StateMachine.Locked = false;
-        player.ForceCameraUpdate = false;
-        player.StateMachine.State = Player.StNormal;
-        gracePeriod = false;
-    }
-
-    public override void DebugRender(Camera camera) {
-        base.DebugRender(camera);
-
-        if (StateMachine.State == StRecording)
-            foreach (var rec in Recordings)
-                if (rec.RecordingOf != null)
-                    Draw.Line(Position, rec.RecordingOf.Center, BaseColor);
-
-                else if (StateMachine.State == StPlayback)
-                    foreach (var rec2 in Recordings)
-                        if (rec2.Visible)
-                            Draw.Line(Position, rec2.Center, BaseColor);
-    }
+    #endregion
+    #endregion
 
 }

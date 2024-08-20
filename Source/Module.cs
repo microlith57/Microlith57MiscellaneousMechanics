@@ -32,12 +32,16 @@ public class Module : EverestModule {
         On.Celeste.Player.Update += hookPlayerUpdate;
         On.Celeste.Player.IsRiding_JumpThru += hookPlayerIsRiding;
         On.Celeste.Player.DustParticleFromSurfaceIndex += hookDustParticle;
+
+        On.Celeste.Level.Update += hookLevelUpdate;
     }
 
     public override void Unload() {
         On.Celeste.Player.Update -= hookPlayerUpdate;
         On.Celeste.Player.IsRiding_JumpThru -= hookPlayerIsRiding;
         On.Celeste.Player.DustParticleFromSurfaceIndex -= hookDustParticle;
+
+        On.Celeste.Level.Update -= hookLevelUpdate;
     }
 
     public override void LoadContent(bool firstLoad) {
@@ -82,9 +86,11 @@ public class Module : EverestModule {
     private static void hookPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {
         bool invert = self.Get<GravityComponent>()?.ShouldInvert ?? false;
 
-        Dictionary<BoxSurface, (bool, bool)> boxesWithOrigCollidableStates = [];
+        Dictionary<BoxSurface, (bool, bool, bool)> boxesWithOrigCollidableStates = [];
         foreach (BoxSurface boxSurface in self.Scene.Tracker.GetComponents<BoxSurface>()) {
-            boxesWithOrigCollidableStates.Add(boxSurface, (boxSurface.CollidableTop, boxSurface.CollidableBot));
+            boxesWithOrigCollidableStates.Add(boxSurface, (boxSurface.Collidable,
+                                                           boxSurface.CollidableTop,
+                                                           boxSurface.CollidableBot));
 
             if (self.Holding?.Entity == boxSurface.Entity)
                 boxSurface.Collidable = false;
@@ -96,7 +102,8 @@ public class Module : EverestModule {
 
         orig(self);
 
-        foreach ((var surface, (var wasCollidableTop, var wasCollidableBot)) in boxesWithOrigCollidableStates) {
+        foreach ((var surface, (var wasCollidable, var wasCollidableTop, var wasCollidableBot)) in boxesWithOrigCollidableStates) {
+            surface.Collidable = wasCollidable;
             surface.CollidableTop = wasCollidableTop;
             surface.CollidableBot = wasCollidableBot;
         }
@@ -127,6 +134,11 @@ public class Module : EverestModule {
                 return particle;
         }
         return orig(self, index);
+    }
+
+    private static void hookLevelUpdate(On.Celeste.Level.orig_Update orig, Level self) {
+        Box.updatedThisFrame = false;
+        orig(self);
     }
 
 }

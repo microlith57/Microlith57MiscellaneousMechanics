@@ -57,4 +57,18 @@ public abstract class Recording : Entity {
         if (remove) RemoveSelf();
     }
 
+    public void AppearEffect(Vector2 position, int count, Vector2 range, Color color) {
+        if (Scene is not Level level) return;
+
+        Audio.Play("event:/new_content/char/tutorial_ghost/appear", position);
+        level.Particles.Emit(P_Appear, count, Center, range, color);
+    }
+
+    public void DisappearEffect(Vector2 position, int count, Vector2 range, Color color) {
+        if (Scene is not Level level) return;
+
+        Audio.Play("event:/new_content/char/tutorial_ghost/disappear", Position);
+        level.Particles.Emit(P_Appear, count, Center, range, color);
+    }
+
 }
