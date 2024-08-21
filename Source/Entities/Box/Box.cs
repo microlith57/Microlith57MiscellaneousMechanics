@@ -111,7 +111,7 @@ public partial class Box : Actor {
         onCollideV = OnCollideV;
         LiftSpeedGraceTime = 0.1f;
 
-        Add(Light = new(FullSizeCollider.Center, Color.White, 1f, 24, 48));
+        Add(Light = new(FullSizeCollider.Center, Color.White * 0.7f, 1f, 24, 48));
 
         ActivatorCollider = new Hitbox(20f, 20f, -10f, -20f);
         ActivatorCollider.Added(this);
@@ -299,16 +299,16 @@ public partial class Box : Actor {
         }
 
         if (!Inverted) {
-            if (Bottom > level.Bounds.Bottom + 4) {
-                Bottom = level.Bounds.Bottom - 4;
-                Speed.Y = 0f;
-            } else if (Bottom < level.Bounds.Top - 48f)
-                Die();
-        } else {
-            if (Top < level.Bounds.Top - 4) {
-                Top = level.Bounds.Top + 4;
+            if (Top < level.Bounds.Top - 24f) {
+                Top = level.Bounds.Top + 24f;
                 Speed.Y = 0f;
             } else if (Top > level.Bounds.Bottom + 48f)
+                Die();
+        } else {
+            if (Bottom > level.Bounds.Bottom + 24f) {
+                Bottom = level.Bounds.Bottom - 24f;
+                Speed.Y = 0f;
+            } else if (Bottom < level.Bounds.Top - 48f)
                 Die();
         }
     }
