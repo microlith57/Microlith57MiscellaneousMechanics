@@ -5,11 +5,34 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "launch",
+      "name": "misc",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/../../Celeste.dll",
+      "args": ["--whitelist", "${workspaceFolder}/.vscode/whitelist.txt"],
+      "cwd": "${workspaceFolder}/../../",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "linux": {
+        "env": {
+          "LD_LIBRARY_PATH": "${workspaceFolder}/../../lib64-linux:"
+        }
+      },
+      "justMyCode": false,
+      "sourceFileMap": {
+        "Microlith57MiscellaneousMechanics/": "${workspaceFolder}/Source/",
+        "/home/vsts/work/1/s/": "${workspaceFolder}/../../../../everest/"
+      },
+      "requireExactSource": false
+    },
+    {
+      "name": "rewind",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/../../Celeste.dll",
+      "args": ["--whitelist", "${workspaceFolder}/../Rewind/.vscode/whitelist.txt"],
       "cwd": "${workspaceFolder}/../../",
       "console": "integratedTerminal",
       "stopAtEntry": false,

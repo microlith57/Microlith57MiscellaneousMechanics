@@ -1,5 +1,5 @@
 - Name: Microlith57MiscellaneousMechanics
-  DLL: Code/bin/Microlith57Misc.dll
+  DLL: Code/bin/Microlith57MiscellaneousMechanics.dll
   Version: 0.1.0
   Dependencies:
   - Name: EverestCore

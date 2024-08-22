@@ -160,7 +160,7 @@ public partial class Box : Actor {
         if (Scene.Tracker.GetEntity<Renderer>() == null)
             Scene.Add(new Renderer());
 
-        var grav = Get<GravityComponent>();
+        var grav = Get<GravityComponent>() ?? throw new Exception("expected gravityhelper to do its thing, but it didn't! missing a force load gravity controller?");
         grav.UpdatePosition = OnGravityChange_Position;
         grav.UpdateColliders = OnGravityChange_Colliders;
         grav.UpdateVisuals = OnGravityChange_Visuals;
