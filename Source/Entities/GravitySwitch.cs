@@ -5,11 +5,11 @@ using Monocle;
 
 using Celeste.Mod.GravityHelper;
 
-using Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+using Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
-namespace Celeste.Mod.Microlith57.IntContest.Entities;
+namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity("Microlith57_IntContest24/GravitySwitch")]
+[CustomEntity("Microlith57Misc/GravitySwitch")]
 [Tracked]
 public class GravitySwitch : Entity {
 

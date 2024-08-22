@@ -6,7 +6,7 @@ using Monocle;
 using Celeste.Mod.GravityHelper.Components;
 using GravityType = Celeste.Mod.GravityHelper.GravityType;
 
-namespace Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
 [Tracked]
 public class PlayerRecording : Recording {

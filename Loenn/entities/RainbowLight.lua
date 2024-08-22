@@ -2,7 +2,7 @@ local utils = require("utils")
 
 local RainbowLight = {}
 
-RainbowLight.name = "Microlith57_IntContest24/RainbowLight"
+RainbowLight.name = "Microlith57Misc/RainbowLight"
 RainbowLight.depth = -1000000
 RainbowLight.placements = {
     {

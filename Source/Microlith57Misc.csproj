@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
-        <AssemblyName>Microlith57_IntContest24</AssemblyName>
-        <RootNamespace>Celeste.Mod.Microlith57.IntContest</RootNamespace>
+        <AssemblyName>Microlith57MiscellaneousMechanics</AssemblyName>
+        <RootNamespace>Celeste.Mod.Microlith57Misc</RootNamespace>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\..\Celeste.dll')">..\..\..</CelestePrefix>
@@ -37,15 +37,15 @@
         <Copy SourceFiles="$(OutputPath)\$(AssemblyName).pdb" DestinationFolder="..\Code\bin" />
     </Target>
 
-    <Target Name="PackageMod" AfterTargets="CopyFiles" Inputs="$(ZippedFiles)" Outputs="..\Microlith57_IntContest24.zip" Condition="'$(Configuration)' == 'Release'">
+    <Target Name="PackageMod" AfterTargets="CopyFiles" Inputs="$(ZippedFiles)" Outputs="..\Microlith57MiscellaneousMechanics.zip" Condition="'$(Configuration)' == 'Release'">
         <ItemGroup>
             <FilesToPackage Include="$(ZippedFiles)" />
         </ItemGroup>
-        <PackageMod Files="@(FilesToPackage)" OutputPath="..\Microlith57_IntContest24.zip" />
+        <PackageMod Files="@(FilesToPackage)" OutputPath="..\Microlith57MiscellaneousMechanics.zip" />
     </Target>
 
     <PropertyGroup>
-        <PathMap>$(MSBuildProjectDirectory)=Microlith57_IntContest24/</PathMap>
+        <PathMap>$(MSBuildProjectDirectory)=Microlith57MiscellaneousMechanics/</PathMap>
     </PropertyGroup>
 
     <!-- Inline task used to create a .zip for the mod -->

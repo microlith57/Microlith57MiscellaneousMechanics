@@ -5,11 +5,11 @@ using System.Linq;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+using Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
-namespace Celeste.Mod.Microlith57.IntContest.Entities;
+namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity("Microlith57_IntContest24/RecorderTerminal")]
+[CustomEntity("Microlith57Misc/RecorderTerminal")]
 [Tracked]
 public class RecorderTerminal : Entity {
 
@@ -76,11 +76,11 @@ public class RecorderTerminal : Entity {
             Color2 = Color.White
         };
 
-        Image image = new(GFX.Game["objects/INTcontest24/microlith57/terminal"]);
+        Image image = new(GFX.Game["objects/microlith57/misc/terminal"]);
         image.JustifyOrigin(new(0.5f, 1f));
         Add(image);
 
-        Add(ButtonAndStripe = new(GFX.Game, "objects/INTcontest24/microlith57/terminalcolor") {
+        Add(ButtonAndStripe = new(GFX.Game, "objects/microlith57/misc/terminalcolor") {
             Color = BaseColor,
             Justify = new(0.5f, 1f),
             OnChange = (from, to) => {
@@ -94,7 +94,7 @@ public class RecorderTerminal : Entity {
         ButtonAndStripe.Add("interact", "", 0.1f, "idle", [1]);
         ButtonAndStripe.Play("idle");
 
-        Add(Screen = new(GFX.Game, "objects/INTcontest24/microlith57/screen") {
+        Add(Screen = new(GFX.Game, "objects/microlith57/misc/screen") {
             Justify = new(0.5f, 1f)
         });
         Screen.AddLoop("idle", "", 0.05f, [0, 1, 2]);

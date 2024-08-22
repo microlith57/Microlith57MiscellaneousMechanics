@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest.Entities;
+namespace Celeste.Mod.Microlith57Misc.Entities;
 
 public partial class Box {
     private class TutorialPrompt() : Component(true, false) {

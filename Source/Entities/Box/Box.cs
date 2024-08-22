@@ -7,9 +7,9 @@ using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest.Entities;
+namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity("Microlith57_IntContest24/Box")]
+[CustomEntity("Microlith57Misc/Box")]
 [Tracked]
 public partial class Box : Actor {
 
@@ -86,7 +86,7 @@ public partial class Box : Actor {
         FullSizeCollider = new Hitbox(20f, 20f, -10f, -20f);
         FullSizeCollider.Added(this);
 
-        Add(Sprite = new(GFX.Game, "objects/INTcontest24/microlith57/box/"));
+        Add(Sprite = new(GFX.Game, "objects/microlith57/misc/box/"));
         Sprite.Add("normal", "normal", 1f, [0]);
         Sprite.Add("inverted", "inverted", 1f, [0]);
         Sprite.Play("normal");

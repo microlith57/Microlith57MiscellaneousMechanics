@@ -2,9 +2,9 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest;
+namespace Celeste.Mod.Microlith57Misc;
 
-[CustomEntity("Microlith57_IntContest24/RainbowLight")]
+[CustomEntity("Microlith57Misc/RainbowLight")]
 public class RainbowLight : Entity {
 
     public VertexLight Light;

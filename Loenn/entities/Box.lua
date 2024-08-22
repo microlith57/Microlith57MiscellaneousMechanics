@@ -3,9 +3,9 @@ local utils = require("utils")
 
 local Box = {}
 
-Box.name = "Microlith57_IntContest24/Box"
+Box.name = "Microlith57Misc/Box"
 Box.depth = 100
-Box.texture = "objects/INTcontest24/microlith57/box/normal00"
+Box.texture = "objects/microlith57/misc/box/normal00"
 Box.offset = {-11, -21}
 Box.placements = {
     {

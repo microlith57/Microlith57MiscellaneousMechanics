@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest;
+namespace Celeste.Mod.Microlith57Misc;
 
 public static class Utils {
 

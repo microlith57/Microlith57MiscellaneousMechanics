@@ -7,12 +7,12 @@ using System.Linq;
 
 using FlagSwitchGate = Celeste.Mod.MaxHelpingHand.Entities.FlagSwitchGate;
 
-using Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+using Celeste.Mod.Microlith57Misc.Entities.Recordings;
 using System.Collections;
 
-namespace Celeste.Mod.Microlith57.IntContest.Entities;
+namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity("Microlith57_IntContest24/AreaSwitch")]
+[CustomEntity("Microlith57Misc/AreaSwitch")]
 [Tracked]
 public class AreaSwitch : Entity {
 

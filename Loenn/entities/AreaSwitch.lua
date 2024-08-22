@@ -3,7 +3,7 @@ local utils = require("utils")
 
 local AreaSwitch = {}
 
-AreaSwitch.name = "Microlith57_IntContest24/AreaSwitch"
+AreaSwitch.name = "Microlith57Misc/AreaSwitch"
 AreaSwitch.depth = 2000
 AreaSwitch.placements = {
     {
@@ -31,7 +31,7 @@ AreaSwitch.placements = {
             flag = "area_switch",
             persistent = "false",
             activationMode = "BoxOnly",
-            container = "objects/INTcontest24/microlith57/touchswitch/container_box",
+            container = "objects/microlith57/misc/touchswitch/container_box",
             icon = "objects/touchswitch/icon",
             animationLength = 6,
             inactiveColor = "5FCDE4",
@@ -50,7 +50,7 @@ AreaSwitch.placements = {
             flag = "area_switch",
             persistent = "false",
             activationMode = "DestroysBox",
-            container = "objects/INTcontest24/microlith57/touchswitch/container_box",
+            container = "objects/microlith57/misc/touchswitch/container_box",
             icon = "objects/touchswitch/icon",
             animationLength = 6,
             inactiveColor = "5FCDE4",

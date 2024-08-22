@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
 [Tracked(inherited: true)]
 public abstract class Recording : Entity {

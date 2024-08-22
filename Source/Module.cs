@@ -5,10 +5,10 @@ using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-using Celeste.Mod.Microlith57.IntContest.Entities;
-using Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+using Celeste.Mod.Microlith57Misc.Entities;
+using Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
-namespace Celeste.Mod.Microlith57.IntContest;
+namespace Celeste.Mod.Microlith57Misc;
 
 public class Module : EverestModule {
 

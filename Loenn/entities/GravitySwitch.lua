@@ -1,6 +1,6 @@
 local GravitySwitch = {}
 
-GravitySwitch.name = "Microlith57_IntContest24/GravitySwitch"
+GravitySwitch.name = "Microlith57Misc/GravitySwitch"
 GravitySwitch.depth = 2000
 GravitySwitch.placements = {
   {

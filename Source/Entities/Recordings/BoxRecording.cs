@@ -5,7 +5,7 @@ using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-namespace Celeste.Mod.Microlith57.IntContest.Entities.Recordings;
+namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
 [Tracked]
 public class BoxRecording : Recording {
@@ -76,7 +76,7 @@ public class BoxRecording : Recording {
         Add(Light = new(Collider.Center, Color.White, 1f, 24, 48));
         Add(new AreaSwitch.Activator());
 
-        Add(Sprite = new(GFX.Game, "objects/INTcontest24/microlith57/box_playback/"));
+        Add(Sprite = new(GFX.Game, "objects/microlith57/misc/box_playback/"));
         Sprite.Add("normal", "normal", 1f, [0]);
         Sprite.Add("inverted", "inverted", 1f, [0]);
         Sprite.Play("normal");

@@ -20,7 +20,7 @@
       },
       "justMyCode": false,
       "sourceFileMap": {
-        "Microlith57_IntContest24/": "${workspaceFolder}/Source/",
+        "Microlith57MiscellaneousMechanics/": "${workspaceFolder}/Source/",
         "/home/vsts/work/1/s/": "${workspaceFolder}/../../../../everest/"
       },
       "requireExactSource": false
