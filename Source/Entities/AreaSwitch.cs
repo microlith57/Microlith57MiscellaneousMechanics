@@ -9,6 +9,7 @@ using FlagSwitchGate = Celeste.Mod.MaxHelpingHand.Entities.FlagSwitchGate;
 
 using Celeste.Mod.Microlith57Misc.Entities.Recordings;
 using System.Collections;
+using Celeste.Mod.GravityHelper.Components;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -357,9 +358,7 @@ public class AreaSwitch : Entity {
         var box = Mode == ActivationMode.DestroysBox
                 ? Activators.FirstOrDefault(a => a.Entity is Box)?.Entity as Box
                 : null;
-
-        if (box != null)
-            box.Shattering = true;
+        box?.BeginShatter();
 
         Activators.Clear();
 
@@ -399,8 +398,7 @@ public class AreaSwitch : Entity {
     private void AttractBox(Box box, float fac) {
         {
             var force = Calc.ClampedMap(fac, 0f, 0.5f, 60f, 0f);
-            var boxPos = box.Position + (box.Inverted ? new Vector2(0f, 10f) : new Vector2(0f, -10f));
-            var delta = Position - boxPos;
+            var delta = Position - box.AbsCenter;
             force *= (float)Math.Atan(delta.Length() / Radius);
             box.Speed += delta.SafeNormalize() * force;
         }
@@ -411,8 +409,7 @@ public class AreaSwitch : Entity {
         }
         {
             var guide = Calc.ClampedMap(fac, 0.5f, 1f, 0.2f, 1f);
-            var boxPos = box.Position + (box.Inverted ? new Vector2(0f, 10f) : new Vector2(0f, -10f));
-            var delta = Position - boxPos;
+            var delta = Position - box.AbsCenter;
             box.Position += delta * guide;
         }
     }

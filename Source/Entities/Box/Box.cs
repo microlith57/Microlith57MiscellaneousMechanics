@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Celeste.Mod.Entities;
 using Celeste.Mod.GravityHelper;
 using Celeste.Mod.GravityHelper.Components;
@@ -47,23 +48,28 @@ public partial class Box : Actor {
     public static ParticleType P_Impact;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-    #endregion
+    #endregion Util
     #region --- State ---
 
     internal static bool updatedThisFrame = false;
 
-    public string RemoveIfFlag = "";
+    public readonly string RemoveIfFlag = "";
+    public readonly bool GravityLocked = true;
+    public readonly bool IsTutorial = false;
+
+    public readonly Hitbox MainCollider, FullSizeCollider, PickupCollider, ActivatorCollider;
+    public readonly Holdable Hold;
+    public readonly BoxSurface Surface;
+    public GravityComponent? Gravity { get; private set; }
+    public readonly Image BaseSprite;
+    public readonly Sprite IndicatorSprite;
+    public readonly VertexLight Light;
+
+    private readonly Collision onCollideH, onCollideV;
 
     public Vector2 Speed;
-    public Holdable Hold;
-    public Sprite Sprite;
-    public VertexLight Light;
-    public BoxSurface Surface;
-
+    public bool PositionInverted;
     public bool Inverted;
-    public Hitbox MainCollider, FullSizeCollider, PickupCollider, PickupColliderStacked, ActivatorCollider;
-
-    private Collision onCollideH, onCollideV;
 
     public float NoGravityTimer;
     public float LastInteraction;
@@ -75,26 +81,41 @@ public partial class Box : Actor {
 
     public bool BonkedH, BonkedV;
 
-    private bool IsTutorial;
+    public Vector2 AbsCenter => Position + (PositionInverted ? new Vector2(0f, 10f) : new Vector2(0f, -10f));
 
-    #endregion
+    #endregion State
     #region --- Init ---
 
-    public Box(Vector2 position, Vector2 speed = default) : base(position) {
+    public Box(Vector2 position,
+               string removeIfFlag = "",
+               bool gravityLocked = false,
+               bool isTutorial = false) : base(position) {
         Depth = -2;
+        RemoveIfFlag = removeIfFlag;
+        GravityLocked = gravityLocked;
+        IsTutorial = isTutorial;
+
         Collider = MainCollider = new Hitbox(8f, 10f, -4f, -10f);
         FullSizeCollider = new Hitbox(20f, 20f, -10f, -20f);
         FullSizeCollider.Added(this);
 
-        Add(Sprite = new(GFX.Game, "objects/microlith57/misc/box/"));
-        Sprite.Add("normal", "normal", 1f, [0]);
-        Sprite.Add("inverted", "inverted", 1f, [0]);
-        Sprite.Play("normal");
-        Sprite.CenterOrigin();
-        Sprite.Position = FullSizeCollider.Center;
+        Add(BaseSprite = new(GFX.Game["objects/microlith57/misc/box/base"]));
+        BaseSprite.CenterOrigin();
+        BaseSprite.Position = FullSizeCollider.Center;
+
+        var spritePath = "objects/microlith57/misc/box/indicator";
+        if (gravityLocked)
+            spritePath += "_locked";
+
+        Add(IndicatorSprite = new(GFX.Game, spritePath));
+        IndicatorSprite.Add("normal", "", 1f, [0]);
+        IndicatorSprite.Add("inverted", "", 1f, [1]);
+        IndicatorSprite.Add("shatter", "", 1f, [2]);
+        IndicatorSprite.Play("normal");
+        IndicatorSprite.CenterOrigin();
+        IndicatorSprite.Position = FullSizeCollider.Center;
 
         PickupCollider = new Hitbox(28f, 28f, -14f, -24f);
-        PickupColliderStacked = new Hitbox(28f, 20f, -14f, -16f);
         Add(Hold = new Holdable {
             PickupCollider = PickupCollider,
             SlowFall = false,
@@ -131,13 +152,16 @@ public partial class Box : Actor {
             },
             OnOut = _ => UpdateShake()
         });
+
+        Add(new PlayerGravityListener() {GravityChanged = OnPlayerChangeGravity});
     }
 
     public Box(EntityData data, Vector2 offset)
         : this(data.Position + offset,
-               new(data.Float("speedX"), data.Float("speedY"))) {
-        RemoveIfFlag = data.Attr("removeIfFlag");
-        IsTutorial = data.Bool("tutorial");
+              data.Attr("removeIfFlag"),
+              data.Bool("gravityLocked"),
+              data.Bool("tutorial")) {
+        Speed = new(data.Float("speedX"), data.Float("speedY"));
     }
 
     public override void Added(Scene scene) {
@@ -160,13 +184,16 @@ public partial class Box : Actor {
         if (Scene.Tracker.GetEntity<Renderer>() == null)
             Scene.Add(new Renderer());
 
-        var grav = Get<GravityComponent>() ?? throw new Exception("expected gravityhelper to do its thing, but it didn't! missing a force load gravity controller?");
-        grav.UpdatePosition = OnGravityChange_Position;
-        grav.UpdateColliders = OnGravityChange_Colliders;
-        grav.UpdateVisuals = OnGravityChange_Visuals;
+        Gravity = Get<GravityComponent>() ?? throw new Exception("expected gravityhelper to do its thing, but it didn't! missing a force load gravity controller?");
+        Gravity.UpdatePosition = OnGravityChange_Position;
+        Gravity.UpdateColliders = OnGravityChange_Colliders;
+        Gravity.UpdateVisuals = OnGravityChange_Visuals;
+
+        if (GravityLocked)
+            Gravity.Lock();
     }
 
-    #endregion
+    #endregion Init
     #region --- Behaviour ---
 
     public override void Update() {
@@ -225,6 +252,16 @@ public partial class Box : Actor {
         }
     }
 
+    public void UpdateShake() {
+        if (Shaking) {
+            if (!Scene.OnInterval(0.04f))
+                return;
+
+            ShakeOffset = Calc.Random.ShakeVector();
+        } else
+            ShakeOffset = Vector2.Zero;
+    }
+
     #region > Physics
 
     public void UpdatePhysics() {
@@ -251,7 +288,6 @@ public partial class Box : Actor {
         Position = Position.Round();
 
         UpdatePhysics_ClampBounds();
-        UpdatePhysics_DetectStack();
     }
 
     private void UpdatePhysics_OnGround() {
@@ -303,36 +339,18 @@ public partial class Box : Actor {
                 Top = level.Bounds.Top + 24f;
                 Speed.Y = 0f;
             } else if (Top > level.Bounds.Bottom + 48f)
-                Die();
+                RemoveSelf();
         } else {
             if (Bottom > level.Bounds.Bottom + 24f) {
                 Bottom = level.Bounds.Bottom - 24f;
                 Speed.Y = 0f;
             } else if (Bottom < level.Bounds.Top - 48f)
-                Die();
+                RemoveSelf();
         }
     }
 
-    private void UpdatePhysics_DetectStack() {
-        foreach (var surf in Scene.Tracker.GetComponents<BoxSurface.BelongsToBox>()) {
-            if (surf is BoxSurface.BelongsToBox bb &&
-                bb.Entity.Collidable &&
-                bb.Surface is BoxSurface bs &&
-                bs.Collidable &&
-                bs.Entity is Box box &&
-                box != this &&
-                (!Inverted ? bb.IsTop : bb.IsBot) &&
-                box.FullSizeCollider.Intersects(
-                    Position.X - 8f, Position.Y - 4f,
-                    16f, 8f
-                )
-            )
-                box.Hold.PickupCollider = box.PickupColliderStacked;
-        }
-    }
-
-    #endregion
-    #region > Actor/Holdable
+    #endregion Physics
+    #region > Actor
 
     public void ExplodeLaunch(Vector2 from) {
         if (Hold.IsHeld)
@@ -440,7 +458,41 @@ public partial class Box : Actor {
 
     public override void OnSquish(CollisionData data) {
         if (!TrySquishWiggle(data))
-            Die();
+            Shatter();
+    }
+
+    #endregion Actor/Holdable
+    #region > Holdable
+
+    private static Holdable? GetBoxToPickUp(Player player) {
+        var checkPos = player.Center + ((int)player.Facing * 8f * Vector2.UnitX);
+
+        var selected = (
+            from e in player.Scene.Tracker.GetEntities<Box>()
+            let box = e as Box
+            where box.Hold.Check(player)
+            orderby (checkPos - box.AbsCenter).LengthSquared()
+            select box.Hold
+        ).FirstOrDefault();
+
+        return selected;
+    }
+
+    public static bool TryPickupAny(Player player) {
+        var checkPos = player.Center + ((int)player.Facing * 8f * Vector2.UnitX);
+
+        var selected = (
+            from e in player.Scene.Tracker.GetEntities<Box>()
+            let box = e as Box
+            where box.Hold.Check(player)
+            orderby (checkPos - box.AbsCenter).LengthSquared()
+            select box
+        ).FirstOrDefault();
+
+        if (selected != null)
+            return player.Pickup(selected.Hold);
+
+        return false;
     }
 
     private void OnPickup() {
@@ -449,6 +501,13 @@ public partial class Box : Actor {
 
         Speed = Vector2.Zero;
         AddTag(Tags.Persistent);
+
+        if (GravityLocked &&
+            holder.Get<GravityComponent>() is GravityComponent playerGrav &&
+            playerGrav.ShouldInvert is bool playerInvert &&
+            playerInvert != Inverted)
+
+            GravUpdate(playerInvert);
     }
 
     private void OnRelease(Vector2 dir) {
@@ -461,82 +520,100 @@ public partial class Box : Actor {
             NoGravityTimer = 0.05f;
 
         LastInteraction = Scene.TimeActive;
+
+        if (GravityLocked)
+            GravUpdate(Inverted);
     }
 
-    #endregion
+    #endregion Pickup
     #region > Gravity
 
-    private void OnGravityChange_Position(GravityChangeArgs args) {
-        if (!args.Changed) return;
+    private void OnPlayerChangeGravity(Entity player, GravityChangeArgs args) {
+        if (!args.Changed || Hold.Holder != player)
+            return;
 
-        Position.Y = args.NewValue == GravityType.Inverted
-                ? FullSizeCollider.AbsoluteTop
-                : FullSizeCollider.AbsoluteBottom;
+        bool playerInvert = args.NewValue == GravityType.Inverted;
+        if (GravityLocked && playerInvert != PositionInverted)
+            GravUpdate(playerInvert);
+    }
+
+    private void OnGravityChange_Position(GravityChangeArgs args) {
+        if (args.Changed) {
+            Inverted = args.NewValue == GravityType.Inverted;
+            GravUpdatePosition(args.NewValue == GravityType.Inverted);
+        }
     }
 
     private void OnGravityChange_Colliders(GravityChangeArgs args) {
-        if (!args.Changed) return;
+        if (args.Changed)
+            GravUpdateColliders(args.NewValue == GravityType.Inverted);
+    }
 
-        if (args.NewValue != GravityType.Inverted) {
-            Inverted = false;
+    private void OnGravityChange_Visuals(GravityChangeArgs args) {
+        if (args.Changed)
+            GravUpdateVisuals(args.NewValue == GravityType.Inverted);
+    }
 
+    private void GravUpdate(bool inverted) {
+        GravUpdatePosition(inverted);
+        GravUpdateColliders(inverted);
+        GravUpdateVisuals(inverted);
+    }
+
+    private void GravUpdatePosition(bool inverted) {
+        PositionInverted = inverted;
+        Position.Y = !inverted
+                   ? FullSizeCollider.AbsoluteBottom
+                   : FullSizeCollider.AbsoluteTop;
+    }
+
+    private void GravUpdateColliders(bool inverted) {
+        if (!inverted) {
             MainCollider.Position = new(-4f, -10f);
             FullSizeCollider.Position = new(-10f, -20f);
             PickupCollider.Position = new(-14f, -24f);
-            PickupColliderStacked.Position = new(-14f, -16f);
             ActivatorCollider.Position = new(-10f, -20f);
         } else {
-            Inverted = true;
-
             MainCollider.Position = new(-4f, 0f);
             FullSizeCollider.Position = new(-10f, 0f);
             PickupCollider.Position = new(-14f, -4f);
-            PickupColliderStacked.Position = new(-14f, -4f);
             ActivatorCollider.Position = new(-10f, 0f);
         }
     }
 
-    private void OnGravityChange_Visuals(GravityChangeArgs args) {
-        Sprite.Play(args.NewValue == GravityType.Inverted ? "inverted" : "normal");
-        Sprite.Position = Light.Position = FullSizeCollider.Center;
+    private void GravUpdateVisuals(bool inverted) {
+        if (!GravityLocked)
+            IndicatorSprite.Play(!inverted ? "normal" : "inverted");
+
+        BaseSprite.Position = IndicatorSprite.Position = Light.Position = FullSizeCollider.Center;
     }
 
-    #endregion
-    #region > Destruction
+    #endregion Gravity
+    #region > Shattering
+
+    public void BeginShatter() {
+        Shattering = true;
+
+        Get<GravityComponent>()?.Lock();
+        IndicatorSprite.Play("shatter");
+
+        Remove(Get<AreaSwitch.Activator>());
+
+        Surface.Collidable = false;
+    }
+
 
     public void Shatter() {
         Shattering = true;
-        var center = Position + new Vector2(0f, -10f);
-        Audio.Play("event:/game/general/wall_break_stone", center);
-
-        for (var i = 0; i < 7; i++) {
-            var pos = Calc.Round(new(Calc.Random.NextFloat(12f) + 4f, Calc.Random.NextFloat(12f) + 4f));
-            var debris = new Debris().orig_Init(TopLeft + pos, '1').BlastFrom(center);
-            debris.image.Texture = GFX.Game["debris/7"];
-            Scene.Add(debris);
-        }
+        Audio.Play("event:/game/general/wall_break_stone", AbsCenter);
+        Audio.Play("event:/game/06_reflection/fall_spike_smash", AbsCenter);
+        ShardDebris.Burst(AbsCenter, Inverted ? Calc.HexToColor("e36363") : Calc.HexToColor("6c63e3"), 10);
 
         RemoveSelf();
     }
 
-    public void Die() {
-        RemoveSelf();
-    }
-
-    #endregion
-
-    public void UpdateShake() {
-        if (Shaking) {
-            if (!Scene.OnInterval(0.04f))
-                return;
-
-            ShakeOffset = Calc.Random.ShakeVector();
-        } else {
-            ShakeOffset = Vector2.Zero;
-        }
-    }
-
-    #endregion
+    #endregion Shattering
+    #endregion Behaviour
     #region --- Rendering ---
 
     public override void Render() {
@@ -546,17 +623,26 @@ public partial class Box : Actor {
         RenderSprite();
     }
 
-    public void RenderSprite() {
-        Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset, Sprite.Origin, Sprite.Color, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
+    private void RenderSprite() {
+        RenderBase(new Vector2(0f, 0f), Color.White);
+        RenderIndicator(new Vector2(0f, 0f), Color.White);
     }
 
-    public void RenderOutline() {
-        Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset + new Vector2( 1f,  1f), Sprite.Origin, Color.Black, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
-        Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset + new Vector2( 1f, -1f), Sprite.Origin, Color.Black, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
-        Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset + new Vector2(-1f,  1f), Sprite.Origin, Color.Black, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
-        Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset + new Vector2(-1f, -1f), Sprite.Origin, Color.Black, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
+    private void RenderOutline() {
+        RenderBase(new Vector2(1f, 1f), Color.Black);
+        RenderBase(new Vector2(1f, -1f), Color.Black);
+        RenderBase(new Vector2(-1f, 1f), Color.Black);
+        RenderBase(new Vector2(-1f, -1f), Color.Black);
     }
 
-    #endregion
+    private void RenderBase(Vector2 offset, Color col) {
+        BaseSprite.Texture.Draw(BaseSprite.RenderPosition + ShakeOffset + offset, BaseSprite.Origin, col, BaseSprite.Scale, BaseSprite.Rotation, BaseSprite.Effects);
+    }
+
+    private void RenderIndicator(Vector2 offset, Color col) {
+        IndicatorSprite.Texture.Draw(IndicatorSprite.RenderPosition + ShakeOffset + offset, IndicatorSprite.Origin, col, IndicatorSprite.Scale, IndicatorSprite.Rotation, IndicatorSprite.Effects);
+    }
+
+    #endregion Rendering
 
 }

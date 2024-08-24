@@ -6,17 +6,22 @@ local Box = {}
 Box.name = "Microlith57Misc/Box"
 Box.depth = 100
 Box.texture = "objects/microlith57/misc/box/normal00"
-Box.offset = {-11, -21}
+Box.offset = {0, 10}
 Box.placements = {
     {
         name = "box",
         data = {
+            _gravityHelper = true,
             speedX = 0,
             speedY = 0,
-            tutorial = false,
-            removeIfFlag = ""
+            removeIfFlag = "",
+            gravityLocked = false,
+            tutorial = false
         }
     }
+}
+Box.ignoredFields = {
+    "_gravityHelper"
 }
 
 function Box.rectangle(room, entity)
