@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Celeste.Mod.Entities;
 using Celeste.Mod.GravityHelper;
 using Celeste.Mod.GravityHelper.Components;
+using Celeste.Mod.Microlith57Misc.Magnetism;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -70,6 +70,7 @@ public partial class Box : Actor {
     public Vector2 Speed;
     public bool PositionInverted;
     public bool Inverted;
+    public Vector2 MagneticField;
 
     public float NoGravityTimer;
     public float LastInteraction;
@@ -153,7 +154,7 @@ public partial class Box : Actor {
             OnOut = _ => UpdateShake()
         });
 
-        Add(new PlayerGravityListener() {GravityChanged = OnPlayerChangeGravity});
+        Add(new PlayerGravityListener() { GravityChanged = OnPlayerChangeGravity });
     }
 
     public Box(EntityData data, Vector2 offset)
@@ -276,6 +277,8 @@ public partial class Box : Actor {
         if (Hold.IsHeld)
             return;
 
+        MagneticField = Scene.FieldAt(AbsCenter) * (Inverted ? 10f : -10f);
+
         if (OnGround())
             UpdatePhysics_OnGround();
         else if (Hold.ShouldHaveGravity)
@@ -304,6 +307,11 @@ public partial class Box : Actor {
             target = -20f;
 
         Speed.X = Calc.Approach(Speed.X, target, 800f * Engine.DeltaTime);
+
+        // if (field.X > 10f)
+        //     Speed.X += field.X * 0.6f;
+
+        // todo: pull off floor if strong enough Y
     }
 
     private void UpdatePhysics_InAir() {
@@ -321,6 +329,8 @@ public partial class Box : Actor {
             NoGravityTimer -= Engine.DeltaTime;
         else
             Speed.Y = Calc.Approach(Speed.Y, 200f, gravityRate * Engine.DeltaTime);
+
+        Speed += MagneticField * Engine.DeltaTime;
     }
 
     private void UpdatePhysics_ClampBounds() {
@@ -641,6 +651,12 @@ public partial class Box : Actor {
 
     private void RenderIndicator(Vector2 offset, Color col) {
         IndicatorSprite.Texture.Draw(IndicatorSprite.RenderPosition + ShakeOffset + offset, IndicatorSprite.Origin, col, IndicatorSprite.Scale, IndicatorSprite.Rotation, IndicatorSprite.Effects);
+    }
+
+    public override void DebugRender(Camera camera) {
+        base.DebugRender(camera);
+
+        Draw.Line(AbsCenter, AbsCenter + MagneticField / 30f, Color.Magenta);
     }
 
     #endregion Rendering

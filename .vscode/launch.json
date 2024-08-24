@@ -10,7 +10,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/../../Celeste.dll",
-      "args": ["--whitelist", "${workspaceFolder}/.vscode/whitelist.txt"],
+      "args": ["--whitelist", "${workspaceFolder}../Microlith57MiscellaneousMechanics/.vscode/whitelist.txt"],
       "cwd": "${workspaceFolder}/../../",
       "console": "integratedTerminal",
       "stopAtEntry": false,
@@ -21,7 +21,7 @@
       },
       "justMyCode": false,
       "sourceFileMap": {
-        "Microlith57MiscellaneousMechanics/": "${workspaceFolder}/Source/",
+        "Microlith57MiscellaneousMechanics/": "${workspaceFolder}/../Microlith57MiscellaneousMechanics/Source/",
         "/home/vsts/work/1/s/": "${workspaceFolder}/../../../../everest/"
       },
       "requireExactSource": false
@@ -43,7 +43,7 @@
       },
       "justMyCode": false,
       "sourceFileMap": {
-        "Microlith57MiscellaneousMechanics/": "${workspaceFolder}/Source/",
+        "Microlith57MiscellaneousMechanics/": "${workspaceFolder}../Microlith57MiscellaneousMechanics/Source/",
         "/home/vsts/work/1/s/": "${workspaceFolder}/../../../../everest/"
       },
       "requireExactSource": false

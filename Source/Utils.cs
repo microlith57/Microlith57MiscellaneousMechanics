@@ -5,7 +5,7 @@ using Monocle;
 
 namespace Celeste.Mod.Microlith57Misc;
 
-public static class Utils {
+public static partial class Utils {
 
     public static float SoftCap(this float num, float magnitude, float softness) {
         var excess = Math.Max(Math.Abs(num) - magnitude, 0f);
