@@ -5,24 +5,7 @@ using Monocle;
 
 namespace Celeste.Mod.Microlith57Misc.Magnetism;
 
-public class Monopole(Vector2 offset, float strength) : MagnetComponent(offset, strength) {
-
-    public override Vector2 FieldAt(Vector2 position) {
-        var delta = position - AbsPosition;
-
-        if (delta == Vector2.Zero)
-            return Vector2.Zero;
-
-        return delta.SafeNormalize() * Strength / delta.LengthSquared();
-    }
-
-    public override void DebugRender(Camera camera) {
-        Draw.Circle(AbsPosition, 16f, Strength > 0 ? Color.Red : Color.Blue, 8);
-    }
-
-}
-
-[CustomEntity("Microlith57Misc/DipoleMagnet")]
+[CustomEntity("Microlith57Misc/MonopoleMagnet")]
 [Tracked]
 public class MonopoleMagnet : Entity {
 
@@ -37,10 +20,10 @@ public class MonopoleMagnet : Entity {
 
         switch (polarity) {
             case Polarity.MonopolePlus:
-                Add(new Monopole(Collider.TopCenter, strength));
+                Add(new PointMonopole(Position, strength));
                 break;
             case Polarity.MonopoleMinus:
-                Add(new Monopole(Collider.TopCenter, -strength));
+                Add(new PointMonopole(Position, -strength));
                 break;
             default:
                 throw new Exception("monopole magnets cannot be dipoles!");

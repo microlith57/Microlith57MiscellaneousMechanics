@@ -21,25 +21,24 @@ public class DipoleMagnet : Entity {
         Collider = new Hitbox(width, height);
 
         switch (polarity) {
-            case Polarity.MonopolePlus:
-            case Polarity.MonopoleMinus:
-                throw new Exception("dipole magnets cannot be monopoles!");
             case Polarity.Up:
-                Add(new MagnetPole(Collider.TopCenter, radius, strength));
-                Add(new MagnetPole(Collider.BottomCenter, radius, -strength));
+                Add(new LinearMonopole(Collider.TopLeft, Collider.TopRight, strength));
+                Add(new LinearMonopole(Collider.BottomLeft, Collider.BottomRight, -strength));
                 break;
             case Polarity.Down:
-                Add(new MagnetPole(Collider.TopCenter, radius, -strength));
-                Add(new MagnetPole(Collider.BottomCenter, radius, strength));
+                Add(new LinearMonopole(Collider.TopLeft, Collider.TopRight, -strength));
+                Add(new LinearMonopole(Collider.BottomLeft, Collider.BottomRight, strength));
                 break;
             case Polarity.Left:
-                Add(new MagnetPole(Collider.CenterLeft, radius, strength));
-                Add(new MagnetPole(Collider.CenterRight, radius, -strength));
+                Add(new LinearMonopole(Collider.TopLeft, Collider.BottomLeft, strength));
+                Add(new LinearMonopole(Collider.TopRight, Collider.BottomRight, -strength));
                 break;
             case Polarity.Right:
-                Add(new MagnetPole(Collider.CenterLeft, radius, -strength));
-                Add(new MagnetPole(Collider.CenterRight, radius, strength));
+                Add(new LinearMonopole(Collider.TopLeft, Collider.BottomLeft, -strength));
+                Add(new LinearMonopole(Collider.TopRight, Collider.BottomRight, strength));
                 break;
+            default:
+                throw new Exception("dipole magnets cannot be monopoles!");
         }
 
     }
@@ -57,11 +56,24 @@ public class DipoleMagnet : Entity {
     #endregion Init
     #region --- Rendering ---
 
+    private static float biggest_so_far = 0.001f;
+
     public override void Render() {
-        base.Render();
-        // todo
-        Draw.HollowRect(Collider, Color.White);
+        var scaling = 8f / biggest_so_far;
+
+        for (float x = Left - 32f; x <= Right + 32f; x += 8f)
+            for (float y = Top - 32f; y <= Bottom + 32f; y += 8f) {
+                var pos = new Vector2(x, y);
+                var f = Scene.FieldAt(pos);
+                var l = f.Length();
+
+                if (biggest_so_far < l)
+                    biggest_so_far = l;
+
+                Draw.Line(pos, pos + f * scaling, Color.HotPink);
+            }
     }
+
 
     #endregion Rendering
 
