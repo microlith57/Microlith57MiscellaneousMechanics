@@ -5,7 +5,7 @@ local Box = {}
 
 Box.name = "Microlith57Misc/Box"
 Box.depth = 100
-Box.texture = "objects/microlith57/misc/box/normal00"
+Box.texture = "objects/microlith57/misc/box/base"
 Box.offset = {0, 10}
 Box.placements = {
     {

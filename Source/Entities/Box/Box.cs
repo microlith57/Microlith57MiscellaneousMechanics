@@ -153,7 +153,7 @@ public partial class Box : Actor {
             OnOut = _ => UpdateShake()
         });
 
-        Add(new PlayerGravityListener() {GravityChanged = OnPlayerChangeGravity});
+        Add(new PlayerGravityListener() { GravityChanged = OnPlayerChangeGravity });
     }
 
     public Box(EntityData data, Vector2 offset)
