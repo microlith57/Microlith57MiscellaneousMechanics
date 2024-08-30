@@ -1,6 +1,7 @@
-using Celeste.Mod.GravityHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+
+using Celeste.Mod.GravityHelper.Entities;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 

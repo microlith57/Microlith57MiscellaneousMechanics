@@ -38,10 +38,12 @@ public class PlayerRecording : Recording {
     public VertexLight Light;
 
     public PlayerRecording(int hairCount) {
+        Depth = Depths.Top;
+
         Add(Gravity = new GravityComponent());
 
-        Sprite = new PlayerSprite(PlayerSpriteMode.Playback) { HairCount = hairCount };
-        Add(Hair = new PlayerHair(Sprite) { Active = false });
+        Sprite = new PlayerSprite(PlayerSpriteMode.Playback) { HairCount = hairCount, Visible = false };
+        Add(Hair = new PlayerHair(Sprite) { Active = false, Visible = false });
         Add(Sprite);
 
         Collider = new Hitbox(8f, 11f, -4f, -11f);
@@ -49,8 +51,6 @@ public class PlayerRecording : Recording {
         Add(Light = new(Color.White, 1f, 32, 64));
 
         Add(new AreaSwitch.Activator());
-
-        Depth = 1000;
     }
 
     public override void Observe(int currentFrame, Color baseColor) {
@@ -121,6 +121,7 @@ public class PlayerRecording : Recording {
             Hair.Nodes[i] = state.HairNodes[i];
 
         Light.Position = state.LightOffset;
+        Light.Color = Color.Lerp(state.Color, Color.White, 0.5f);
 
         if (silent || Scene == null)
             return;
@@ -185,11 +186,18 @@ public class PlayerRecording : Recording {
         }
     }
 
+    public override void RenderSprite() {
+        base.RenderSprite();
+
+        Hair.Render();
+        Sprite.Render();
+    }
+
     public override void Update() {
         base.Update();
 
-        if (Visible && Scene != null && Scene.OnInterval(0.1f))
-            TrailManager.Add(Position, Sprite, Hair, Sprite.Scale, Hair.Color, Depth + 1);
+        if (IsPlaying && Scene != null && Scene.OnInterval(0.1f))
+            TrailManager.Add(Position, Sprite, Hair, Sprite.Scale, Hair.Color, 1001);
     }
 
 }

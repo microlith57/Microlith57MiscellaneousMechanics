@@ -2,14 +2,13 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 using FlagSwitchGate = Celeste.Mod.MaxHelpingHand.Entities.FlagSwitchGate;
 
 using Celeste.Mod.Microlith57Misc.Entities.Recordings;
-using System.Collections;
-using Celeste.Mod.GravityHelper.Components;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 

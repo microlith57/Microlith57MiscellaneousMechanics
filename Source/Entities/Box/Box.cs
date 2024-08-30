@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Celeste.Mod.Entities;
-using Celeste.Mod.GravityHelper;
-using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
+
+using Celeste.Mod.GravityHelper;
+using Celeste.Mod.GravityHelper.Components;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 

@@ -18,11 +18,18 @@ public abstract class Recording : Entity {
     public abstract int FrameIndex { get; set; }
 
     public bool IsRecording => RecordingOf != null;
-    public bool IsPlaying => Visible;
+    public bool IsPlaying = false;
 
     public Recording() {
         Visible = false;
         Collidable = false;
+    }
+
+    public override void Added(Scene scene) {
+        base.Added(scene);
+
+        if (Scene.Tracker.GetEntity<RecordingRenderer>() == null)
+            Scene.Add(new RecordingRenderer());
     }
 
     public abstract void Observe(int currentFrame, Color baseColor);
@@ -33,6 +40,8 @@ public abstract class Recording : Entity {
         if (RecordingOf != null && RecordingOf.Scene == null)
             EndRecording();
     }
+
+    public virtual void RenderSprite() {}
 
     public void BeginRecording(Entity toRecord) {
         RecordingOf = toRecord;
@@ -46,11 +55,13 @@ public abstract class Recording : Entity {
         if (IsRecording) EndRecording();
 
         FrameIndex = FirstFrame!.Value;
+        IsPlaying = true;
         Visible = true;
         Collidable = true;
     }
 
     public virtual void EndPlayback(bool remove) {
+        IsPlaying = false;
         Visible = false;
         Collidable = false;
 

@@ -1,42 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
+
+using Celeste.Mod.GravityHelper.Components;
 
 namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
 [Tracked]
 public class BoxRecording : Recording {
-
-    [Tracked]
-    private class Renderer : Entity {
-
-        public Renderer() : base() {
-            Depth = 1001;
-            AddTag(Tags.Persistent);
-        }
-
-        public override void Render() {
-            base.Render();
-
-            var boxes = (
-                from e in Scene.Tracker.GetEntities<BoxRecording>()
-                let box = (BoxRecording)e
-                where !box.IsHeld
-                orderby box.LastInteraction
-                select box
-            ).ToList();
-
-            foreach (var box in boxes)
-                box.RenderOutline();
-
-            foreach (var box in boxes)
-                box.RenderSprite();
-        }
-
-    }
 
     public record struct State(
         Vector2 Position,
@@ -70,7 +42,7 @@ public class BoxRecording : Recording {
     public float LastInteraction;
 
     public BoxRecording(ParticleType dust) {
-        Depth = 999;
+        Depth = Depths.Top;
 
         Collider = new Hitbox(20f, 20f, -10f, -20f);
         Add(Light = new(Collider.Center, Color.White, 1f, 24, 48));
@@ -82,24 +54,18 @@ public class BoxRecording : Recording {
         Sprite.Play("normal");
         Sprite.CenterOrigin();
         Sprite.Position = Collider.Center;
+        Sprite.Visible = false;
 
         Dust = dust;
 
         Add(Surface = new BoxSurface(
             Collider,
             width: 20,
-            depth: 1011,
+            depth: 1001,
             surfaceIndex: SurfaceIndex.Glitch
         ));
         Module.OverrideDust(Surface.SurfaceTop, Dust);
         Module.OverrideDust(Surface.SurfaceBot, Dust);
-    }
-
-    public override void Awake(Scene scene) {
-        base.Awake(scene);
-
-        if (Scene.Tracker.GetEntity<Renderer>() == null)
-            Scene.Add(new Renderer());
     }
 
     public override void Observe(int currentFrame, Color baseColor) {
@@ -155,6 +121,8 @@ public class BoxRecording : Recording {
         Sprite.Position = Collider.Center;
         Sprite.Color = state.Color;
 
+        Light.Color = Color.Lerp(state.Color, Color.White, 0.5f);
+
         if (state.BonkH)
             Audio.Play("event:/new_content/char/tutorial_ghost/grab", Position);
 
@@ -162,15 +130,8 @@ public class BoxRecording : Recording {
             Audio.Play("event:/new_content/char/tutorial_ghost/land", Position);
     }
 
-    public override void Render() {
-        if (!IsHeld) return;
-
-        RenderOutline();
-        RenderSprite();
-    }
-
-    public void RenderSprite() {
-        Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset, Sprite.Origin, Sprite.Color, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
+    public override void RenderSprite() {
+        Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset, Sprite.Origin, Sprite.Color * 0.8f, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
     }
 
     public void RenderOutline() {
