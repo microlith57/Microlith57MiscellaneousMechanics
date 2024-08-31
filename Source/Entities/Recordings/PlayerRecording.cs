@@ -10,6 +10,7 @@ namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
 [Tracked]
 public class PlayerRecording : Recording {
+
     public record struct State(
         Player.ChaserState Underlying,
         bool Inverted,

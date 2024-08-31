@@ -254,10 +254,10 @@ public class RecorderTerminal : Entity {
                     rec = new PlayerRecording(p.Hair.Nodes.Count);
                 else if (entity is PlayerRecording pr)
                     rec = new PlayerRecording(pr.Hair.Nodes.Count);
-                else if (entity is Box)
-                    rec = new BoxRecording(BaseDust);
+                else if (entity is Box b)
+                    rec = new BoxRecording(BaseDust, b.GravityLocked);
                 else if (entity is BoxRecording br)
-                    rec = new BoxRecording(br.Dust);
+                    rec = new BoxRecording(br.Dust, br.GravityLocked);
                 else
                     throw new Exception("should be unreachable");
 

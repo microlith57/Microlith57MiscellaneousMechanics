@@ -11,11 +11,12 @@ namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 public class BoxRecording : Recording {
 
     public record struct State(
-        Vector2 Position,
+        Vector2 Center,
         Vector2 ShakeOffset,
         bool Inverted,
         bool Held,
         bool BonkH, bool BonkV,
+        string Animation,
         Color Color
     ) { }
 
@@ -34,26 +35,32 @@ public class BoxRecording : Recording {
     public Vector2 ShakeOffset => CurrentState.HasValue ? CurrentState.Value.ShakeOffset : Vector2.Zero;
     public bool IsHeld => CurrentState.HasValue ? CurrentState.Value.Held : false;
 
-    public Sprite Sprite;
-    public VertexLight Light;
-    public ParticleType Dust;
-    public BoxSurface Surface;
+    public readonly bool GravityLocked;
+    public readonly Sprite Sprite;
+    public readonly VertexLight Light;
+    public readonly ParticleType Dust;
+    public readonly BoxSurface Surface;
 
     public float LastInteraction;
 
-    public BoxRecording(ParticleType dust) {
+    public BoxRecording(ParticleType dust, bool gravityLocked) {
+        GravityLocked = gravityLocked;
         Depth = Depths.Top;
 
-        Collider = new Hitbox(20f, 20f, -10f, -20f);
-        Add(Light = new(Collider.Center, Color.White, 1f, 24, 48));
+        Collider = new Hitbox(20f, 20f, -10f, -10f);
+        Add(Light = new(Vector2.Zero, Color.White, 1f, 24, 48));
         Add(new AreaSwitch.Activator());
 
-        Add(Sprite = new(GFX.Game, "objects/microlith57/misc/box_playback/"));
-        Sprite.Add("normal", "normal", 1f, [0]);
-        Sprite.Add("inverted", "inverted", 1f, [0]);
+        var spritePath = "objects/microlith57/misc/box/playback";
+        if (gravityLocked)
+            spritePath += "_locked";
+
+        Add(Sprite = new(GFX.Game, spritePath));
+        Sprite.Add("normal", "", 1f, [0]);
+        Sprite.Add("inverted", "", 1f, [1]);
+        Sprite.Add("shatter", "", 1f, [2]);
         Sprite.Play("normal");
         Sprite.CenterOrigin();
-        Sprite.Position = Collider.Center;
         Sprite.Visible = false;
 
         Dust = dust;
@@ -78,11 +85,12 @@ public class BoxRecording : Recording {
             var grav = box.Get<GravityComponent>();
 
             Timeline.Add(new(
-                Position: box.Position,
+                Center: box.AbsCenter,
                 ShakeOffset: box.ShakeOffset,
                 Held: box.Hold.IsHeld,
                 Inverted: grav?.ShouldInvert ?? false,
                 BonkH: box.BonkedH, BonkV: box.BonkedV,
+                Animation: box.IndicatorSprite.CurrentAnimationID,
                 Color: baseColor
             ));
         } else if (RecordingOf is BoxRecording recording) {
@@ -112,13 +120,12 @@ public class BoxRecording : Recording {
         if (Scene != null && wasHeld && !IsHeld)
             LastInteraction = Scene.TimeActive;
 
-        Position = state.Position;
-
-        Collider.Position = state.Inverted ? new(-10f, 0f) : new(-10f, -20f);
+        Position = state.Center;
         Surface.Move();
 
-        Sprite.Play(state.Inverted ? "inverted" : "normal");
-        Sprite.Position = Collider.Center;
+        if (!string.IsNullOrEmpty(state.Animation))
+            Sprite.Play(state.Animation);
+
         Sprite.Color = state.Color;
 
         Light.Color = Color.Lerp(state.Color, Color.White, 0.5f);
