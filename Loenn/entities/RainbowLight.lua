@@ -4,6 +4,9 @@ local RainbowLight = {}
 
 RainbowLight.name = "Microlith57Misc/RainbowLight"
 RainbowLight.depth = -1000000
+RainbowLight.texture = "objects/microlith57/misc/rainbow_light"
+RainbowLight.offset = {0, -1}
+RainbowLight.color = {1, 1, 1, 0.5}
 RainbowLight.placements = {
     {
         name = "rainbowLight",
@@ -14,7 +17,7 @@ RainbowLight.placements = {
         }
     }
 }
-RainbowLightfieldInformation = {
+RainbowLight.fieldInformation = {
     startFade = {
         fieldType = "integer"
     },

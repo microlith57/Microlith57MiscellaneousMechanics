@@ -7,9 +7,6 @@ using Monocle;
 
 using Celeste.Mod.Microlith57Misc.Entities;
 using Celeste.Mod.Microlith57Misc.Entities.Recordings;
-using MonoMod.Cil;
-using Mono.Cecil.Cil;
-using System.Reflection;
 
 namespace Celeste.Mod.Microlith57Misc;
 
@@ -32,7 +29,7 @@ public class Module : EverestModule {
     }
 
     public override void Load() {
-        IL.Celeste.Player.NormalUpdate += manipPlayerNormalUpdate;
+        IL.Celeste.Player.NormalUpdate += HoldablePriorityController.manipPlayerNormalUpdate;
 
         On.Celeste.Player.Update += hookPlayerUpdate;
         On.Celeste.Player.IsRiding_JumpThru += hookPlayerIsRiding;
@@ -42,7 +39,7 @@ public class Module : EverestModule {
     }
 
     public override void Unload() {
-        IL.Celeste.Player.NormalUpdate -= manipPlayerNormalUpdate;
+        IL.Celeste.Player.NormalUpdate -= HoldablePriorityController.manipPlayerNormalUpdate;
 
         On.Celeste.Player.Update -= hookPlayerUpdate;
         On.Celeste.Player.IsRiding_JumpThru -= hookPlayerIsRiding;
@@ -88,35 +85,6 @@ public class Module : EverestModule {
         Box.P_Impact ??= new ParticleType(TheoCrystal.P_Impact) {
             Color = Color.White
         };
-    }
-
-    private static void manipPlayerNormalUpdate(ILContext il) {
-        ILCursor cursor = new(il);
-
-        cursor.GotoNext(instr => instr.MatchCallOrCallvirt<Player>("get_Holding"));
-        cursor.GotoNext(instr => instr.MatchCallOrCallvirt<Tracker>("GetComponents"));
-
-        // | foreach (var h in Scene.Tracker.GetComponents<Holdable>())
-        cursor.GotoPrev(MoveType.AfterLabel,
-                        instr => instr.MatchLdarg(0),
-                        instr => instr.MatchCallOrCallvirt<Entity>("get_Scene"),
-                        instr => instr.MatchCallOrCallvirt<Scene>("get_Tracker"));
-
-        ILLabel label_else = cursor.DefineLabel();
-
-        // + if (Box.TryPickupAny(this))
-        cursor.EmitLdarg(0);
-        cursor.Emit(OpCodes.Call, typeof(Box).GetMethod("TryPickupAny")!);
-        cursor.Emit(OpCodes.Brfalse, label_else);
-
-        // +   return 8;
-        cursor.EmitLdcI4(8);
-        cursor.Emit(OpCodes.Ret);
-
-        // + }
-        cursor.MarkLabel(label_else);
-
-        return;
     }
 
     private static void hookPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {

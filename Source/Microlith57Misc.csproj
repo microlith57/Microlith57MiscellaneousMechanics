@@ -74,6 +74,8 @@
                         string filePath = file.GetMetadata("FullPath");
                         string entryName = GetRelativePath(projectDir, filePath);
 
+                        if (filePath.Contains("unreleased")) continue;
+
                         zip.CreateEntryFromFile(filePath, entryName);
                     }
                 }

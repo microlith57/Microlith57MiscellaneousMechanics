@@ -464,37 +464,6 @@ public partial class Box : Actor {
     #endregion Actor/Holdable
     #region > Holdable
 
-    private static Holdable? GetBoxToPickUp(Player player) {
-        var checkPos = player.Center + ((int)player.Facing * 8f * Vector2.UnitX);
-
-        var selected = (
-            from e in player.Scene.Tracker.GetEntities<Box>()
-            let box = e as Box
-            where box.Hold.Check(player)
-            orderby (checkPos - box.AbsCenter).LengthSquared()
-            select box.Hold
-        ).FirstOrDefault();
-
-        return selected;
-    }
-
-    public static bool TryPickupAny(Player player) {
-        var checkPos = player.Center + ((int)player.Facing * 8f * Vector2.UnitX);
-
-        var selected = (
-            from e in player.Scene.Tracker.GetEntities<Box>()
-            let box = e as Box
-            where box.Hold.Check(player)
-            orderby (checkPos - box.AbsCenter).LengthSquared()
-            select box
-        ).FirstOrDefault();
-
-        if (selected != null)
-            return player.Pickup(selected.Hold);
-
-        return false;
-    }
-
     private void OnPickup() {
         var holder = Hold.Holder;
         holder.Speed = holder.Speed.SoftCap(80f, 0.4f);

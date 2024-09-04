@@ -1,0 +1,17 @@
+mods.Microlith57MiscellaneousMechanics.name=Microlith57's Misc. Mechanics
+
+entities.Microlith57Misc/AreaSwitch.placements.name.area_switch=Area Switch (Anything)
+entities.Microlith57Misc/AreaSwitch.placements.name.box_switch=Area Switch (Box)
+entities.Microlith57Misc/AreaSwitch.placements.name.box_destroyer=Area Switch (Destroys Box)
+
+entities.Microlith57Misc/Box.placements.name.box=Box
+
+entities.Microlith57Misc/GravitySwitch.placements.name.normal=Gravity Switch (Normal)
+entities.Microlith57Misc/GravitySwitch.placements.name.inverted=Gravity Switch (Inverted)
+entities.Microlith57Misc/GravitySwitch.placements.name.toggle=Gravity Switch (Toggle)
+
+entities.Microlith57Misc/HoldablePriorityController.placements.name.holdablePriorityController=Holdable Priority Controller
+
+entities.Microlith57Misc/RainbowLight.placements.name.rainbowLight=Rainbow Light
+
+entities.Microlith57Misc/RecorderTerminal.placements.name.normal=Recorder Terminal (Normal)
