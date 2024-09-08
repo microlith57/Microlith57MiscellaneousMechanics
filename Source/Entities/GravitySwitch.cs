@@ -23,7 +23,11 @@ public class GravitySwitch : Entity {
 
     private bool usable => true;
 
-    public GravitySwitch(EntityData data, Vector2 offset) : base(data.Position + offset) {
+    public GravitySwitch(EntityData data, Vector2 offset)
+        : base(data.Position + offset) {
+
+        Depth = Depths.Below;
+
         GravityType = data.Enum("gravityType", GravityType.Toggle);
         Cooldown = data.Float("cooldown", 1f);
 
@@ -33,8 +37,6 @@ public class GravitySwitch : Entity {
         Add(new PlayerCollider(OnPlayer));
         Add(new PlayerGravityListener(OnGravityChanged));
         Add(Sprite = GFX.SpriteBank.Create(GravityType == GravityType.Toggle ? "gravitySwitchToggle" : "gravitySwitch"));
-
-        Depth = Depths.Below;
     }
 
     public override void Added(Scene scene) {

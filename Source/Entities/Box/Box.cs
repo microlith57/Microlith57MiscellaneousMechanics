@@ -89,7 +89,9 @@ public partial class Box : Actor {
     public Box(Vector2 position,
                string removeIfFlag = "",
                bool gravityLocked = false,
-               bool isTutorial = false) : base(position) {
+               bool isTutorial = false)
+            : base(position) {
+
         Depth = -2;
         RemoveIfFlag = removeIfFlag;
         GravityLocked = gravityLocked;

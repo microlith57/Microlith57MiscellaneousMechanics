@@ -12,13 +12,18 @@ namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/RecorderTerminal")]
 [Tracked]
-public class RecorderTerminal : Entity {
+public sealed class RecorderTerminal : Entity {
 
-    public class ProgressBar(Vector2 Offset, float Width) : Component(active: false, visible: true) {
+    #region --- Util ---
+
+    public sealed class ProgressBar(Vector2 offset, float width) : Component(active: false, visible: true) {
+
         public float Progress = 0f;
         public Color Color = Color.White;
 
-        public Vector2 Position => Entity.Position + Offset;
+        public Vector2 Position => Entity.Position + offset;
+
+        public float Width = width;
         public float EffectiveWidth => (float)Math.Floor(Width * Progress);
         public float Remainder => Math.Clamp(Width * Progress - EffectiveWidth, 0f, 1f);
 
@@ -40,19 +45,22 @@ public class RecorderTerminal : Entity {
     public static readonly Color COLOR_PLAYBACK = Calc.HexToColor("88ff88");
     public static readonly Color COLOR_COOLDOWN = Calc.HexToColor("ff8800");
 
+    #endregion Util
+    #region --- State ---
+
     public Color BaseColor;
     public ParticleType BaseDust;
 
-    public Sprite ButtonAndStripe;
-    public Sprite Screen;
-    public ProgressBar Progress;
-    public TalkComponent Talker;
-    public VertexLight Light;
-    public StateMachine StateMachine;
+    public readonly Sprite ButtonAndStripe;
+    public readonly Sprite Screen;
+    public readonly ProgressBar Progress;
+    public readonly TalkComponent Talker;
+    public readonly VertexLight Light;
+    public readonly StateMachine StateMachine;
 
-    public List<Recording> Recordings = [];
+    public readonly List<Recording> Recordings = [];
 
-    public List<float> TimeStamps = [];
+    public readonly List<float> TimeStamps = [];
     public float Duration => TimeStamps.Count > 0 ? TimeStamps[^1] : 0;
     public int FrameCount => TimeStamps.Count;
 
@@ -61,14 +69,17 @@ public class RecorderTerminal : Entity {
 
     private bool gracePeriod = false;
 
-    public static int StIdle;
-    public static int StRecording;
-    public static int StPlayback;
-    public static int StCooldown;
+    public readonly int StIdle;
+    public readonly int StRecording;
+    public readonly int StPlayback;
+    public readonly int StCooldown;
 
+    #endregion State
     #region --- Init ---
 
-    public RecorderTerminal(EntityData data, Vector2 offset) : base(data.Position + offset) {
+    public RecorderTerminal(EntityData data, Vector2 offset)
+        : base(data.Position + offset) {
+
         Depth = 2000;
 
         BaseColor = data.HexColor("color", Calc.HexToColor("ac3232"));

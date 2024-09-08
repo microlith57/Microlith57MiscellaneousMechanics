@@ -14,12 +14,12 @@ namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/AreaSwitch")]
 [Tracked]
-public class AreaSwitch : Entity {
+public sealed class AreaSwitch : Entity {
 
     #region --- Util ---
 
     [Tracked]
-    public class Activator() : Component(true, false) {
+    public sealed class Activator() : Component(true, false) {
 
         public Collider? Collider;
 
@@ -65,30 +65,30 @@ public class AreaSwitch : Entity {
     }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    public static ParticleType P_FireInactive;
-    public static ParticleType P_FireActive => TouchSwitch.P_FireWhite;
-    public static ParticleType P_FireFinished => TouchSwitch.P_FireWhite;
-    public static ParticleType P_Spark;
+    internal static ParticleType P_FireInactive;
+    internal static ParticleType P_FireActive => TouchSwitch.P_FireWhite;
+    internal static ParticleType P_FireFinished => TouchSwitch.P_FireWhite;
+    internal static ParticleType P_Spark;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     #endregion
     #region --- State ---
 
-    public string Flag;
-    public bool Persistent;
-    public List<AreaSwitch> Siblings = [];
+    public readonly string Flag;
+    public readonly bool Persistent;
+    public readonly List<AreaSwitch> Siblings = [];
 
-    public ActivationMode Mode;
+    public readonly ActivationMode Mode;
 
-    public float Radius;
-    public float AwarenessRange;
-    public int NumLines;
+    public readonly float Radius;
+    public readonly float AwarenessRange;
+    public readonly int NumLines;
 
-    public SoundSource TouchSfx;
+    public readonly SoundSource TouchSfx;
 
-    public MTexture Container;
-    public Sprite Icon;
-    public int[] Frames;
+    public readonly MTexture Container;
+    public readonly Sprite Icon;
+    public readonly int[] Frames;
 
     public Color InactiveColor;
     public Color ActiveColor;
@@ -101,19 +101,19 @@ public class AreaSwitch : Entity {
     public float Ease = 0f;
     public float FinishedEase = 0f;
     public float Spin = 0f;
-    public Wiggler Wiggler;
+    public readonly Wiggler Wiggler;
     public Vector2 Pulse = Vector2.One;
 
     public float Timer = 0f;
 
-    public BloomPoint Bloom;
+    public readonly BloomPoint Bloom;
 
-    public StateMachine StateMachine;
-    public static int StInactive;
-    public static int StActive;
-    public static int StFinished;
+    public readonly StateMachine StateMachine;
+    public readonly int StInactive;
+    public readonly int StActive;
+    public readonly int StFinished;
 
-    public List<Activator> Activators = [];
+    public readonly List<Activator> Activators = [];
     public bool Activated => Activators.Count > 0;
 
     public bool Finished {
@@ -127,7 +127,8 @@ public class AreaSwitch : Entity {
     #endregion
     #region --- Init ---
 
-    public AreaSwitch(EntityData data, Vector2 offset) : base(data.Position + offset) {
+    public AreaSwitch(EntityData data, Vector2 offset)
+        : base(data.Position + offset) {
 
         Depth = 2000;
         Flag = data.Attr("flag");

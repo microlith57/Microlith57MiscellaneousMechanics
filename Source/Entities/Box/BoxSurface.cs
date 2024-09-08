@@ -38,7 +38,9 @@ public class BoxSurface : Component {
         set { collidable = value; updateCollision(); }
     }
 
-    public BoxSurface(Collider collider, int width, int depth, int surfaceIndex) : base(true, false) {
+    public BoxSurface(Collider collider, int width, int depth, int surfaceIndex)
+        : base(true, false) {
+
         Collider = collider;
 
         SurfaceTop = makeTopSurface(collider.AbsolutePosition, width, depth, surfaceIndex);

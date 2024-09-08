@@ -1,3 +1,4 @@
+using System.Reflection;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
@@ -8,17 +9,16 @@ namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/HoldablePriorityController")]
 [Tracked]
-public partial class HoldablePriorityController : Entity {
 
-    public Vector2 CheckOffset;
+public sealed class HoldablePriorityController(EntityData data, Vector2 offset) : Entity(data.Position + offset) {
 
-    public HoldablePriorityController(EntityData data, Vector2 offset) : base() {
-        CheckOffset = new(data.Float("checkOffsetX", 6f), data.Float("checkOffsetY", 0f));
-    }
+    #region --- State, Behaviour ---
 
-    public static bool AppliesTo(Player player) => player.Scene.Tracker.GetEntity<HoldablePriorityController>() != null;
+    public Vector2 CheckOffset = new(data.Float("checkOffsetX", 6f), data.Float("checkOffsetY", 0f));
 
-    public static bool TryPickupAny(Player player) {
+    private static bool AppliesTo(Player player) => player.Scene.Tracker.GetEntity<HoldablePriorityController>() != null;
+
+    private static bool TryPickupAny(Player player) {
         var controller = player.Scene.Tracker.GetEntity<HoldablePriorityController>();
         var checkPos = player.Center + ((int)player.Facing * controller.CheckOffset);
 
@@ -47,6 +47,9 @@ public partial class HoldablePriorityController : Entity {
         return false;
     }
 
+    #endregion Init, State, Behaviour
+    #region --- Hook ---
+
     internal static void manipPlayerNormalUpdate(ILContext il) {
         ILCursor cursor = new(il);
 
@@ -64,13 +67,13 @@ public partial class HoldablePriorityController : Entity {
 
         // + if (HoldablePriorityController.AppliesTo(this))
         cursor.EmitLdarg(0);
-        cursor.Emit(OpCodes.Call, typeof(HoldablePriorityController).GetMethod(nameof(AppliesTo))!);
+        cursor.Emit(OpCodes.Call, typeof(HoldablePriorityController).GetMethod(nameof(AppliesTo), BindingFlags.NonPublic | BindingFlags.Static)!);
         cursor.Emit(OpCodes.Brfalse, label_nocontroller);
         // + {
 
         // +   if (HoldablePriorityController.TryPickupAny(this))
         cursor.EmitLdarg(0);
-        cursor.Emit(OpCodes.Call, typeof(HoldablePriorityController).GetMethod(nameof(TryPickupAny))!);
+        cursor.Emit(OpCodes.Call, typeof(HoldablePriorityController).GetMethod(nameof(TryPickupAny), BindingFlags.NonPublic | BindingFlags.Static)!);
         cursor.Emit(OpCodes.Brfalse, label_didntpickup);
         // +   {
 
@@ -91,5 +94,7 @@ public partial class HoldablePriorityController : Entity {
 
         return;
     }
+
+    #endregion Hook
 
 }
