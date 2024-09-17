@@ -34,8 +34,12 @@ jobs:
       env:
         CelestePrefix: ${{ github.workspace }}/lib-stripped
 
+    - name: Unzip again (jank)
+      run: |
+        mkdir artifact
+        unzip Microlith57MiscellaneousMechanics.zip -d artifact
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Microlith57MiscellaneousMechanics
-        path: Microlith57MiscellaneousMechanics.zip
+        path: artifact/*
