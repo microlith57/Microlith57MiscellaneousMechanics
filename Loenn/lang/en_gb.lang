@@ -12,6 +12,10 @@ entities.Microlith57Misc/GravitySwitch.placements.name.toggle=Gravity Switch (To
 
 entities.Microlith57Misc/HoldablePriorityController.placements.name.holdablePriorityController=Holdable Priority Controller
 
+entities.Microlith57Misc/FreezeTimeActiveController.placements.name.freezeTimeActiveController=Freeze TimeActive Controller
+
 entities.Microlith57Misc/RainbowLight.placements.name.rainbowLight=Rainbow Light
 
 entities.Microlith57Misc/RecorderTerminal.placements.name.normal=Recorder Terminal (Normal)
+
+triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region

@@ -30,6 +30,7 @@ public class Module : EverestModule {
 
     public override void Load() {
         IL.Celeste.Player.NormalUpdate += HoldablePriorityController.manipPlayerNormalUpdate;
+        IL.Monocle.Scene.BeforeUpdate += FreezeTimeActiveController.manipSceneBeforeUpdate;
 
         On.Celeste.Player.Update += hookPlayerUpdate;
         On.Celeste.Player.IsRiding_JumpThru += hookPlayerIsRiding;
@@ -40,6 +41,7 @@ public class Module : EverestModule {
 
     public override void Unload() {
         IL.Celeste.Player.NormalUpdate -= HoldablePriorityController.manipPlayerNormalUpdate;
+        IL.Monocle.Scene.BeforeUpdate -= FreezeTimeActiveController.manipSceneBeforeUpdate;
 
         On.Celeste.Player.Update -= hookPlayerUpdate;
         On.Celeste.Player.IsRiding_JumpThru -= hookPlayerIsRiding;

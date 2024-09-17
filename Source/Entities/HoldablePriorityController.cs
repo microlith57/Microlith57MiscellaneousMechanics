@@ -9,7 +9,6 @@ namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/HoldablePriorityController")]
 [Tracked]
-
 public sealed class HoldablePriorityController(EntityData data, Vector2 offset) : Entity(data.Position + offset) {
 
     #region --- State, Behaviour ---

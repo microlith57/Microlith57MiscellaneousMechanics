@@ -52,6 +52,7 @@ public class PlayerRecording : Recording {
         Add(Light = new(Color.White, 1f, 32, 64));
 
         Add(new AreaSwitch.Activator());
+        Add(new PressureSensor.Activator());
     }
 
     public override void Observe(int currentFrame, Color baseColor) {

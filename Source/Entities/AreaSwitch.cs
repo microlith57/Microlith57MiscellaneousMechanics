@@ -74,9 +74,9 @@ public sealed class AreaSwitch : Entity {
     #endregion
     #region --- State ---
 
-    public readonly string Flag;
+    public readonly string Label;
     public readonly bool Persistent;
-    public readonly List<AreaSwitch> Siblings = [];
+    private readonly List<AreaSwitch> Siblings = [];
 
     public readonly ActivationMode Mode;
 
@@ -131,7 +131,7 @@ public sealed class AreaSwitch : Entity {
         : base(data.Position + offset) {
 
         Depth = 2000;
-        Flag = data.Attr("flag");
+        Label = data.Attr("label");
         Persistent = data.Bool("persistent");
 
         Mode = data.Enum("activationMode", ActivationMode.Anything);
@@ -196,7 +196,7 @@ public sealed class AreaSwitch : Entity {
 
     public override void Added(Scene scene) {
         if (scene is not Level level) return;
-        if (level.Session.GetFlag(Flag)) {
+        if (level.Session.GetFlag(Label)) {
             StateMachine.State = StFinished;
             Icon.Rate = 0.1f;
             Icon.Play("idle");
@@ -217,7 +217,7 @@ public sealed class AreaSwitch : Entity {
             player.Add(new Activator());
 
         foreach (AreaSwitch @switch in Scene.Tracker.GetEntities<AreaSwitch>())
-            if (Flag == @switch.Flag)
+            if (Label == @switch.Label)
                 Siblings.Add(@switch);
     }
 
@@ -327,13 +327,13 @@ public sealed class AreaSwitch : Entity {
         if (Scene is not Level level) return;
 
         if (Persistent)
-            level.Session.SetFlag(Flag);
+            level.Session.SetFlag(Label);
 
         foreach (var s in Siblings)
             s.Finished = true;
 
         foreach (FlagSwitchGate gate in level.Tracker.GetEntities<FlagSwitchGate>())
-            if (gate.Flag == Flag)
+            if (gate.Flag == Label)
                 gate.Trigger();
 
         Add(new SoundSource("event:/game/general/touchswitch_last_cutoff"));

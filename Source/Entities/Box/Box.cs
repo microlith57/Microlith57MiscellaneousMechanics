@@ -140,6 +140,8 @@ public partial class Box : Actor {
         ActivatorCollider.Added(this);
         Add(new AreaSwitch.Activator() { Collider = ActivatorCollider });
 
+        Add(new PressureSensor.Activator());
+
         Add(Surface = new BoxSurface(
             FullSizeCollider,
             width: 20,

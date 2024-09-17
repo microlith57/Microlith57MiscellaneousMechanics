@@ -9,7 +9,7 @@ AreaSwitch.placements = {
     {
         name = "area_switch",
         data = {
-            flag = "area_switch",
+            label = "area_switch",
             persistent = "false",
             activationMode = "Anything",
             container = "objects/touchswitch/container",
@@ -28,7 +28,7 @@ AreaSwitch.placements = {
     {
         name = "box_switch",
         data = {
-            flag = "area_switch",
+            label = "area_switch",
             persistent = "false",
             activationMode = "BoxOnly",
             container = "objects/microlith57/misc/touchswitch/container_box",
@@ -47,7 +47,7 @@ AreaSwitch.placements = {
     {
         name = "box_destroyer",
         data = {
-            flag = "area_switch",
+            label = "area_switch",
             persistent = "false",
             activationMode = "DestroysBox",
             container = "objects/microlith57/misc/touchswitch/container_cross",

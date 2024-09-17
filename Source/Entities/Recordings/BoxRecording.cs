@@ -50,6 +50,7 @@ public class BoxRecording : Recording {
         Collider = new Hitbox(20f, 20f, -10f, -10f);
         Add(Light = new(Vector2.Zero, Color.White, 1f, 24, 48));
         Add(new AreaSwitch.Activator());
+        Add(new PressureSensor.Activator());
 
         var spritePath = "objects/microlith57/misc/box/playback";
         if (gravityLocked)
