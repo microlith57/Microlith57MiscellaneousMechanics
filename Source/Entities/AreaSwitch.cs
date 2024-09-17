@@ -13,6 +13,15 @@ using Celeste.Mod.Microlith57Misc.Entities.Recordings;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/AreaSwitch")]
+internal static class AreaSwitchFactory {
+    public static AreaSwitch? Load(Level _, LevelData __, Vector2 offset, EntityData data) {
+        if (!Utils.CheckHelpingHand("Area Switches"))
+            return null;
+
+        return new AreaSwitch(data, offset);
+    }
+}
+
 [Tracked]
 public sealed class AreaSwitch : Entity {
 

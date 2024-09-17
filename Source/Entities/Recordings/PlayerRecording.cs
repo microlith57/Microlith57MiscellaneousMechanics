@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-using Celeste.Mod.GravityHelper.Components;
-using GravityType = Celeste.Mod.GravityHelper.GravityType;
-
 namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
 [Tracked]
@@ -33,7 +30,6 @@ public class PlayerRecording : Recording {
 
     public State CurrentState => Timeline[FrameIndex - FrameOffset];
 
-    public GravityComponent Gravity;
     public PlayerSprite Sprite;
     public PlayerHair Hair;
     public VertexLight Light;
@@ -41,7 +37,7 @@ public class PlayerRecording : Recording {
     public PlayerRecording(int hairCount) {
         Depth = Depths.Top;
 
-        Add(Gravity = new GravityComponent());
+        if (Utils.GravityComponentIfExists() is Component c) Add(c);
 
         Sprite = new PlayerSprite(PlayerSpriteMode.Playback) { HairCount = hairCount, Visible = false };
         Add(Hair = new PlayerHair(Sprite) { Active = false, Visible = false });
@@ -62,11 +58,9 @@ public class PlayerRecording : Recording {
             throw new Exception("tried to record a player with non-contiguous lifetime");
 
         if (RecordingOf is Player player) {
-            var grav = player.Get<GravityComponent>();
-
             Timeline.Add(new(
                 Underlying: player.ChaserStates[^1],
-                Inverted: grav?.ShouldInvert ?? false,
+                Inverted: player.ShouldInvert(),
                 LightOffset: player.Light.Position,
                 Color: baseColor,
                 Collider: new(
@@ -108,7 +102,7 @@ public class PlayerRecording : Recording {
         if (anim != null && anim != Sprite.CurrentAnimationID && Sprite.Has(anim))
             Sprite.Play(anim, restart: true);
 
-        Gravity.SetGravity(state.Inverted ? GravityType.Inverted : GravityType.Normal);
+        this.SetInverted(state.Inverted, "Player Recording Inversion");
 
         Sprite.Scale = state.Underlying.Scale;
         if (state.Inverted)

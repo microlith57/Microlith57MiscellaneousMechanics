@@ -11,6 +11,15 @@ using Celeste.Mod.GravityHelper.Components;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/Box")]
+internal static class BoxFactory {
+    public static Box? Load(Level _, LevelData __, Vector2 offset, EntityData data) {
+        if (!Utils.CheckGravityHelper("Boxes"))
+            return null;
+
+        return new Box(data, offset);
+    }
+}
+
 [Tracked]
 public partial class Box : Actor {
 

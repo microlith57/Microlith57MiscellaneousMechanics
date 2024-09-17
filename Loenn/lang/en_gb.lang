@@ -1,4 +1,23 @@
+# public
+
 mods.Microlith57MiscellaneousMechanics.name=Microlith57's Misc. Mechanics
+
+entities.Microlith57Misc/HoldablePriorityController.placements.name.holdablePriorityController=Holdable Priority Controller
+entities.Microlith57Misc/HoldablePriorityController.placements.description.holdablePriorityController=When the player could pick up multiple holdables, this prefers the closest one to the player's hand position.
+entities.Microlith57Misc/HoldablePriorityController.attributes.description.checkOffsetX=Position to most prefer holdables at, relative to the player's center, in the current facing direction
+entities.Microlith57Misc/HoldablePriorityController.attributes.description.checkOffsetY=Position to most prefer holdables at, relative to the player's center, in the current facing direction
+
+entities.Microlith57Misc/FreezeTimeActiveController.placements.name.freezeTimeActiveController=Freeze TimeActive Controller
+entities.Microlith57Misc/FreezeTimeActiveController.placements.description.freezeTimeActiveController=Freezes the Scene.TimeActive field; has some wacky effects.
+
+entities.Microlith57Misc/RainbowLight.placements.name.rainbowLight=Rainbow Light
+
+triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region
+triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.minForce=How much force to exert (px/sec^2) when the holdable is just touching the surface.
+triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.maxForce=How much force to exert (px/sec^2) when the holdable is fully submerged.
+triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.damping=Coefficient controlling how much motion is slowed in the region; acts like viscosity.
+
+# nonpublic
 
 entities.Microlith57Misc/AreaSwitch.placements.name.area_switch=Area Switch (Anything)
 entities.Microlith57Misc/AreaSwitch.placements.name.box_switch=Area Switch (Box)
@@ -10,12 +29,4 @@ entities.Microlith57Misc/GravitySwitch.placements.name.normal=Gravity Switch (No
 entities.Microlith57Misc/GravitySwitch.placements.name.inverted=Gravity Switch (Inverted)
 entities.Microlith57Misc/GravitySwitch.placements.name.toggle=Gravity Switch (Toggle)
 
-entities.Microlith57Misc/HoldablePriorityController.placements.name.holdablePriorityController=Holdable Priority Controller
-
-entities.Microlith57Misc/FreezeTimeActiveController.placements.name.freezeTimeActiveController=Freeze TimeActive Controller
-
-entities.Microlith57Misc/RainbowLight.placements.name.rainbowLight=Rainbow Light
-
 entities.Microlith57Misc/RecorderTerminal.placements.name.normal=Recorder Terminal (Normal)
-
-triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region

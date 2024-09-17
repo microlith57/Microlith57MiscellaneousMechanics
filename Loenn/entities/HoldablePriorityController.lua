@@ -9,6 +9,8 @@ HoldablePriorityController.placements = {
     {
         name = "holdablePriorityController",
         data = {
+            checkOffsetX=6,
+            checkOffsetY=0
         }
     }
 }

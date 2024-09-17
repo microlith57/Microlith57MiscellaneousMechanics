@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
 
-using Celeste.Mod.GravityHelper.Components;
-
 namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
 [Tracked]
@@ -83,13 +81,11 @@ public class BoxRecording : Recording {
             throw new Exception("tried to record a box with non-contiguous lifetime");
 
         if (RecordingOf is Box box) {
-            var grav = box.Get<GravityComponent>();
-
             Timeline.Add(new(
                 Center: box.AbsCenter,
                 ShakeOffset: box.ShakeOffset,
                 Held: box.Hold.IsHeld,
-                Inverted: grav?.ShouldInvert ?? false,
+                Inverted: box.ShouldInvert(),
                 BonkH: box.BonkedH, BonkV: box.BonkedV,
                 Animation: box.IndicatorSprite.CurrentAnimationID,
                 Color: baseColor

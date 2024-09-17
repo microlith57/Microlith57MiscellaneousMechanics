@@ -1,6 +1,5 @@
 using System;
 using Celeste.Mod.Entities;
-using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -20,6 +19,8 @@ public sealed class HoldableBouyancyRegion : Entity {
         MinForce = data.Float("minForce", 0f);
         MaxForce = data.Float("maxForce", 300f);
         Damping = data.Float("damping", 1f);
+
+        Depth = Depths.Top;
     }
 
     public override void Update() {
@@ -36,7 +37,7 @@ public sealed class HoldableBouyancyRegion : Entity {
     private Vector2 Affect(Entity e, Vector2 speed) {
         float force;
 
-        if (e.Get<GravityComponent>()?.ShouldInvert != true) {
+        if (!e.ShouldInvert()) {
             var bottom = e.Bottom + (e is Actor a ? a.ExactPosition.Y - a.Position.Y : 0f);
             force = Calc.ClampedMap(bottom, Top, Top + e.Height, MinForce, MaxForce);
         } else {
