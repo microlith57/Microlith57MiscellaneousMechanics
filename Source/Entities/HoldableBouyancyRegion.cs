@@ -30,6 +30,11 @@ public sealed class HoldableBouyancyRegion : Entity {
             if (!hold.IsHeld && hold.Entity is Entity e && e.CollideCheck(this))
                 hold.SetSpeed(Affect(e, hold.GetSpeed()));
 
+        // TODO: remove once eeveehelper has proper speedsetters (if possible)
+        foreach ((var container, var hold, var speedSetter) in Scene.Tracker.GetEeveeHelperHoldableContainers())
+            if (!hold.IsHeld && hold.SpeedSetter == null && container.CollideCheck(this))
+                speedSetter(Affect(container, hold.GetSpeed()));
+
         if (AlsoAffectPlayer && Scene.Tracker.GetEntity<Player>() is Player p && p.CollideCheck(this))
             p.Speed = Affect(p, p.Speed);
     }

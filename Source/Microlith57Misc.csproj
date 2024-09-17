@@ -30,6 +30,7 @@
 
         <Reference Include="lib\MaxHelpingHand.dll" Private="false" />
         <Reference Include="lib\GravityHelper.dll" Private="false" />
+        <Reference Include="lib\EeveeHelper.dll" Private="false" />
     </ItemGroup>
 
     <Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb" Outputs="..\Code\bin\$(AssemblyName).dll;..\Code\bin\$(AssemblyName).pdb">

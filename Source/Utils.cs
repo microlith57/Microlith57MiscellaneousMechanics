@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Celeste.Mod.EeveeHelper.Entities;
 using Celeste.Mod.GravityHelper;
 using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
@@ -10,7 +12,7 @@ namespace Celeste.Mod.Microlith57Misc;
 internal static class Utils {
 
     private static bool checkedGravityHelper;
-    private static bool GravityHelperLoaded {
+    public static bool GravityHelperLoaded {
         get {
             if (checkedGravityHelper || Everest.Loader.DependencyLoaded(new EverestModuleMetadata { Name = "GravityHelper", Version = new Version(1, 0, 0) })) {
                 checkedGravityHelper = true;
@@ -47,7 +49,7 @@ internal static class Utils {
     public static Component? GravityComponentIfExists() => GravityHelperLoaded ? GravityHelperContainmentChamber.makeGravityComponent() : null;
 
     private static bool checkedHelpingHand;
-    private static bool HelpingHandLoaded {
+    public static bool HelpingHandLoaded {
         get {
             if (checkedHelpingHand || Everest.Loader.DependencyLoaded(new EverestModuleMetadata { Name = "MaxHelpingHand", Version = new Version(1, 0, 0) })) {
                 checkedHelpingHand = true;
@@ -68,6 +70,21 @@ internal static class Utils {
         return false;
     }
 
+    private static bool checkedEeveeHelper;
+    public static bool EeveeHelperLoaded {
+        get {
+            if (checkedEeveeHelper || Everest.Loader.DependencyLoaded(new EverestModuleMetadata { Name = "EeveeHelper", Version = new Version(1, 0, 0) })) {
+                checkedEeveeHelper = true;
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public static IEnumerable<(Entity container, Holdable hold, Action<Vector2> speedSetter)> GetEeveeHelperHoldableContainers(this Tracker tracker) => EeveeHelperLoaded ? EeveeHelperContainmentChamber.getHoldableContainers(tracker) : [];
+
+    // public static bool IsHoldableContainer(this Holdable hold) => EeveeHelperLoaded && EeveeHelperContainmentChamber.isHoldableContainer(hold);
+
     public static float SoftCap(this float num, float magnitude, float softness) {
         var excess = Math.Max(Math.Abs(num) - magnitude, 0f);
         return num - Math.Sign(num) * excess * (1f - softness);
@@ -85,5 +102,17 @@ internal static class GravityHelperContainmentChamber {
     internal static bool shouldInvert(Entity e) => e.Get<GravityComponent>() is GravityComponent g && g.ShouldInvert;
     internal static void setInverted(Entity e, bool inverted) => e.Get<GravityComponent>()!.SetGravity(inverted ? GravityType.Inverted : GravityType.Normal);
     internal static Component makeGravityComponent() => new GravityComponent();
+
+}
+
+internal static class EeveeHelperContainmentChamber {
+
+    internal static IEnumerable<(Entity container, Holdable hold, Action<Vector2> speedSetter)> getHoldableContainers(Tracker tracker)
+        => (
+            from e in tracker.GetEntities<HoldableContainer>()
+            let c = e as HoldableContainer
+            where c != null
+            select ((Entity)c, c.Hold, (Action<Vector2>)((speed) => c.Speed = speed))
+        );
 
 }
