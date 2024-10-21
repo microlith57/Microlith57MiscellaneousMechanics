@@ -3,6 +3,7 @@ using Monocle;
 using Celeste.Mod.Entities;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
+using System.Linq;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -13,11 +14,15 @@ public sealed class FreezeTimeActiveController(EntityData data, Vector2 offset) 
     #region --- Behaviour ---
 
     public string Flag = data.Attr("flag", "freezeTimeActive");
+    public bool InvertFlag = data.Bool("invertFlag");
 
     private static bool AppliesTo(Scene scene)
         => scene is Level level
-        && level.Tracker.GetEntity<FreezeTimeActiveController>() is { } ctrl
-        && level.Session.GetFlag(ctrl.Flag);
+        && level.Tracker.GetEntities<FreezeTimeActiveController>()
+            .Any(c => c is FreezeTimeActiveController ctrl && (
+                    string.IsNullOrEmpty(ctrl.Flag) ||
+                    (level.Session.GetFlag(ctrl.Flag) ^ ctrl.InvertFlag)
+                ));
 
     #endregion Behaviour
     #region --- Hook ---

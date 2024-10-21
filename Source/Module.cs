@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -90,7 +89,7 @@ public class Module : EverestModule {
     }
 
     private static void hookPlayerUpdate(On.Celeste.Player.orig_Update orig, Player self) {
-        bool invert = self.Get<GravityComponent>()?.ShouldInvert ?? false;
+        bool invert = self.ShouldInvert();
 
         Dictionary<BoxSurface, (bool, bool, bool)> boxesWithOrigCollidableStates = [];
         foreach (BoxSurface boxSurface in self.Scene.Tracker.GetComponents<BoxSurface>()) {
@@ -116,7 +115,7 @@ public class Module : EverestModule {
     }
 
     private static bool hookPlayerIsRiding(On.Celeste.Player.orig_IsRiding_JumpThru orig, Player self, JumpThru jumpthru) {
-        bool invert = self.Get<GravityComponent>()?.ShouldInvert ?? false;
+        bool invert = self.ShouldInvert();
 
         if (self.Holding?.Entity is Box box && (jumpthru == box.Surface.SurfaceTop || jumpthru == box.Surface.SurfaceBot))
             return false;
@@ -132,7 +131,7 @@ public class Module : EverestModule {
 
     private static ParticleType hookDustParticle(On.Celeste.Player.orig_DustParticleFromSurfaceIndex orig, Player self, int index) {
         if (index == SurfaceIndex.Glitch) {
-            bool invert = self.Get<GravityComponent>()?.ShouldInvert ?? false;
+            bool invert = self.ShouldInvert();
             var pos = self.Position + (invert ? -Vector2.UnitY : Vector2.UnitY);
             var platform = SurfaceIndex.GetPlatformByPriority(self.CollideAll<Platform>(pos));
 

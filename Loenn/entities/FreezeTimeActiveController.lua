@@ -9,7 +9,8 @@ FreezeTimeActiveController.placements = {
     {
         name = "freezeTimeActiveController",
         data = {
-            flag = "freezeTimeActive"
+            flag = "freezeTimeActive",
+            invertFlag = false
         }
     }
 }

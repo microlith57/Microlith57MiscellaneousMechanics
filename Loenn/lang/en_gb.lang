@@ -9,6 +9,26 @@ entities.Microlith57Misc/HoldablePriorityController.attributes.description.check
 
 entities.Microlith57Misc/FreezeTimeActiveController.placements.name.freezeTimeActiveController=Freeze TimeActive Controller
 entities.Microlith57Misc/FreezeTimeActiveController.placements.description.freezeTimeActiveController=Freezes the Scene.TimeActive field; has some wacky effects.
+entities.Microlith57Misc/FreezeTimeActiveController.attributes.description.flag=If present, freeze only when the flag is set.
+
+entities.Microlith57Misc/LevelTimerToCounterController.placements.name.levelTimerSecondsToCounterController=Level Timer to Counter (Seconds)
+entities.Microlith57Misc/LevelTimerToCounterController.placements.name.levelTimerFramesToCounterController=Level Timer to Counter (Frames)
+entities.Microlith57Misc/LevelTimerToCounterController.placements.name.levelTimerMillisecondsToCounterController=Level Timer to Counter (Milliseconds)
+entities.Microlith57Misc/LevelTimerToCounterController.placements.description.levelTimerSecondsToCounterController=Puts the amount of time playing the chapter to a counter.
+entities.Microlith57Misc/LevelTimerToCounterController.placements.description.levelTimerFramesToCounterController=Puts the amount of time playing the chapter to a counter.
+entities.Microlith57Misc/LevelTimerToCounterController.placements.description.levelTimerMillisecondsToCounterController=Puts the amount of time playing the chapter to a counter.
+entities.Microlith57Misc/LevelTimerToCounterController.attributes.description.flag=If present, only update the counter if the flag is set.
+entities.Microlith57Misc/LevelTimerToCounterController.attributes.description.wrapMode=What to do if the number is too big for the maximum counter value.\nNoWrapping: Stop at the maximum value;\nPositive: wrap around the positive values;\nFullRange: wrap around negative and positive values.
+entities.Microlith57Misc/LevelTimerToCounterController.attributes.description.precisionMode=What unit to use. FramesProbably is 60ths of a second.
+
+entities.Microlith57Misc/LockPauseController.placements.name.lockRetryController=Lock Pause Controller (Disable Retry)
+entities.Microlith57Misc/LockPauseController.placements.name.lockSaveQuitController=Lock Pause Controller (Disable Save+Quit)
+entities.Microlith57Misc/LockPauseController.placements.name.lockPauseController=Lock Pause Controller (Disable Menu)
+entities.Microlith57Misc/LockPauseController.attributes.description.flag=If present, only lock if the flag is set.
+entities.Microlith57Misc/LockPauseController.attributes.description.mode=What to lock.\nLockRetry: Grey out the Retry button and prevent the retry keybind;\nLockSaveQuit: Grey out the Save and Quit button;\nLockRetryAndSaveQuit: Grey out both the Retry and Save and Quit buttons;\nLockPauseMenu: Prevent opening the pause menu entirely.
+entities.Microlith57Misc/LockPauseController.attributes.description.unlockWhenControllerRemoved=Whether to reenable the locked features when the controller is removed (eg. when transitioning into a different room)
+
+entities.Microlith57Misc/PlayerGroundedFlagController.placements.name.playerGroundedFlagController=Flag if Player Grounded Controller
 
 entities.Microlith57Misc/RainbowLight.placements.name.rainbowLight=Rainbow Light
 
@@ -16,6 +36,7 @@ triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancy
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.minForce=How much force to exert (px/sec^2) when the holdable is just touching the surface.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.maxForce=How much force to exert (px/sec^2) when the holdable is fully submerged.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.damping=Coefficient controlling how much motion is slowed in the region; acts like viscosity.
+triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.flag=If present, apply bouyancy only when the flag is set.
 
 # nonpublic
 

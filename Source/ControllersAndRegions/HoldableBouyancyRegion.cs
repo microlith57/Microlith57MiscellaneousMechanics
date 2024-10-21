@@ -6,14 +6,19 @@ using Monocle;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/HoldableBouyancyRegion")]
-[Tracked]
 public sealed class HoldableBouyancyRegion : Entity {
+
+    public string Flag;
+    public bool InvertFlag;
 
     public bool AlsoAffectPlayer;
     public float MinForce, MaxForce, Damping;
 
     public HoldableBouyancyRegion(EntityData data, Vector2 offset) : base(data.Position + offset) {
         Collider = new Hitbox(data.Width, data.Height);
+
+        Flag = data.Attr("");
+        InvertFlag = data.Bool("invertFlag");
 
         AlsoAffectPlayer = data.Bool("alsoAffectPlayer", false);
         MinForce = data.Float("minForce", 0f);
@@ -25,6 +30,9 @@ public sealed class HoldableBouyancyRegion : Entity {
 
     public override void Update() {
         base.Update();
+
+        if (!string.IsNullOrEmpty(Flag) && !((Scene as Level)!.Session.GetFlag(Flag) ^ InvertFlag))
+            return;
 
         foreach (Holdable hold in Scene.Tracker.GetComponents<Holdable>())
             if (!hold.IsHeld && hold.Entity is Entity e && e.CollideCheck(this))

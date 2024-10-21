@@ -23,6 +23,12 @@ public sealed class RainbowLight : Entity {
                data.Int("startFade", 16),
                data.Int("endFade", 32)) { }
 
+    public override void Awake(Scene scene) {
+        base.Awake(scene);
+
+        Light.Color = GetHue(Center);
+    }
+
     public override void Update() {
         base.Update();
 
