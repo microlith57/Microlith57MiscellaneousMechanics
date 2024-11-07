@@ -30,6 +30,8 @@ entities.Microlith57Misc/LockPauseController.attributes.description.unlockWhenCo
 
 entities.Microlith57Misc/PlayerGroundedFlagController.placements.name.playerGroundedFlagController=Flag if Player Grounded Controller
 
+entities.Microlith57Misc/PlayerFacingFlagController.placements.name.playerFacingFlagController=Player Facing to Flags Controller
+
 entities.Microlith57Misc/RainbowLight.placements.name.rainbowLight=Rainbow Light
 
 triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region
