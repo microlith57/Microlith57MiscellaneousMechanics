@@ -23,29 +23,29 @@ public sealed class LockPauseController(EntityData data, Vector2 offset) : Entit
     public LockMode Mode = data.Enum<LockMode>("mode");
     public bool UnlockOnControllerRemoved = data.Bool("unlockWhenControllerRemoved", true);
 
-    private Level Level => (Scene as Level)!;
-
     public override void Update() {
         base.Update();
 
-        Set(Level.Session.GetFlag(Flag) ^ InvertFlag);
+        if (Scene is not Level level) return;
+
+        Set(level, level.Session.GetFlag(Flag) ^ InvertFlag);
     }
 
     public override void Removed(Scene scene) {
         base.Removed(scene);
 
-        if (UnlockOnControllerRemoved) Set(false);
+        if (scene is Level level && UnlockOnControllerRemoved) Set(level, false);
     }
 
-    private void Set(bool locked) {
+    private void Set(Level level, bool locked) {
         if ((Mode & LockMode.LockRetry) != LockMode.Nothing)
-            Level.CanRetry = !locked;
+            level.CanRetry = !locked;
 
         if ((Mode & LockMode.LockSaveQuit) != LockMode.Nothing)
-            Level.SaveQuitDisabled = locked;
+            level.SaveQuitDisabled = locked;
 
         if ((Mode & LockMode.LockPauseMenu) != LockMode.Nothing)
-            Level.PauseLock = locked;
+            level.PauseLock = locked;
     }
 
 }
