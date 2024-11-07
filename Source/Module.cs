@@ -15,15 +15,16 @@ public class Module : EverestModule {
     public static Module Instance { get; private set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
+    public const string LOGGING_TAG = "Microlith57Misc";
 
     public Module() {
         Instance = this;
 #if DEBUG
         // debug builds use verbose logging
-        Logger.SetLogLevel(nameof(Module), LogLevel.Verbose);
+        Logger.SetLogLevel(LOGGING_TAG, LogLevel.Verbose);
 #else
         // release builds use info logging to reduce spam in log files
-        Logger.SetLogLevel(nameof(Module), LogLevel.Info);
+        Logger.SetLogLevel(LOGGING_TAG, LogLevel.Info);
 #endif
     }
 
