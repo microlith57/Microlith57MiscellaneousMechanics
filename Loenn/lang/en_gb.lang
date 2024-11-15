@@ -40,6 +40,12 @@ triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.maxForce=
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.damping=Coefficient controlling how much motion is slowed in the region; acts like viscosity.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.flag=If present, apply bouyancy only when the flag is set.
 
+triggers.Microlith57Misc/SetFacingTrigger.placements.name.setFacingTrigger=Set Facing Trigger
+triggers.Microlith57Misc/SetFacingTrigger.attributes.description.direction=Direction to make the player face.
+triggers.Microlith57Misc/SetFacingTrigger.attributes.description.flag=If present, only make the player face that direction if the flag is set.
+triggers.Microlith57Misc/SetFacingTrigger.attributes.description.invertIfUnset=If the flag is unset, make the player face the other way.
+triggers.Microlith57Misc/SetFacingTrigger.attributes.description.continuous=Continue to set the player's facing direction the whole time they're in the trigger.
+
 # nonpublic
 
 entities.Microlith57Misc/AreaSwitch.placements.name.area_switch=Area Switch (Anything)
