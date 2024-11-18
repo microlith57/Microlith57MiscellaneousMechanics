@@ -115,7 +115,7 @@ public partial class Box : Actor {
         BaseSprite.Position = FullSizeCollider.Center;
 
         var spritePath = "objects/microlith57/misc/box/indicator";
-        if (gravityLocked)
+        if (GravityLocked)
             spritePath += "_locked";
 
         Add(IndicatorSprite = new(GFX.Game, spritePath));
