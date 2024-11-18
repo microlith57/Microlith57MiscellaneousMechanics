@@ -3,10 +3,17 @@ using Monocle;
 using Celeste.Mod.Entities;
 using System;
 
+using Celeste.Mod.Microlith57Misc.Components;
+
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity("Microlith57Misc/LockPauseController")]
-public sealed class LockPauseController(EntityData data, Vector2 offset) : Entity(data.Position + offset) {
+[CustomEntity(
+    "Microlith57Misc/LockPauseController=CreateFlag",
+    "Microlith57Misc/LockPauseController_Expression=CreateExpr"
+)]
+public sealed class LockPauseController : Entity {
+
+    #region --- State ---
 
     [Flags]
     public enum LockMode : byte {
@@ -17,24 +24,59 @@ public sealed class LockPauseController(EntityData data, Vector2 offset) : Entit
         LockPauseMenu = 1 << 2
     }
 
-    public string Flag = data.Attr("flag", "lockPause");
-    public bool InvertFlag = data.Bool("invertFlag");
+    private readonly ConditionSource Condition;
+    public bool LockActive => Condition.Value;
 
-    public LockMode Mode = data.Enum<LockMode>("mode");
-    public bool UnlockOnControllerRemoved = data.Bool("unlockWhenControllerRemoved", true);
+    public readonly LockMode Mode;
+    public readonly bool UnlockWhenControllerRemoved;
+
+    #endregion State
+    #region --- Init ---
+
+    public LockPauseController(
+        Vector2 position,
+        ConditionSource condition,
+        LockMode mode,
+        bool unlockWhenControllerRemoved
+    ) : base(position) {
+
+        Add(Condition = condition);
+        Mode = mode;
+        UnlockWhenControllerRemoved = unlockWhenControllerRemoved;
+    }
+
+    private static LockPauseController Create(EntityData data, Vector2 offset, ConditionSource condition)
+        => new(
+            data.Position + offset,
+            condition,
+            data.Enum<LockMode>("mode"),
+            data.Bool("unlockWhenControllerRemoved", true)
+        );
+
+    public static LockPauseController CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
+        => Create(data, offset, new ConditionSource.FlagSource(
+            data.Attr("flag", "lockPause"),
+            data.Bool("invertFlag")
+        ) { Default = true });
+
+    public static LockPauseController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
+        => Create(data, offset, new ConditionSource.ExpressionSource(
+            data.Attr("expression", "lockPause")
+        ) { Default = true });
+
+    #endregion Init
+    #region --- Behaviour ---
 
     public override void Update() {
         base.Update();
 
-        if (Scene is not Level level) return;
-
-        Set(level, level.Session.GetFlag(Flag) ^ InvertFlag);
+        if (Scene is Level level) Set(level, LockActive);
     }
 
     public override void Removed(Scene scene) {
         base.Removed(scene);
 
-        if (scene is Level level && UnlockOnControllerRemoved) Set(level, false);
+        if (scene is Level level && UnlockWhenControllerRemoved) Set(level, false);
     }
 
     private void Set(Level level, bool locked) {
@@ -47,5 +89,7 @@ public sealed class LockPauseController(EntityData data, Vector2 offset) : Entit
         if ((Mode & LockMode.LockPauseMenu) != LockMode.Nothing)
             level.PauseLock = locked;
     }
+
+    #endregion Behaviour
 
 }

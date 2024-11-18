@@ -1,16 +1,70 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 
+using Celeste.Mod.Microlith57Misc.Components;
+using Monocle;
+
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity("Microlith57Misc/SetFacingTrigger")]
-public sealed class SetFacingTrigger(EntityData data, Vector2 offset) : Trigger(data, offset) {
+[CustomEntity(
+    "Microlith57Misc/SetFacingTrigger=CreateFlag",
+    "Microlith57Misc/SetFacingTrigger_Expression=CreateExpr"
+)]
+public sealed class SetFacingTrigger : Trigger {
 
-    public Facings Facing = data.Enum<Facings>("direction");
-    public string Flag = data.Attr("flag");
-    public bool InvertIfUnset = data.Bool("invertIfUnset");
+    #region --- State ---
 
-    public bool Continuous = data.Bool("continuous");
+    private readonly ConditionSource Condition;
+    public bool SetFacingActive => Condition.Value;
+
+    public Facings Facing;
+    public bool InvertIfUnset;
+    public bool Continuous;
+
+    #endregion State
+    #region --- Init ---
+
+    public SetFacingTrigger(
+        EntityData data, Vector2 offset,
+        ConditionSource condition,
+        Facings facing,
+        bool invertIfUnset,
+        bool continuous
+    ) : base(data, offset) {
+
+        Add(Condition = condition);
+        Facing = facing;
+        InvertIfUnset = invertIfUnset;
+        Continuous = continuous;
+    }
+
+    private static SetFacingTrigger Create(EntityData data, Vector2 offset, ConditionSource condition)
+        => new(
+            data, offset,
+            condition,
+            data.Enum<Facings>("direction"),
+            data.Bool("invertIfUnset"),
+            data.Bool("continuous")
+        );
+
+    public static SetFacingTrigger CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
+        => Create(data, offset, new ConditionSource.FlagSource(
+            data.Attr("flag", ""),
+            data.Bool("invertFlag")
+        ) { Default = true });
+
+    public static SetFacingTrigger CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
+        => Create(data, offset, new ConditionSource.ExpressionSource(
+            data.Attr("expression", "")
+        ) { Default = true });
+
+    public override void Added(Scene scene) {
+        base.Added(scene);
+        Add(Condition);
+    }
+
+    #endregion Init
+    #region --- Behaviour ---
 
     public override void OnEnter(Player player) {
         base.OnEnter(player);
@@ -27,12 +81,12 @@ public sealed class SetFacingTrigger(EntityData data, Vector2 offset) : Trigger(
     }
 
     private void SetFacing(Player player) {
-        if (player.Scene is not Level level) return;
-
-        if (string.IsNullOrEmpty(Flag) || level.Session.GetFlag(Flag))
+        if (SetFacingActive)
             player.Facing = Facing;
         else if (InvertIfUnset)
             player.Facing = (Facing == Facings.Left) ? Facings.Right : Facings.Left;
     }
+
+    #endregion Behaviour
 
 }

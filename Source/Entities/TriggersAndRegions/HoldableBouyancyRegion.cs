@@ -1,37 +1,73 @@
 using System;
 using Celeste.Mod.Entities;
+using Celeste.Mod.Microlith57Misc.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity("Microlith57Misc/HoldableBouyancyRegion")]
+[CustomEntity(
+    "Microlith57Misc/HoldableBouyancyRegion=CreateFlag",
+    "Microlith57Misc/HoldableBouyancyRegion_Expression=CreateExpr"
+)]
 public sealed class HoldableBouyancyRegion : Entity {
 
-    public string Flag;
-    public bool InvertFlag;
+    #region --- State ---
+
+    private readonly ConditionSource Condition;
+    public bool BouyancyActive => Condition.Value;
 
     public bool AlsoAffectPlayer;
     public float MinForce, MaxForce, Damping;
 
-    public HoldableBouyancyRegion(EntityData data, Vector2 offset) : base(data.Position + offset) {
-        Collider = new Hitbox(data.Width, data.Height);
+    #endregion State
+    #region --- Init ---
 
-        Flag = data.Attr("");
-        InvertFlag = data.Bool("invertFlag");
+    public HoldableBouyancyRegion(
+        Vector2 position,
+        ConditionSource condition,
+        bool alsoAffectPlayer,
+        float minForce, float maxForce, float damping
+    ) : base(position) {
 
-        AlsoAffectPlayer = data.Bool("alsoAffectPlayer", false);
-        MinForce = data.Float("minForce", 0f);
-        MaxForce = data.Float("maxForce", 300f);
-        Damping = data.Float("damping", 1f);
-
-        Depth = Depths.Top;
+        Add(Condition = condition);
+        AlsoAffectPlayer = alsoAffectPlayer;
+        MinForce = minForce;
+        MaxForce = maxForce;
+        Damping = damping;
     }
+
+    private static HoldableBouyancyRegion Create(EntityData data, Vector2 offset, ConditionSource condition)
+        => new(
+            data.Position + offset,
+            condition,
+            data.Bool("alsoAffectPlayer"),
+            data.Float("minForce", 0f),
+            data.Float("maxForce", 300f),
+            data.Float("damping", 1f)
+        ) {
+            Collider = new Hitbox(data.Width, data.Height),
+            Depth = Depths.Top
+        };
+
+    public static HoldableBouyancyRegion CreateFlag(Level _1, LevelData _2, Vector2 offset, EntityData data)
+        => Create(data, offset, new ConditionSource.FlagSource(
+            data.Attr("flag"),
+            data.Bool("invertFlag")
+        ) { Default = true });
+
+    public static HoldableBouyancyRegion CreateExpr(Level _1, LevelData _2, Vector2 offset, EntityData data)
+        => Create(data, offset, new ConditionSource.ExpressionSource(
+            data.Attr("expression")
+        ) { Default = true });
+
+    #endregion Init
+    #region --- Behaviour ---
 
     public override void Update() {
         base.Update();
 
-        if (!string.IsNullOrEmpty(Flag) && !((Scene as Level)!.Session.GetFlag(Flag) ^ InvertFlag))
+        if (!BouyancyActive)
             return;
 
         foreach (Holdable hold in Scene.Tracker.GetComponents<Holdable>())
@@ -63,5 +99,7 @@ public sealed class HoldableBouyancyRegion : Entity {
 
         return rawSpeed * damping;
     }
+
+    #endregion Behaviour
 
 }

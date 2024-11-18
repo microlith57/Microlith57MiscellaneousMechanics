@@ -5,24 +5,51 @@ using MonoMod.Cil;
 using Mono.Cecil.Cil;
 using System.Linq;
 
+using Celeste.Mod.Microlith57Misc.Components;
+
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity("Microlith57Misc/FreezeTimeActiveController")]
+[CustomEntity(
+    "Microlith57Misc/FreezeTimeActiveController=CreateFlag",
+    "Microlith57Misc/FreezeTimeActiveController_Expression=CreateExpr"
+)]
 [Tracked]
-public sealed class FreezeTimeActiveController(EntityData data, Vector2 offset) : Entity(data.Position + offset) {
+public sealed class FreezeTimeActiveController : Entity {
 
+    #region --- State ---
+
+    private readonly ConditionSource Condition;
+    public bool FreezeActive => Condition.Value;
+
+    #endregion State
+    #region --- Init ---
+
+    public FreezeTimeActiveController(
+        Vector2 position,
+        ConditionSource condition
+    ) : base(position) {
+
+        Add(Condition = condition);
+    }
+
+    public static FreezeTimeActiveController CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
+        => new(data.Position + offset, new ConditionSource.FlagSource(
+            data.Attr("flag", "freezeTimeActive"),
+            data.Bool("invertFlag")
+        ) { Default = true });
+
+    public static FreezeTimeActiveController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
+        => new(data.Position + offset, new ConditionSource.ExpressionSource(
+            data.Attr("expression", "freezeTimeActive")
+        ) { Default = true });
+
+    #endregion Init
     #region --- Behaviour ---
-
-    public string Flag = data.Attr("flag", "freezeTimeActive");
-    public bool InvertFlag = data.Bool("invertFlag");
 
     private static bool AppliesTo(Scene scene)
         => scene is Level level
         && level.Tracker.GetEntities<FreezeTimeActiveController>()
-            .Any(c => c is FreezeTimeActiveController ctrl && (
-                    string.IsNullOrEmpty(ctrl.Flag) ||
-                    (level.Session.GetFlag(ctrl.Flag) ^ ctrl.InvertFlag)
-                ));
+            .Any(c => c is FreezeTimeActiveController ctrl && ctrl.FreezeActive);
 
     #endregion Behaviour
     #region --- Hook ---

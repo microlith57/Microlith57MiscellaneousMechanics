@@ -6,6 +6,7 @@ using Monocle;
 
 using Celeste.Mod.Microlith57Misc.Entities;
 using Celeste.Mod.Microlith57Misc.Entities.Recordings;
+using MonoMod.ModInterop;
 
 namespace Celeste.Mod.Microlith57Misc;
 
@@ -37,6 +38,8 @@ public class Module : EverestModule {
         On.Celeste.Player.DustParticleFromSurfaceIndex += hookDustParticle;
 
         On.Celeste.Level.Update += hookLevelUpdate;
+
+        typeof(Imports.FrostHelper).ModInterop();
     }
 
     public override void Unload() {
