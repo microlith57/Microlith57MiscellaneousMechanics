@@ -51,15 +51,10 @@ public sealed class HoldableBouyancyRegion : Entity {
         };
 
     public static HoldableBouyancyRegion CreateFlag(Level _1, LevelData _2, Vector2 offset, EntityData data)
-        => Create(data, offset, new ConditionSource.FlagSource(
-            data.Attr("flag"),
-            data.Bool("invertFlag")
-        ) { Default = true });
+        => Create(data, offset, new ConditionSource.FlagSource(data) { Default = true });
 
     public static HoldableBouyancyRegion CreateExpr(Level _1, LevelData _2, Vector2 offset, EntityData data)
-        => Create(data, offset, new ConditionSource.ExpressionSource(
-            data.Attr("expression")
-        ) { Default = true });
+        => Create(data, offset, new ConditionSource.ExpressionSource(data) { Default = true });
 
     #endregion Init
     #region --- Behaviour ---

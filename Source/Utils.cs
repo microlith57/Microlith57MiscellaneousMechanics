@@ -95,6 +95,16 @@ internal static class Utils {
 
     public static IEnumerator<T> GetEnumerator<T>(this IEnumerator<T> enumerator) => enumerator;
 
+    public static void Add(this Entity self, Components.Vector2Source source) {
+        self.Add(source.X);
+        self.Add(source.Y);
+    }
+
+    public static void Remove(this Entity self, Components.Vector2Source source) {
+        self.Remove(source.X);
+        self.Remove(source.Y);
+    }
+
 }
 
 internal static class GravityHelperContainmentChamber {

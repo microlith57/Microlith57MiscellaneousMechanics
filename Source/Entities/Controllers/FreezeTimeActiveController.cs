@@ -6,6 +6,7 @@ using Mono.Cecil.Cil;
 using System.Linq;
 
 using Celeste.Mod.Microlith57Misc.Components;
+using static Celeste.Mod.Microlith57Misc.Components.ConditionSource;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -33,15 +34,16 @@ public sealed class FreezeTimeActiveController : Entity {
     }
 
     public static FreezeTimeActiveController CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
-        => new(data.Position + offset, new ConditionSource.FlagSource(
-            data.Attr("flag", "freezeTimeActive"),
-            data.Bool("invertFlag")
-        ) { Default = true });
+        => new(
+                data.Position + offset,
+                new FlagSource(data, ifAbsent: "freezeTimeActive") { Default = true }
+            );
 
     public static FreezeTimeActiveController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
-        => new(data.Position + offset, new ConditionSource.ExpressionSource(
-            data.Attr("expression", "freezeTimeActive")
-        ) { Default = true });
+        => new(
+                data.Position + offset,
+                new ExpressionSource(data, "expression", "freezeTimeActive") { Default = true }
+            );
 
     #endregion Init
     #region --- Behaviour ---
