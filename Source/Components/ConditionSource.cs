@@ -6,9 +6,9 @@ namespace Celeste.Mod.Microlith57Misc.Components;
 public class ConditionSource(bool invert = false) : Component(active: false, visible: false) {
 
     public virtual bool? RawValue => null;
+
     public bool Default = false;
     public bool Invert = invert;
-
     public bool Value => RawValue.HasValue ? RawValue.Value ^ Invert : Default;
 
     public class FuncSource(Func<bool> func, bool invert = false) : ConditionSource(invert) {

@@ -7,8 +7,8 @@ namespace Celeste.Mod.Microlith57Misc.Components;
 public class FloatSource() : Component(active: false, visible: false) {
 
     public virtual float? RawValue => null;
-    public float Default = 0f;
 
+    public float Default = 0f;
     public float Value => RawValue ?? Default;
 
     public class FuncSource(Func<float> func) : FloatSource {
