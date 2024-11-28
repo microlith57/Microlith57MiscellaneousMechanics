@@ -7,22 +7,15 @@ using Celeste.Mod.Microlith57Misc.Components;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(
-    "Microlith57Misc/SliderAudioParamController=CreateFlag",
+    "Microlith57Misc/SliderAudioParamController=Create",
     "Microlith57Misc/SliderAudioParamController_Expression=CreateExpr"
 )]
-[Tracked]
-public sealed class SliderAudioParamController : Entity {
+public sealed class SliderAudioParamController : SliderController {
 
     #region --- State ---
 
     public readonly bool IsAmbience;
     public readonly string Param;
-
-    private readonly ConditionSource EnabledCondition;
-    public bool Enabled => EnabledCondition.Value;
-
-    private readonly FloatSource ValueSource;
-    public float Value => ValueSource.Value;
 
     #endregion State
     #region --- Init ---
@@ -31,27 +24,24 @@ public sealed class SliderAudioParamController : Entity {
         EntityData data, Vector2 offset,
         ConditionSource enabledCondition,
         FloatSource valueSource
-    ) : base(data.Position + offset) {
+    ) : base(data, offset, enabledCondition, valueSource) {
 
         Param = data.Attr("param");
         IsAmbience = data.Bool("isAmbience");
-
-        Add(EnabledCondition = enabledCondition);
-        Add(ValueSource = valueSource);
     }
 
-    public static SliderAudioParamController CreateFlag(Level level, LevelData __, Vector2 offset, EntityData data)
+    public static SliderAudioParamController Create(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new ConditionSource.FlagSource(data) { Default = true },
-            new FloatSource.SliderSource(level.Session, data)
+            new ConditionSource.Flag(data) { Default = true },
+            new FloatSource.Slider(level.Session, data)
         );
 
     public static SliderAudioParamController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new ConditionSource.ExpressionSource(data) { Default = true },
-            new FloatSource.ExpressionSource(data)
+            new ConditionSource.Expr(data) { Default = true },
+            new FloatSource.Expr(data)
         );
 
     #endregion Init

@@ -56,13 +56,13 @@ public sealed class LockPauseController : Entity {
     public static LockPauseController CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
         => Create(
                 data, offset,
-                new ConditionSource.FlagSource(data, ifAbsent: "lockPause") { Default = true }
+                new ConditionSource.Flag(data, ifAbsent: "lockPause") { Default = true }
             );
 
     public static LockPauseController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => Create(
                 data, offset,
-                new ConditionSource.ExpressionSource(data, ifAbsent: "lockPause") { Default = true }
+                new ConditionSource.Expr(data, ifAbsent: "lockPause") { Default = true }
             );
 
     #endregion Init

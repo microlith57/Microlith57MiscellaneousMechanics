@@ -11,23 +11,22 @@ public class FloatSource() : Component(active: false, visible: false) {
     public float Default = 0f;
     public float Value => RawValue ?? Default;
 
-    public class FuncSource(Func<float> func) : FloatSource {
+    public class Function(Func<float> func) : FloatSource {
 
-        private readonly Func<float> Func = func;
-
-        public override float? RawValue => Func();
+        private readonly Func<float> _Func = func;
+        public override float? RawValue => _Func();
 
     }
 
-    public class SliderSource : FloatSource {
+    public class Slider : FloatSource {
 
-        public readonly Session.Slider? Slider;
+        public readonly Session.Slider? _Slider;
 
-        public SliderSource(Session.Slider? slider) {
-            Slider = slider;
+        public Slider(Session.Slider? slider) {
+            _Slider = slider;
         }
 
-        public SliderSource(
+        public Slider(
             Session session,
             EntityData data,
             string name = "slider",
@@ -36,30 +35,27 @@ public class FloatSource() : Component(active: false, visible: false) {
             string slider = data.Attr(name, ifAbsent);
 
             if (slider != "")
-                Slider = session.GetSliderObject(slider);
+                _Slider = session.GetSliderObject(slider);
         }
 
-        public override float? RawValue => Slider?.Value;
+        public override float? RawValue => _Slider?.Value;
 
     }
 
-    public class ExpressionSource : FloatSource {
+    public class Expr : FloatSource {
 
-        public readonly string RawExpression;
-        private readonly object? Expression;
+        private readonly object? _Expr;
 
-        public ExpressionSource(string raw) {
-            RawExpression = raw;
-
-            if (RawExpression == "") return;
+        public Expr(string raw) {
+            if (raw == "") return;
 
             if (Imports.FrostHelper.TryCreateSessionExpression == null)
                 throw new Exception("tried to use a frosthelper session expression, but frosthelper is not loaded");
 
-            Imports.FrostHelper.TryCreateSessionExpression(RawExpression, out Expression);
+            Imports.FrostHelper.TryCreateSessionExpression(raw, out _Expr);
         }
 
-        public ExpressionSource(
+        public Expr(
             EntityData data,
             string name = "expression",
             string ifAbsent = ""
@@ -68,9 +64,9 @@ public class FloatSource() : Component(active: false, visible: false) {
         ) { }
 
         public override float? RawValue =>
-            (Expression == null || Scene is not Level level)
+            (_Expr == null || Scene is not Level level)
                 ? null
-                : Imports.FrostHelper.GetFloatSessionExpressionValue!(Expression, level.Session);
+                : Imports.FrostHelper.GetFloatSessionExpressionValue!(_Expr, level.Session);
 
     }
 
@@ -100,18 +96,18 @@ public struct Vector2Source(FloatSource x, FloatSource y) {
         string ifXAbsent = "",
         string ifYAbsent = ""
     ) => new(
-            new FloatSource.SliderSource(session, data, name + "X", ifXAbsent),
-            new FloatSource.SliderSource(session, data, name + "Y", ifYAbsent)
+            new FloatSource.Slider(session, data, name + "X", ifXAbsent),
+            new FloatSource.Slider(session, data, name + "Y", ifYAbsent)
         );
 
-    public static Vector2Source ExpressionSource(
+    public static Vector2Source ExprSource(
         EntityData data,
         string name = "expression",
         string ifXAbsent = "",
         string ifYAbsent = ""
     ) => new(
-            new FloatSource.ExpressionSource(data, name + "X", ifXAbsent),
-            new FloatSource.ExpressionSource(data, name + "Y", ifYAbsent)
+            new FloatSource.Expr(data, name + "X", ifXAbsent),
+            new FloatSource.Expr(data, name + "Y", ifYAbsent)
         );
 
 }

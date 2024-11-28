@@ -11,19 +11,18 @@ public class ConditionSource(bool invert = false) : Component(active: false, vis
     public bool Invert = invert;
     public bool Value => RawValue.HasValue ? RawValue.Value ^ Invert : Default;
 
-    public class FuncSource(Func<bool> func, bool invert = false) : ConditionSource(invert) {
+    public class Function(Func<bool> func, bool invert = false) : ConditionSource(invert) {
 
-        private readonly Func<bool> Func = func;
-
-        public override bool? RawValue => Func() ^ Invert;
+        private readonly Func<bool> _Func = func;
+        public override bool? RawValue => _Func() ^ Invert;
 
     }
 
-    public class FlagSource(string flag, bool invert = false) : ConditionSource(invert) {
+    public class Flag(string flag, bool invert = false) : ConditionSource(invert) {
 
-        public readonly string Flag = flag;
+        public readonly string _Flag = flag;
 
-        public FlagSource(
+        public Flag(
             EntityData data,
             string name = "flag",
             string ifAbsent = "",
@@ -34,33 +33,30 @@ public class ConditionSource(bool invert = false) : Component(active: false, vis
         ) {}
 
         public override bool? RawValue =>
-            (Flag == "" || Scene is not Level level)
+            (_Flag == "" || Scene is not Level level)
                 ? null
-                : level.Session.GetFlag(Flag);
+                : level.Session.GetFlag(_Flag);
 
     }
 
-    public class ExpressionSource : ConditionSource {
+    public class Expr : ConditionSource {
 
-        public readonly string RawExpression;
-        private readonly object? Expression;
+        private readonly object? _Expr;
 
-        public ExpressionSource(
+        public Expr(
             string raw,
             bool invert = false
         ) : base(invert) {
 
-            RawExpression = raw;
-
-            if (RawExpression == "") return;
+            if (raw == "") return;
 
             if (Imports.FrostHelper.TryCreateSessionExpression == null)
                 throw new Exception("tried to use a frosthelper session expression, but frosthelper is not loaded");
 
-            Imports.FrostHelper.TryCreateSessionExpression(RawExpression, out Expression);
+            Imports.FrostHelper.TryCreateSessionExpression(raw, out _Expr);
         }
 
-        public ExpressionSource(
+        public Expr(
             EntityData data,
             string name = "expression",
             string ifAbsent = "",
@@ -71,9 +67,9 @@ public class ConditionSource(bool invert = false) : Component(active: false, vis
         ) {}
 
         public override bool? RawValue =>
-            (Expression == null || Scene is not Level level)
+            (_Expr == null || Scene is not Level level)
                 ? null
-                : Imports.FrostHelper.GetBoolSessionExpressionValue!(Expression, level.Session);
+                : Imports.FrostHelper.GetBoolSessionExpressionValue!(_Expr, level.Session);
 
     }
 

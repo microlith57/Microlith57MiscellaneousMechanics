@@ -11,7 +11,7 @@ using static Celeste.Mod.Microlith57Misc.Components.ConditionSource;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(
-    "Microlith57Misc/FreezeTimeActiveController=CreateFlag",
+    "Microlith57Misc/FreezeTimeActiveController=Create",
     "Microlith57Misc/FreezeTimeActiveController_Expression=CreateExpr"
 )]
 [Tracked]
@@ -33,16 +33,16 @@ public sealed class FreezeTimeActiveController : Entity {
         Add(Condition = condition);
     }
 
-    public static FreezeTimeActiveController CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
+    public static FreezeTimeActiveController Create(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
                 data.Position + offset,
-                new FlagSource(data, ifAbsent: "freezeTimeActive") { Default = true }
+                new Flag(data, ifAbsent: "freezeTimeActive") { Default = true }
             );
 
     public static FreezeTimeActiveController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
                 data.Position + offset,
-                new ExpressionSource(data, "expression", "freezeTimeActive") { Default = true }
+                new Expr(data, "expression", "freezeTimeActive") { Default = true }
             );
 
     #endregion Init

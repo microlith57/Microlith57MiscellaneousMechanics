@@ -20,17 +20,16 @@ public class IntSource() : Component(active: false, visible: false) {
     public int Value => RawValue ?? Default;
     public Color ColorValue => new() { PackedValue = unchecked((uint)Value) };
 
-    public class FuncSource(Func<int> func) : IntSource {
+    public class Function(Func<int> func) : IntSource {
 
-        private readonly Func<int> Func = func;
-
-        public override int? RawValue => Func();
+        private readonly Func<int> _Func = func;
+        public override int? RawValue => _Func();
 
     }
 
     public class CounterSource : IntSource {
 
-        public readonly string Counter;
+        private readonly string _Counter;
 
         public CounterSource(
             Session session,
@@ -38,33 +37,30 @@ public class IntSource() : Component(active: false, visible: false) {
             string name = "slider",
             string ifAbsent = ""
         ) : base() {
-            Counter = data.Attr(name, ifAbsent);
+            _Counter = data.Attr(name, ifAbsent);
         }
 
         public override int? RawValue =>
-            (Counter == "" || Scene is not Level level)
+            (_Counter == "" || Scene is not Level level)
                 ? null
-                : level.Session.GetCounter(Counter);
+                : level.Session.GetCounter(_Counter);
 
     }
 
-    public class ExpressionSource : IntSource {
+    public class Expr : IntSource {
 
-        public readonly string RawExpression;
-        private readonly object? Expression;
+        private readonly object? _Expr;
 
-        public ExpressionSource(string raw) {
-            RawExpression = raw;
-
-            if (RawExpression == "") return;
+        public Expr(string raw) {
+            if (raw == "") return;
 
             if (Imports.FrostHelper.TryCreateSessionExpression == null)
                 throw new Exception("tried to use a frosthelper session expression, but frosthelper is not loaded");
 
-            Imports.FrostHelper.TryCreateSessionExpression(RawExpression, out Expression);
+            Imports.FrostHelper.TryCreateSessionExpression(raw, out _Expr);
         }
 
-        public ExpressionSource(
+        public Expr(
             EntityData data,
             string name = "expression",
             string ifAbsent = ""
@@ -73,9 +69,9 @@ public class IntSource() : Component(active: false, visible: false) {
         ) { }
 
         public override int? RawValue =>
-            (Expression == null || Scene is not Level level)
+            (_Expr == null || Scene is not Level level)
                 ? null
-                : Imports.FrostHelper.GetIntSessionExpressionValue!(Expression, level.Session);
+                : Imports.FrostHelper.GetIntSessionExpressionValue!(_Expr, level.Session);
 
     }
 

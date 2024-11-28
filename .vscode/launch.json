@@ -47,6 +47,27 @@
         "/home/vsts/work/1/s/": "${workspaceFolder}/../../../../everest/"
       },
       "requireExactSource": false
+    },
+    {
+      "name": "just debug",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/../../Celeste.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/../../",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "linux": {
+        "env": {
+          "LD_LIBRARY_PATH": "${workspaceFolder}/../../lib64-linux:"
+        }
+      },
+      "justMyCode": false,
+      "sourceFileMap": {
+        "Microlith57MiscellaneousMechanics/": "${workspaceFolder}../Microlith57MiscellaneousMechanics/Source/",
+        "/home/vsts/work/1/s/": "${workspaceFolder}/../../../../everest/"
+      },
+      "requireExactSource": false
     }
   ]
 }

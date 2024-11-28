@@ -7,19 +7,12 @@ using Celeste.Mod.Microlith57Misc.Components;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(
-    "Microlith57Misc/SliderColorgradeController=CreateFlag",
+    "Microlith57Misc/SliderColorgradeController=Create",
     "Microlith57Misc/SliderColorgradeController_Expression=CreateExpr"
 )]
-[Tracked]
-public sealed class SliderColorgradeController : Entity {
+public sealed class SliderColorgradeController : SliderController {
 
     #region --- State ---
-
-    private readonly ConditionSource EnabledCondition;
-    public bool Enabled => EnabledCondition.Value;
-
-    private readonly FloatSource LerpSource;
-    public float Lerp => LerpSource.Value;
 
     public readonly string ColorgradeA, ColorgradeB;
 
@@ -29,28 +22,25 @@ public sealed class SliderColorgradeController : Entity {
     public SliderColorgradeController(
         EntityData data, Vector2 offset,
         ConditionSource enabledCondition,
-        FloatSource lerpSource
-    ) : base(data.Position + offset) {
-
-        Add(EnabledCondition = enabledCondition);
-        Add(LerpSource = lerpSource);
+        FloatSource valueSource
+    ) : base(data, offset, enabledCondition, valueSource) {
 
         ColorgradeA = data.Attr("colorgradeA", "none");
         ColorgradeB = data.Attr("colorgradeB", "none");
     }
 
-    public static SliderColorgradeController CreateFlag(Level level, LevelData __, Vector2 offset, EntityData data)
+    public static SliderColorgradeController Create(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new ConditionSource.FlagSource(data) { Default = true },
-            new FloatSource.SliderSource(level.Session, data, ifAbsent: "colorgradeLerp")
+            new ConditionSource.Flag(data) { Default = true },
+            new FloatSource.Slider(level.Session, data, ifAbsent: "colorgradeLerp")
         );
 
     public static SliderColorgradeController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new ConditionSource.ExpressionSource(data) { Default = true },
-            new FloatSource.ExpressionSource(data, ifAbsent: "@colorgradeLerp")
+            new ConditionSource.Expr(data) { Default = true },
+            new FloatSource.Expr(data, ifAbsent: "@colorgradeLerp")
         );
 
     #endregion Init
@@ -65,7 +55,7 @@ public sealed class SliderColorgradeController : Entity {
             level.SnapColorGrade(ColorgradeA);
         } else {
             string from = ColorgradeA, to = ColorgradeB;
-            float lerp = Lerp;
+            float lerp = Value;
 
             if (lerp > 0.5f) {
                 lerp = 0.5f - lerp;

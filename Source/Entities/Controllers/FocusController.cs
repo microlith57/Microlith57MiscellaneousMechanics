@@ -9,11 +9,10 @@ using System;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(
-    "Microlith57Misc/FocusController=CreateFlag",
+    "Microlith57Misc/FocusController=Create",
     "Microlith57Misc/FocusController_Button=CreateButton",
     "Microlith57Misc/FocusController_Expression=CreateExprs"
 )]
-[Tracked]
 public sealed class FocusController : Entity {
 
     #region --- State ---
@@ -61,27 +60,27 @@ public sealed class FocusController : Entity {
         FadeDuration = data.Float("fadeDuration", 0f);
     }
 
-    public static FocusController CreateFlag(Level level, LevelData __, Vector2 offset, EntityData data)
+    public static FocusController Create(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new FlagSource(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
-            new FlagSource(data, name: "activeFlag", ifAbsent: "timeSlowActive", invertName: "invertActiveFlag"),
+            new Flag(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
+            new Flag(data, name: "activeFlag", ifAbsent: "timeSlowActive", invertName: "invertActiveFlag"),
             level.Session.GetSliderObject(data.Attr("slider", "focus"))
         );
 
     public static FocusController CreateButton(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new FlagSource(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
-            new FuncSource(() => Input.Talk),
+            new Flag(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
+            new Function(() => Input.Talk),
             level.Session.GetSliderObject(data.Attr("slider", "focus"))
         );
 
     public static FocusController CreateExprs(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new ExpressionSource(data, name: "enabledExpression") { Default = true },
-            new ExpressionSource(data, name: "activeExpression", ifAbsent: "$input.talk"),
+            new Expr(data, name: "enabledExpression") { Default = true },
+            new Expr(data, name: "activeExpression", ifAbsent: "$input.talk"),
             level.Session.GetSliderObject(data.Attr("slider", "focus"))
         );
 

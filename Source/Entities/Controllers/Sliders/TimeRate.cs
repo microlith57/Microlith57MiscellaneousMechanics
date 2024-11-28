@@ -7,10 +7,9 @@ using Celeste.Mod.Microlith57Misc.Components;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(
-    "Microlith57Misc/SliderTimeRateController=CreateFlag",
+    "Microlith57Misc/SliderTimeRateController=Create",
     "Microlith57Misc/SliderTimeRateController_Expression=CreateExpr"
 )]
-[Tracked]
 public sealed class SliderTimeRateController : Entity {
 
     #region --- State ---
@@ -37,18 +36,18 @@ public sealed class SliderTimeRateController : Entity {
         Add(Modifier = new(multiplier: 1f, enabled: false));
     }
 
-    public static SliderTimeRateController CreateFlag(Level level, LevelData __, Vector2 offset, EntityData data)
+    public static SliderTimeRateController Create(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new ConditionSource.FlagSource(data) { Default = true },
-            new FloatSource.SliderSource(level.Session, data) { Default = 1f }
+            new ConditionSource.Flag(data) { Default = true },
+            new FloatSource.Slider(level.Session, data) { Default = 1f }
         );
 
     public static SliderTimeRateController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new ConditionSource.ExpressionSource(data) { Default = true },
-            new FloatSource.ExpressionSource(data) { Default = 1f }
+            new ConditionSource.Expr(data) { Default = true },
+            new FloatSource.Expr(data) { Default = 1f }
         );
 
     #endregion Init

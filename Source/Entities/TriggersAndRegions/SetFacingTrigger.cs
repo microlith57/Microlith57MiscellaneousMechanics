@@ -48,10 +48,10 @@ public sealed class SetFacingTrigger : Trigger {
         );
 
     public static SetFacingTrigger CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
-        => Create(data, offset, new ConditionSource.FlagSource(data) { Default = true });
+        => Create(data, offset, new ConditionSource.Flag(data) { Default = true });
 
     public static SetFacingTrigger CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
-        => Create(data, offset, new ConditionSource.ExpressionSource(data) { Default = true });
+        => Create(data, offset, new ConditionSource.Expr(data) { Default = true });
 
     public override void Added(Scene scene) {
         base.Added(scene);

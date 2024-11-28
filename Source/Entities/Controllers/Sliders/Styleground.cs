@@ -7,10 +7,9 @@ using Celeste.Mod.Microlith57Misc.Components;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(
-    "Microlith57Misc/SliderStylegroundController=CreateFlag",
+    "Microlith57Misc/SliderStylegroundController=Create",
     "Microlith57Misc/SliderStylegroundController_Expression=CreateExpr"
 )]
-[Tracked]
 public sealed class SliderStylegroundController : Entity {
 
     #region --- State ---
@@ -51,26 +50,26 @@ public sealed class SliderStylegroundController : Entity {
         Add(AlphaSource = alphaSource);
     }
 
-    public static SliderStylegroundController CreateFlag(Level level, LevelData __, Vector2 offset, EntityData data)
+    public static SliderStylegroundController Create(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new ConditionSource.FlagSource(data) { Default = true },
+            new ConditionSource.Flag(data) { Default = true },
             Vector2Source.SliderSource(level.Session, data, "position"),
             Vector2Source.SliderSource(level.Session, data, "scroll"),
             Vector2Source.SliderSource(level.Session, data, "speed"),
             new IntSource.CounterSource(level.Session, data, "packedColor"),
-            new FloatSource.SliderSource(level.Session, data, "alphaMultiplier")
+            new FloatSource.Slider(level.Session, data, "alphaMultiplier")
         );
 
     public static SliderStylegroundController CreateExpr(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new ConditionSource.ExpressionSource(data) { Default = true },
-            Vector2Source.ExpressionSource(data, "position"),
-            Vector2Source.ExpressionSource(data, "scroll"),
-            Vector2Source.ExpressionSource(data, "speed"),
-            new IntSource.ExpressionSource(data, "packedColor"),
-            new FloatSource.ExpressionSource(data, "alphaMultiplier")
+            new ConditionSource.Expr(data) { Default = true },
+            Vector2Source.ExprSource(data, "position"),
+            Vector2Source.ExprSource(data, "scroll"),
+            Vector2Source.ExprSource(data, "speed"),
+            new IntSource.Expr(data, "packedColor"),
+            new FloatSource.Expr(data, "alphaMultiplier")
         );
 
     #endregion Init
