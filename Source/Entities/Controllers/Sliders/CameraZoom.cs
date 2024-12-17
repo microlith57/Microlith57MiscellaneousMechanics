@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using Monocle;
 using Celeste.Mod.Entities;
 
 using Celeste.Mod.Microlith57Misc.Components;
@@ -38,7 +37,7 @@ public sealed class SliderCameraZoomController : SliderController {
                 new FloatSource.Slider(level.Session, data, "focusXSlider") { Default = 320 / 2 },
                 new FloatSource.Slider(level.Session, data, "focusYSlider") { Default = 180 / 2 }
             ),
-            new FloatSource.Slider(level.Session, data) { Default = 1f }
+            new FloatSource.Slider(level.Session, data, name: "amount") { Default = 1f }
         );
 
     public static SliderCameraZoomController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
@@ -49,7 +48,7 @@ public sealed class SliderCameraZoomController : SliderController {
                 new FloatSource.Expr(data, "focusXExpression") { Default = 320 / 2 },
                 new FloatSource.Expr(data, "focusYExpression") { Default = 180 / 2 }
             ),
-            new FloatSource.Expr(data) { Default = 1f }
+            new FloatSource.Expr(data, name: "amount") { Default = 1f }
         );
 
     #endregion Init

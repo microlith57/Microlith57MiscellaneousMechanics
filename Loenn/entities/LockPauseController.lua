@@ -1,48 +1,83 @@
 local utils = require("utils")
 
-local LockPauseController = {}
+local fieldInformation = {
+  mode = {
+    options = {
+      "LockRetry",
+      "LockSaveQuit",
+      "LockRetryAndSaveQuit",
+      "LockPauseMenu"
+    }
+  }
+}
 
-LockPauseController.name = "Microlith57Misc/LockPauseController"
-LockPauseController.depth = -1000000
-LockPauseController.texture = "objects/microlith57/misc/lock_pause_controller"
-LockPauseController.placements = {
-    {
+return {
+  {
+    name = "Microlith57Misc/LockPauseController",
+    depth = -1000000,
+    texture = "objects/microlith57/misc/lock_pause_controller",
+    placements = {
+      {
         name = "lockRetryController",
         data = {
-            flag = "",
-            invertFlag = false,
-            mode = "LockRetry",
-            unlockWhenControllerRemoved = true
+          flag = "",
+          invertFlag = false,
+          mode = "LockRetry",
+          unlockWhenControllerRemoved = true
         }
-    },
-    {
+      },
+      {
         name = "lockSaveQuitController",
         data = {
-            flag = "",
-            invertFlag = false,
-            mode = "LockSaveQuit",
-            unlockWhenControllerRemoved = true
+          flag = "",
+          invertFlag = false,
+          mode = "LockSaveQuit",
+          unlockWhenControllerRemoved = true
         }
-    },
-    {
+      },
+      {
         name = "lockPauseController",
         data = {
-            flag = "",
-            invertFlag = false,
-            mode = "LockPauseMenu",
-            unlockWhenControllerRemoved = true
+          flag = "",
+          invertFlag = false,
+          mode = "LockPauseMenu",
+          unlockWhenControllerRemoved = true
         }
+      }
     },
-}
-LockPauseController.fieldInformation = {
-    mode = {
-        options = {
-            "LockRetry",
-            "LockSaveQuit",
-            "LockRetryAndSaveQuit",
-            "LockPauseMenu"
+    fieldInformation = fieldInformation
+  },
+  {
+    name = "Microlith57Misc/LockPauseController_Expression",
+    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    depth = -1000000,
+    texture = "objects/microlith57/misc/lock_pause_controller",
+    placements = {
+      {
+        name = "lockRetryController",
+        data = {
+          expression = "",
+          mode = "LockRetry",
+          unlockWhenControllerRemoved = true
         }
-    }
+      },
+      {
+        name = "lockSaveQuitController",
+        data = {
+          expression = "",
+          mode = "LockSaveQuit",
+          unlockWhenControllerRemoved = true
+        }
+      },
+      {
+        name = "lockPauseController",
+        data = {
+          expression = "",
+          mode = "LockPauseMenu",
+          unlockWhenControllerRemoved = true
+        }
+      }
+    },
+    fieldInformation = fieldInformation
+  }
 }
-
-return LockPauseController

@@ -1,26 +1,23 @@
-# public
+# --- public ---
 
 mods.Microlith57MiscellaneousMechanics.name=Microlith57's Misc. Mechanics
 
+# Holdable Priority Controller
 entities.Microlith57Misc/HoldablePriorityController.placements.name.holdablePriorityController=Holdable Priority Controller
 entities.Microlith57Misc/HoldablePriorityController.placements.description.holdablePriorityController=When the player could pick up multiple holdables, this prefers the closest one to the player's hand position.
 entities.Microlith57Misc/HoldablePriorityController.attributes.description.checkOffsetX=Position to most prefer holdables at, relative to the player's center, in the current facing direction
 entities.Microlith57Misc/HoldablePriorityController.attributes.description.checkOffsetY=Position to most prefer holdables at, relative to the player's center, in the current facing direction
 
+# Freeze TimeActive Controller
 entities.Microlith57Misc/FreezeTimeActiveController.placements.name.freezeTimeActiveController=Freeze TimeActive Controller
 entities.Microlith57Misc/FreezeTimeActiveController.placements.description.freezeTimeActiveController=Freezes the Scene.TimeActive field; has some wacky effects.
 entities.Microlith57Misc/FreezeTimeActiveController.attributes.description.flag=If present, freeze only when the flag is set.
 
-entities.Microlith57Misc/LevelTimerToCounterController.placements.name.levelTimerSecondsToCounterController=Level Timer to Counter (Seconds)
-entities.Microlith57Misc/LevelTimerToCounterController.placements.name.levelTimerFramesToCounterController=Level Timer to Counter (Frames)
-entities.Microlith57Misc/LevelTimerToCounterController.placements.name.levelTimerMillisecondsToCounterController=Level Timer to Counter (Milliseconds)
-entities.Microlith57Misc/LevelTimerToCounterController.placements.description.levelTimerSecondsToCounterController=Puts the amount of time playing the chapter to a counter.
-entities.Microlith57Misc/LevelTimerToCounterController.placements.description.levelTimerFramesToCounterController=Puts the amount of time playing the chapter to a counter.
-entities.Microlith57Misc/LevelTimerToCounterController.placements.description.levelTimerMillisecondsToCounterController=Puts the amount of time playing the chapter to a counter.
-entities.Microlith57Misc/LevelTimerToCounterController.attributes.description.flag=If present, only update the counter if the flag is set.
-entities.Microlith57Misc/LevelTimerToCounterController.attributes.description.wrapMode=What to do if the number is too big for the maximum counter value.\nNoWrapping: Stop at the maximum value;\nPositive: wrap around the positive values;\nFullRange: wrap around negative and positive values.
-entities.Microlith57Misc/LevelTimerToCounterController.attributes.description.precisionMode=What unit to use. FramesProbably is 60ths of a second.
+entities.Microlith57Misc/FreezeTimeActiveController_Expression.placements.name.freezeTimeActiveController=Freeze TimeActive Controller (Expression)
+entities.Microlith57Misc/FreezeTimeActiveController_Expression.placements.description.freezeTimeActiveController=Freezes the Scene.TimeActive field; has some wacky effects.
+entities.Microlith57Misc/FreezeTimeActiveController_Expression.attributes.description.expression=If present, freeze only when the expression is truthy.
 
+# Lock Pause Controller
 entities.Microlith57Misc/LockPauseController.placements.name.lockRetryController=Lock Pause Controller (Disable Retry)
 entities.Microlith57Misc/LockPauseController.placements.name.lockSaveQuitController=Lock Pause Controller (Disable Save+Quit)
 entities.Microlith57Misc/LockPauseController.placements.name.lockPauseController=Lock Pause Controller (Disable Menu)
@@ -28,34 +25,105 @@ entities.Microlith57Misc/LockPauseController.attributes.description.flag=If pres
 entities.Microlith57Misc/LockPauseController.attributes.description.mode=What to lock.\nLockRetry: Grey out the Retry button and prevent the retry keybind;\nLockSaveQuit: Grey out the Save and Quit button;\nLockRetryAndSaveQuit: Grey out both the Retry and Save and Quit buttons;\nLockPauseMenu: Prevent opening the pause menu entirely.
 entities.Microlith57Misc/LockPauseController.attributes.description.unlockWhenControllerRemoved=Whether to reenable the locked features when the controller is removed (eg. when transitioning into a different room)
 
+entities.Microlith57Misc/LockPauseController_Expression.placements.name.lockRetryController=Lock Pause Controller (Expression; Disable Retry)
+entities.Microlith57Misc/LockPauseController_Expression.placements.name.lockSaveQuitController=Lock Pause Controller (Expression; Disable Save+Quit)
+entities.Microlith57Misc/LockPauseController_Expression.placements.name.lockPauseController=Lock Pause Controller (Expression; Disable Menu)
+entities.Microlith57Misc/LockPauseController_Expression.attributes.description.expression=If present, only lock if the expression is truthy.
+entities.Microlith57Misc/LockPauseController_Expression.attributes.description.mode=What to lock.\nLockRetry: Grey out the Retry button and prevent the retry keybind;\nLockSaveQuit: Grey out the Save and Quit button;\nLockRetryAndSaveQuit: Grey out both the Retry and Save and Quit buttons;\nLockPauseMenu: Prevent opening the pause menu entirely.
+entities.Microlith57Misc/LockPauseController_Expression.attributes.description.unlockWhenControllerRemoved=Whether to reenable the locked features when the controller is removed (eg. when transitioning into a different room)
+
+# Ambience Volume Controller
+entities.Microlith57Misc/SliderAmbienceVolumeController.placements.name.sliderAmbienceVolumeController=Ambience Volume Controller (Slider)
+entities.Microlith57Misc/SliderAmbienceVolumeController.attributes.description.flag=If present, only set the volume if the flag is set.
+entities.Microlith57Misc/SliderAmbienceVolumeController.attributes.description.volume=Slider to set the volume to.
+
+entities.Microlith57Misc/SliderAmbienceVolumeController_Expression.placements.name.sliderAmbienceVolumeController=Ambience Volume Controller (Expression)
+entities.Microlith57Misc/SliderAmbienceVolumeController_Expression.attributes.description.flag=If present, only set the volume if the expression is truthy.
+entities.Microlith57Misc/SliderAmbienceVolumeController_Expression.attributes.description.volume=Expression to set the volume to.
+
+# Audio Param Controller
+entities.Microlith57Misc/SliderAudioParamController.placements.name.sliderAudioParamController=Audio Param Controller (Slider)
+entities.Microlith57Misc/SliderAudioParamController.attributes.description.param=Name of the param to set.
+entities.Microlith57Misc/SliderAudioParamController.attributes.description.isAmbience=If checked, set an ambience param; otherwise, set a music param.
+entities.Microlith57Misc/SliderAudioParamController.attributes.description.flag=If present, only set the param if the flag is set.
+entities.Microlith57Misc/SliderAudioParamController.attributes.description.value=Slider to set the param to.
+
+entities.Microlith57Misc/SliderAudioParamController_Expression.placements.name.sliderAudioParamController=Audio Param Controller (Expression)
+entities.Microlith57Misc/SliderAudioParamController_Expression.attributes.description.param=Name of the param to set.
+entities.Microlith57Misc/SliderAudioParamController_Expression.attributes.description.isAmbience=If checked, set an ambience param; otherwise, set a music param.
+entities.Microlith57Misc/SliderAudioParamController_Expression.attributes.description.flag=If present, only set the param if the expression is truthy.
+entities.Microlith57Misc/SliderAudioParamController_Expression.attributes.description.value=Expression to set the param to.
+
+# Colourgrade Controller
+entities.Microlith57Misc/SliderColorgradeController.placements.name.sliderColorgradeController=Colourgrade Controller (Slider)
+entities.Microlith57Misc/SliderColorgradeController.attributes.description.flag=If present, only set the colourgrade if the flag is set.
+entities.Microlith57Misc/SliderColorgradeController.attributes.description.colorgradeA=Colourgrade to interpolate from (lerp = 0.0).
+entities.Microlith57Misc/SliderColorgradeController.attributes.description.colorgradeB=Colourgrade to interpolate to (lerp = 1.0).
+entities.Microlith57Misc/SliderColorgradeController.attributes.description.lerp=Slider for the linear interpolation factor, in [0.0, 1.0].
+
+entities.Microlith57Misc/SliderColorgradeController_Expression.placements.name.sliderColorgradeController=Colourgrade Controller (Expression)
+entities.Microlith57Misc/SliderColorgradeController_Expression.attributes.description.expression=If present, only set the colourgrade if the expression is truthy.
+entities.Microlith57Misc/SliderColorgradeController_Expression.attributes.description.colorgradeA=Colourgrade to interpolate from (lerp = 0.0).
+entities.Microlith57Misc/SliderColorgradeController_Expression.attributes.description.colorgradeB=Colourgrade to interpolate to (lerp = 1.0).
+entities.Microlith57Misc/SliderColorgradeController_Expression.attributes.description.lerp=Expression for the linear interpolation factor, in [0.0, 1.0].
+
+# Time Rate Controller
+entities.Microlith57Misc/SliderTimeRateController.placements.name.sliderTimeRateController=Time Rate Controller (Slider)
+entities.Microlith57Misc/SliderTimeRateController.attributes.description.flag=If present, only affect the time rate if the flag is set.
+entities.Microlith57Misc/SliderTimeRateController.attributes.description.multiplier=Slider containing the amount to multiply the time rate by, in [0.0, ∞).
+
+entities.Microlith57Misc/SliderTimeRateController_Expression.placements.name.sliderTimeRateController=Time Rate Controller (Expression)
+entities.Microlith57Misc/SliderTimeRateController_Expression.attributes.description.flag=If present, only affect the time rate if the expression is truthy.
+entities.Microlith57Misc/SliderTimeRateController_Expression.attributes.description.multiplier=Expression containing the amount to multiply the time rate by, in [0.0, ∞).
+
+# Flag if Player Grounded Controller
 entities.Microlith57Misc/PlayerGroundedFlagController.placements.name.playerGroundedFlagController=Flag if Player Grounded Controller
 
+# Player Facing to Flags Controller
 entities.Microlith57Misc/PlayerFacingFlagController.placements.name.playerFacingFlagController=Player Facing to Flags Controller
 
+# Rainbow Light
 entities.Microlith57Misc/RainbowLight.placements.name.rainbowLight=Rainbow Light
 
+# Color Unpacker
+entities.Microlith57Misc/ColorUnpacker_Float.placements.name.colorUnpacker=Color Unpacker (Counter to Sliders)
+entities.Microlith57Misc/ColorUnpacker_Float.attributes.description.flag=If present, only update the sliders when the flag is set.
+entities.Microlith57Misc/ColorUnpacker_Float.attributes.description.packedColor=Counter containing the packed color data to unpack.\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorUnpacker_Float.attributes.description.unpackedColorPrefix=R, G, B, and A will be appended to this value to get the slider names for the four components of the color.
+
+entities.Microlith57Misc/ColorUnpacker_Float_Expression.placements.name.colorUnpacker=Color Unpacker (Expression to Sliders)
+entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.expression=If present, only update the sliders when the expression is truthy.
+entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.packedColor=Expression yielding the packed color data to unpack.\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.unpackedColorPrefix=R, G, B, and A will be appended to this value to get the slider names for the four components of the color.
+
+# Holdable Bouyancy Region
 triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.minForce=How much force to exert (px/sec^2) when the holdable is just touching the surface.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.maxForce=How much force to exert (px/sec^2) when the holdable is fully submerged.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.damping=Coefficient controlling how much motion is slowed in the region; acts like viscosity.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.flag=If present, apply bouyancy only when the flag is set.
 
+# Set Player Facing Trigger
 triggers.Microlith57Misc/SetFacingTrigger.placements.name.setFacingTrigger=Set Player Facing Trigger
 triggers.Microlith57Misc/SetFacingTrigger.attributes.description.direction=Direction to make the player face.
 triggers.Microlith57Misc/SetFacingTrigger.attributes.description.flag=If present, only make the player face that direction if the flag is set.
 triggers.Microlith57Misc/SetFacingTrigger.attributes.description.invertIfUnset=If the flag is unset, make the player face the other way.
 triggers.Microlith57Misc/SetFacingTrigger.attributes.description.continuous=Continue to set the player's facing direction the whole time they're in the trigger.
 
-# nonpublic
+# --- nonpublic ---
 
+# Area Switch
 entities.Microlith57Misc/AreaSwitch.placements.name.area_switch=Area Switch (Anything)
 entities.Microlith57Misc/AreaSwitch.placements.name.box_switch=Area Switch (Box)
 entities.Microlith57Misc/AreaSwitch.placements.name.box_destroyer=Area Switch (Destroys Box)
 
+# Box
 entities.Microlith57Misc/Box.placements.name.box=Box
 
+# Gravity Switch
 entities.Microlith57Misc/GravitySwitch.placements.name.normal=Gravity Switch (Normal)
 entities.Microlith57Misc/GravitySwitch.placements.name.inverted=Gravity Switch (Inverted)
 entities.Microlith57Misc/GravitySwitch.placements.name.toggle=Gravity Switch (Toggle)
 
+# Recorder Terminal
 entities.Microlith57Misc/RecorderTerminal.placements.name.normal=Recorder Terminal (Normal)

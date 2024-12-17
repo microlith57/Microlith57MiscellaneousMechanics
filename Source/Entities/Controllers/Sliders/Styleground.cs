@@ -57,7 +57,7 @@ public sealed class SliderStylegroundController : Entity {
             Vector2Source.SliderSource(level.Session, data, "position"),
             Vector2Source.SliderSource(level.Session, data, "scroll"),
             Vector2Source.SliderSource(level.Session, data, "speed"),
-            new IntSource.CounterSource(level.Session, data, "packedColor"),
+            new IntSource.Counter(level.Session, data, "packedColor"),
             new FloatSource.Slider(level.Session, data, "alphaMultiplier")
         );
 

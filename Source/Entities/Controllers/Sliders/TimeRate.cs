@@ -40,14 +40,14 @@ public sealed class SliderTimeRateController : Entity {
         => new(
             data, offset,
             new ConditionSource.Flag(data) { Default = true },
-            new FloatSource.Slider(level.Session, data) { Default = 1f }
+            new FloatSource.Slider(level.Session, data, name: "multiplier") { Default = 1f }
         );
 
     public static SliderTimeRateController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Expr(data) { Default = true },
-            new FloatSource.Expr(data) { Default = 1f }
+            new FloatSource.Expr(data, name: "multiplier") { Default = 1f }
         );
 
     #endregion Init

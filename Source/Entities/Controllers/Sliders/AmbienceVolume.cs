@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using Monocle;
 using Celeste.Mod.Entities;
 
 using Celeste.Mod.Microlith57Misc.Components;
@@ -18,20 +17,20 @@ public sealed class SliderAmbienceVolumeController : SliderController {
         EntityData data, Vector2 offset,
         ConditionSource enabledCondition,
         FloatSource valueSource
-    ) : base(data, offset, enabledCondition, valueSource) {}
+    ) : base(data, offset, enabledCondition, valueSource) { }
 
     public static SliderAmbienceVolumeController Create(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Flag(data) { Default = true },
-            new FloatSource.Slider(level.Session, data)
+            new FloatSource.Slider(level.Session, data, name: "volume")
         );
 
     public static SliderAmbienceVolumeController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Expr(data) { Default = true },
-            new FloatSource.Expr(data)
+            new FloatSource.Expr(data, name: "volume")
         );
 
     #endregion Init

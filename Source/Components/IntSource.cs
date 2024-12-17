@@ -27,11 +27,11 @@ public class IntSource() : Component(active: false, visible: false) {
 
     }
 
-    public class CounterSource : IntSource {
+    public class Counter : IntSource {
 
         private readonly string _Counter;
 
-        public CounterSource(
+        public Counter(
             Session session,
             EntityData data,
             string name = "slider",

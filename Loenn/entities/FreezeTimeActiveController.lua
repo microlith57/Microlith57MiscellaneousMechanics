@@ -1,18 +1,32 @@
 local utils = require("utils")
 
-local FreezeTimeActiveController = {}
-
-FreezeTimeActiveController.name = "Microlith57Misc/FreezeTimeActiveController"
-FreezeTimeActiveController.depth = -1000000
-FreezeTimeActiveController.texture = "objects/microlith57/misc/freeze_time_active_controller"
-FreezeTimeActiveController.placements = {
-    {
+return {
+  {
+    name = "Microlith57Misc/FreezeTimeActiveController",
+    depth = -1000000,
+    texture = "objects/microlith57/misc/freeze_time_active_controller",
+    placements = {
+      {
         name = "freezeTimeActiveController",
         data = {
-            flag = "freezeTimeActive",
-            invertFlag = false
+          flag = "freezeTimeActive",
+          invertFlag = false
         }
+      }
     }
+  },
+  {
+    name = "Microlith57Misc/FreezeTimeActiveController_Expression",
+    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    depth = -1000000,
+    texture = "objects/microlith57/misc/freeze_time_active_controller",
+    placements = {
+      {
+        name = "freezeTimeActiveController",
+        data = {
+          expression = "freezeTimeActive"
+        }
+      }
+    }
+  }
 }
-
-return FreezeTimeActiveController

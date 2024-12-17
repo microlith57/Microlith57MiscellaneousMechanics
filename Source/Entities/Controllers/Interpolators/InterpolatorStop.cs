@@ -187,7 +187,7 @@ internal class InterpolatorStopHolder : Entity {
             level, data.Position + offset,
             data.Attr("counter"),
             new DynamicColorStop(
-                new IntSource.CounterSource(level.Session, data, name: "value")
+                new IntSource.Counter(level.Session, data, name: "value")
             )
         );
 

@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using Monocle;
 using Celeste.Mod.Entities;
 
 using Celeste.Mod.Microlith57Misc.Components;
@@ -34,14 +33,14 @@ public sealed class SliderAudioParamController : SliderController {
         => new(
             data, offset,
             new ConditionSource.Flag(data) { Default = true },
-            new FloatSource.Slider(level.Session, data)
+            new FloatSource.Slider(level.Session, data, name: "value")
         );
 
     public static SliderAudioParamController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Expr(data) { Default = true },
-            new FloatSource.Expr(data)
+            new FloatSource.Expr(data, name: "value")
         );
 
     #endregion Init

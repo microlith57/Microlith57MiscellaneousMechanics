@@ -18,6 +18,7 @@ public sealed class HoldableBouyancyRegion : Entity {
     public bool BouyancyActive => Condition.Value;
 
     public bool AlsoAffectPlayer;
+    // todo: sliders?
     public float MinForce, MaxForce, Damping;
 
     #endregion State

@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using Monocle;
 using Celeste.Mod.Entities;
 
 using Celeste.Mod.Microlith57Misc.Components;
@@ -33,7 +32,7 @@ public sealed class SliderColorgradeController : SliderController {
         => new(
             data, offset,
             new ConditionSource.Flag(data) { Default = true },
-            new FloatSource.Slider(level.Session, data, ifAbsent: "colorgradeLerp")
+            new FloatSource.Slider(level.Session, data, name: "lerp", ifAbsent: "colorgradeLerp")
         );
 
     public static SliderColorgradeController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)

@@ -4,7 +4,6 @@ using Celeste.Mod.Entities;
 
 using Celeste.Mod.Microlith57Misc.Components;
 using static Celeste.Mod.Microlith57Misc.Components.ConditionSource;
-using System;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
