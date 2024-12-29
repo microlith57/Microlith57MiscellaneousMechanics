@@ -23,6 +23,10 @@ local fieldOrder = {
   "enableExpression"
 }
 
+ignoredFields = {
+  "lerpStrength"
+}
+
 return {
   {
     name = "Microlith57Misc/SliderCameraTargetTrigger",
@@ -49,7 +53,8 @@ return {
       }
     },
     fieldInformation = fieldInformation,
-    fieldOrder = fieldInformation
+    fieldOrder = fieldInformation,
+    ignoredFields = ignoredFields
   },
   {
     name = "Microlith57Misc/SliderCameraTargetTrigger_Expression",
@@ -76,6 +81,7 @@ return {
       }
     },
     fieldInformation = fieldInformation,
-    fieldOrder = fieldInformation
+    fieldOrder = fieldInformation,
+    ignoredFields = ignoredFields
   }
 }
