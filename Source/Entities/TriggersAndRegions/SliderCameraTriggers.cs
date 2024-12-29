@@ -5,73 +5,122 @@ using Monocle;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
+#region --- Target ---
+
 [CustomEntity(
-    "Microlith57Misc/SliderCameraTargetTrigger=CreateTarget",
-    // "Microlith57Misc/SliderCameraTargetTrigger_Expression=CreateTargetExpr",
-    "Microlith57Misc/SliderCameraOffsetTrigger=CreateOffset" /* , */
-    // "Microlith57Misc/SliderCameraOffsetTrigger_Expression=CreateOffsetExpr",
-    // "Microlith57Misc/SliderCameraZoomTrigger=CreateZoom",
-    // "Microlith57Misc/SliderCameraZoomTrigger_Expression=CreateZoomExpr"
+    "Microlith57Misc/SliderCameraTargetTrigger=CreateFlag",
+    "Microlith57Misc/SliderCameraTargetTrigger_Expression=CreateExpr"
 )]
-public sealed class SliderCameraTrigger : Entity {
+public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
 
-    // todo: plugins, lang
+    private readonly ConditionSource Condition;
+    public bool Enabled => Condition.Value;
 
-    // dummy
-    private SliderCameraTrigger() { }
+    private Vector2Source TargetSource, LerpStrengthSource;
 
-    #region --- Target ---
+    public SliderCameraTargetTrigger(
+        EntityData data, Vector2 offset,
+        ConditionSource enabledCondition,
+        Vector2Source targetSource,
+        Vector2Source lerpStrengthSource
+    ) : base(data, offset) {
 
-    public static CameraTargetTrigger CreateTarget(Level level, LevelData _, Vector2 offset, EntityData data) {
-        var default_pos = data.Position + new Vector2(data.Width, data.Height) / 2f;
+        Add(Condition = enabledCondition);
+        this.Add(TargetSource = targetSource);
+        this.Add(LerpStrengthSource = lerpStrengthSource);
 
-        if (data.Nodes.Length > 0)
-            default_pos = data.Nodes[0];
-        else
-            data.Nodes = [default_pos];
-
-        var res = new CameraTargetTrigger(data, offset) { Depth = Depths.Below };
-
-        var targetSource = new Vector2Source(
-            new FloatSource.Slider(level.Session, data, "targetSliderX") { Default = res.Target.X },
-            new FloatSource.Slider(level.Session, data, "targetSliderY") { Default = res.Target.Y }
-        );
-        res.Add(targetSource);
-
-        var lerpStrengthSource = new FloatSource.Slider(level.Session, data, "lerpStrengthSlider") { Default = res.LerpStrength };
-        res.Add(lerpStrengthSource);
-
-        res.PreUpdate += (_) => {
-            // todo: ext zoom compat
-            res.Target = targetSource.Value - new Vector2(320 / 2, 180 / 2);
-            res.LerpStrength = lerpStrengthSource.Value;
-        };
-
-        return res;
+        TargetSource.Default = Target;
+        LerpStrengthSource.Default = LerpStrength;
     }
 
-    #endregion Target
-    #region --- Offset ---
-
-    public static CameraOffsetTrigger CreateOffset(Level level, LevelData _, Vector2 offset, EntityData data) {
-        // todo
-        bool coarse = data.Bool("coarse", true);
-
-        var res = new CameraOffsetTrigger(data, offset) { Depth = Depths.Below };
-
-        var offsetSource = new Vector2Source(
-            new FloatSource.Slider(level.Session, data, "offsetSliderX") { Default = res.CameraOffset.X },
-            new FloatSource.Slider(level.Session, data, "offsetSliderY") { Default = res.CameraOffset.Y }
+    public static SliderCameraTargetTrigger CreateFlag(Level level, LevelData _, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Flag(data, "enableFlag", invertName: "invertFlag") { Default = true },
+            Vector2Source.SliderSource(level.Session, data, "targetSlider"),
+            Vector2Source.SliderSource(level.Session, data, "lerpStrengthSlider")
         );
-        res.Add(offsetSource);
 
-        res.PreUpdate += (_) => {
-            res.CameraOffset = offsetSource.Value;
-        };
+    public static SliderCameraTargetTrigger CreateExpr(Level level, LevelData _, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Expr(data, "enableExpression") { Default = true },
+            Vector2Source.ExprSource(data, "targetExpression"),
+            Vector2Source.ExprSource(data, "lerpStrengthExpression")
+        );
 
-        return res;
+    public override void OnStay(Player player) {
+        Target = TargetSource.Value;
+        LerpStrength = LerpStrengthSource.Value;
+        base.OnStay(player);
     }
-
-    #endregion Offset
 
 }
+
+#endregion Target
+#region --- Offset ---
+
+[CustomEntity(
+    "Microlith57Misc/SliderCameraOffsetTrigger=CreateFlag",
+    "Microlith57Misc/SliderCameraOffsetTrigger_Expression=CreateExpr"
+)]
+public sealed class SliderCameraOffsetTrigger : CameraOffsetTrigger {
+
+    private bool Coarse;
+    private Vector2 Coarseness => Coarse ? new(48f, 32f) : Vector2.One;
+
+    private readonly ConditionSource Condition;
+    public bool Enabled => Condition.Value;
+
+    private Vector2Source OffsetSourceFrom, OffsetSourceTo;
+    private PositionModes Mode;
+
+    public SliderCameraOffsetTrigger(
+        EntityData data, Vector2 offset,
+        ConditionSource enabledCondition,
+        Vector2Source offsetSourceFrom,
+        Vector2Source offsetSourceTo
+    ) : base(data, offset) {
+
+        Coarse = data.Bool("coarse");
+
+        Add(Condition = enabledCondition);
+        this.Add(OffsetSourceFrom = offsetSourceFrom);
+        this.Add(OffsetSourceTo = offsetSourceTo);
+
+        OffsetSourceFrom.Default = CameraOffset;
+        OffsetSourceTo.Default = CameraOffset;
+    }
+
+    public static SliderCameraOffsetTrigger CreateFlag(Level level, LevelData _, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Flag(data, "enableFlag", invertName: "invertFlag") { Default = true },
+            Vector2Source.SliderSource(level.Session, data, "offsetFromSlider"),
+            Vector2Source.SliderSource(level.Session, data, "offsetToSlider")
+        );
+
+    public static SliderCameraOffsetTrigger CreateExpr(Level level, LevelData _, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Expr(data, "enableExpression") { Default = true },
+            Vector2Source.ExprSource(data, "offsetFromExpression"),
+            Vector2Source.ExprSource(data, "offsetToExpression")
+        );
+
+    private Vector2 GetOffset(Player player)
+        => Calc.LerpSnap(OffsetSourceFrom.Value, OffsetSourceTo.Value, GetPositionLerp(player, Mode), snapThresholdSq: 0f) * Coarseness;
+
+    public override void OnEnter(Player player) {
+        CameraOffset = GetOffset(player);
+        base.OnEnter(player);
+    }
+
+    public override void OnStay(Player player) {
+        SceneAs<Level>().CameraOffset = CameraOffset = GetOffset(player);
+        base.OnEnter(player);
+    }
+
+}
+
+#endregion Offset
