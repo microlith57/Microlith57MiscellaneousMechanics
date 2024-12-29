@@ -3,7 +3,8 @@ local celesteEnums = require("consts.celeste_enums")
 
 local fieldInformation = {
   direction = {
-    options = celesteEnums.trigger_position_modes
+    options = celesteEnums.trigger_position_modes,
+    editable = false
   }
 }
 

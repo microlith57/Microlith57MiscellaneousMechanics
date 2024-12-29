@@ -7,7 +7,8 @@ local fieldInformation = {
       "LockSaveQuit",
       "LockRetryAndSaveQuit",
       "LockPauseMenu"
-    }
+    },
+    editable = false
   }
 }
 

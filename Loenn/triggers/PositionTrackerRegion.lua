@@ -7,14 +7,16 @@ local fieldInformation = {
       "Actor",
       "NonPlayerActor",
       "Solid"
-    }
+    },
+    editable = false
   },
   detection = {
     options = {
       "Within",
       "Intersecting",
       "Nearest"
-    }
+    },
+    editable = false
   },
   stickiness = {
     options = {
@@ -24,7 +26,8 @@ local fieldInformation = {
       "UntilDeath",
       "Lifelink",
       "Soulbond"
-    }
+    },
+    editable = false
   },
   tracking = {
     options = {
@@ -35,7 +38,8 @@ local fieldInformation = {
       "CenterLeft",
       "CenterRight",
       "Size"
-    }
+    },
+    editable = false
   }
 }
 

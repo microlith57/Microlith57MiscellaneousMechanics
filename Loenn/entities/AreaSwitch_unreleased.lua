@@ -71,7 +71,8 @@ AreaSwitch.fieldInformation = {
             "Anything",
             "BoxOnly",
             "DestroysBox"
-        }
+        },
+        editable = false
     },
     inactiveColor = {
         fieldType = "color"

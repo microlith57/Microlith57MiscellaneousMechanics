@@ -5,7 +5,8 @@ local fieldInformation = {
     options = {
       "Left",
       "Right"
-    }
+    },
+    editable = false
   }
 }
 
