@@ -20,6 +20,7 @@ public class FloatSource() : Component(active: false, visible: false) {
 
     public class Slider : FloatSource {
 
+        public readonly float? _Float;
         public readonly Session.Slider? _Slider;
 
         public Slider(Session.Slider? slider) {
@@ -34,11 +35,15 @@ public class FloatSource() : Component(active: false, visible: false) {
         ) : base() {
             string slider = data.Attr(name, ifAbsent);
 
-            if (slider != "")
+            if (slider == "")
+                return;
+            else if (float.TryParse(slider, out float @float))
+                _Float = @float;
+            else
                 _Slider = session.GetSliderObject(slider);
         }
 
-        public override float? RawValue => _Slider?.Value;
+        public override float? RawValue => _Float ?? (_Slider?.Value);
 
     }
 
@@ -76,6 +81,14 @@ public struct Vector2Source(FloatSource x, FloatSource y) {
 
     public readonly FloatSource X = x;
     public readonly FloatSource Y = y;
+
+    public Vector2 Default {
+        get => new(X.Default, Y.Default);
+        set {
+            X.Default = value.X;
+            Y.Default = value.Y;
+        }
+    }
 
     public Vector2? RawValue {
         get {
