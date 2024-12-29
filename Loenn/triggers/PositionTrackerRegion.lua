@@ -1,7 +1,5 @@
 local utils = require("utils")
 
--- todo: lang
-
 local fieldInformation = {
   target = {
     options = {
@@ -75,9 +73,6 @@ local fieldOrder = {
   "y",
   "width",
   "height",
-  "flag",
-  "invertFlag",
-  "expression",
 
   "target",
   "detection",
@@ -86,6 +81,10 @@ local fieldOrder = {
 
   "sliderPrefix",
   "targettingFlag",
+
+  "retargetIfFlag",
+  "invertRetargetIfFlag",
+  "retargetIfExpression",
 }
 
 local function abbr(str, options)
@@ -127,12 +126,12 @@ return {
         data = {
           width = 16,
           height = 16,
-          flag = "",
-          invertFlag = false,
+          retargetIfFlag = "",
+          invertRetargetIfFlag = false,
 
-          target = "Player",
-          detection = "Intersecting",
-          stickiness = "Lifelink",
+          target = "Actor",
+          detection = "Within",
+          stickiness = "Soulbond",
           tracking = "Position",
 
           sliderPrefix = "trackedPosition",
@@ -153,11 +152,11 @@ return {
         data = {
           width = 16,
           height = 16,
-          expression = "",
+          retargetIfExpression = "",
 
-          target = "Player",
-          detection = "Intersecting",
-          stickiness = "Lifelink",
+          target = "Actor",
+          detection = "Within",
+          stickiness = "Soulbond",
           tracking = "Position",
 
           sliderPrefix = "trackedPosition",

@@ -88,7 +88,7 @@ public sealed class PositionTrackerRegion : Entity {
             data, offset,
             level.Session.GetSliderObject(data.Attr("sliderPrefix", "trackedPosition") + 'X'),
             level.Session.GetSliderObject(data.Attr("sliderPrefix", "trackedPosition") + 'Y'),
-            new ConditionSource.Flag(data) { Default = true }
+            new ConditionSource.Flag(data, "retargetIfFlag", invertName: "invertRetargetIfFlag") { Default = true }
         );
 
     public static PositionTrackerRegion CreateExpr(Level level, LevelData _, Vector2 offset, EntityData data)
@@ -96,7 +96,7 @@ public sealed class PositionTrackerRegion : Entity {
             data, offset,
             level.Session.GetSliderObject(data.Attr("sliderPrefix", "trackedPosition") + 'X'),
             level.Session.GetSliderObject(data.Attr("sliderPrefix", "trackedPosition") + 'Y'),
-            new ConditionSource.Expr(data) { Default = true }
+            new ConditionSource.Expr(data, "retargetIfExpression") { Default = true }
         );
 
     #endregion Init
@@ -215,6 +215,8 @@ public sealed class PositionTrackerRegion : Entity {
     }
 
     private bool Matches(Entity e) {
+        if (e is SolidTiles) return false;
+
         switch (Detection) {
             case DetectionType.Within: return IsWithin(e);
             case DetectionType.Intersecting: return IsIntersecting(e);
