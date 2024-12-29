@@ -19,6 +19,7 @@ public sealed class PositionTrackerRegion : Entity {
     private enum TargetType {
         Player,
         Actor,
+        NonPlayerActor,
         Solid,
     }
 
@@ -70,6 +71,9 @@ public sealed class PositionTrackerRegion : Entity {
         ConditionSource condition
     ) : base(data.Position + offset) {
 
+        Collider = new Hitbox(data.Width, data.Height);
+        Collidable = false;
+
         Add(Condition = condition);
 
         WillTarget = data.Enum("target", TargetType.Player);
@@ -106,9 +110,6 @@ public sealed class PositionTrackerRegion : Entity {
         base.Awake(scene);
         UpdateTarget();
         UpdateOutputs();
-
-        if (Target == null && Stickiness == StickinessType.Soulbond)
-            RemoveSelf();
     }
 
     public override void Update() {
@@ -148,11 +149,14 @@ public sealed class PositionTrackerRegion : Entity {
     #region --- Targetting ---
 
     private void UpdateTarget() {
-        if (Target?.Scene == null) Target = null;
-
         bool canSwitch = Enabled;
 
+        if (Target?.Scene == null)
+            Target = null;
+
         Entity? target = null;
+
+        Collidable = true;
         switch (Stickiness) {
             case StickinessType.Free:
                 if (TryGetTarget(ref target) && canSwitch)
@@ -165,7 +169,7 @@ public sealed class PositionTrackerRegion : Entity {
                 goto case StickinessType.UntilDeath;
 
             case StickinessType.UntilNewMatch:
-                if (Target != null && !Matches(Target) && TryGetTarget(ref target) && canSwitch)
+                if ((Target == null || !Matches(Target)) && TryGetTarget(ref target) && canSwitch)
                     Target = target;
                 break;
 
@@ -176,12 +180,15 @@ public sealed class PositionTrackerRegion : Entity {
 
             case StickinessType.Lifelink:
             case StickinessType.Soulbond:
-                if (EverTargetted && Target == null)
+                if (!EverTargetted && TryGetTarget(ref target) && canSwitch)
+                    Target = target;
+                else if (Target == null && (EverTargetted || Stickiness == StickinessType.Soulbond))
                     RemoveSelf();
                 break;
 
             default: throw new Exception("unreachable");
         }
+        Collidable = false;
 
         EverTargetted |= Target != null;
     }
@@ -189,11 +196,12 @@ public sealed class PositionTrackerRegion : Entity {
     private bool TryGetTarget(ref Entity? target)
         => (target ??= Filter(Candidates)) != null;
 
-    private List<Entity> Candidates {
+    private IEnumerable<Entity> Candidates {
         get {
             switch (WillTarget) {
                 case TargetType.Player: return Scene.Tracker.GetEntities<Player>();
                 case TargetType.Actor: return Scene.Tracker.GetEntities<Actor>();
+                case TargetType.NonPlayerActor: return Scene.Tracker.GetEntities<Actor>().Where(c => c is not Player);
                 case TargetType.Solid: return Scene.Tracker.GetEntities<Solid>();
                 default: throw new Exception("unreachable");
             }
@@ -228,7 +236,12 @@ public sealed class PositionTrackerRegion : Entity {
         if (e.Collider == null)
             return Collide.CheckPoint(this, e.Position);
 
-        return Collide.CheckRect(this, e.Collider.Bounds);
+        return (
+            e.Collider.AbsoluteLeft >= Left
+            && e.Collider.AbsoluteRight <= Right
+            && e.Collider.AbsoluteTop >= Top
+            && e.Collider.AbsoluteBottom <= Bottom
+        );
     }
 
     private bool IsIntersecting(Entity e) {
@@ -239,5 +252,29 @@ public sealed class PositionTrackerRegion : Entity {
     }
 
     #endregion Targetting
+    #region --- Rendering ---
+
+    public override void DebugRender(Camera camera) {
+        base.DebugRender(camera);
+
+        var canSwitch = Enabled;
+        switch (Stickiness) {
+            case StickinessType.Free:
+                break;
+            case StickinessType.Transient:
+            case StickinessType.UntilNewMatch:
+                canSwitch &= Target == null || !Matches(Target); break;
+            default:
+                canSwitch &= Target == null; break;
+        }
+
+        Draw.HollowRect(X, Y, Width, Height, canSwitch ? Color.Red : Color.DarkRed);
+
+        if (EverTargetted)
+            Draw.Line(Center, new(SliderX.Value, SliderY.Value), Target == null ? Color.DarkRed : Color.Red);
+    }
+
+    #endregion Rendering
+
 
 }

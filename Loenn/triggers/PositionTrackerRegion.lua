@@ -5,6 +5,7 @@ local fieldInformation = {
     options = {
       "Player",
       "Actor",
+      "NonPlayerActor",
       "Solid"
     }
   },
@@ -42,6 +43,7 @@ local abbreviations = {
   target = {
     Player = "P",
     Actor = "A",
+    NonPlayerActor = "N",
     Solid = "S",
   },
   detection = {
