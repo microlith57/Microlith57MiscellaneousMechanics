@@ -132,6 +132,7 @@ public partial class Box : Actor {
             SlowFall = false,
             SlowRun = true,
             OnPickup = OnPickup,
+            OnCarry = OnCarry,
             OnRelease = OnRelease,
             DangerousCheck = Dangerous,
             OnHitSpring = HitSpring,
@@ -296,9 +297,6 @@ public partial class Box : Actor {
 
         MoveH(Speed.X * Engine.DeltaTime, onCollideH);
         MoveV(Speed.Y * Engine.DeltaTime, onCollideV);
-
-        // aaaaaaaaaa
-        Position = Position.Round();
 
         UpdatePhysics_ClampBounds();
     }
@@ -491,6 +489,8 @@ public partial class Box : Actor {
 
             GravUpdate(playerInvert);
     }
+
+    private void OnCarry(Vector2 pos) => Position = pos.Round();
 
     private void OnRelease(Vector2 dir) {
         RemoveTag(Tags.Persistent);
