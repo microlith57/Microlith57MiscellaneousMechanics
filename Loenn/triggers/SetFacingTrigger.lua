@@ -43,6 +43,7 @@ return {
         }
       }
     },
-    fieldInformation = fieldInformation
+    fieldInformation = fieldInformation,
+    triggerText = "Set Facing (Expression)"
   }
 }

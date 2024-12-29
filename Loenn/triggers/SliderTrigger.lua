@@ -26,7 +26,8 @@ return {
         }
       }
     },
-    fieldInformation = fieldInformation
+    fieldInformation = fieldInformation,
+    triggerText = "Set Slider"
   },
   {
     name = "Microlith57Misc/SliderTrigger_Expression",
@@ -45,6 +46,7 @@ return {
         }
       }
     },
-    fieldInformation = fieldInformation
+    fieldInformation = fieldInformation,
+    triggerText = "Set Slider (Expression)"
   }
 }

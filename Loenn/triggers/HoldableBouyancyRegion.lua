@@ -35,6 +35,7 @@ return {
           alsoAffectPlayer = false
         }
       }
-    }
+    },
+    triggerText = "Holdable Bouyancy Region (Expression)"
   }
 }

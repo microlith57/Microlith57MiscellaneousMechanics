@@ -23,7 +23,7 @@ public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
         ConditionSource enabledCondition,
         Vector2Source targetSource,
         Vector2Source lerpStrengthSource
-    ) : base(data, offset) {
+    ) : base(AddDummyNode(data), offset) {
 
         Add(Condition = enabledCondition);
         this.Add(TargetSource = targetSource);
@@ -31,6 +31,15 @@ public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
 
         TargetSource.Default = Target;
         LerpStrengthSource.Default = LerpStrength;
+    }
+
+    public override void Awake(Scene scene) {
+        base.Awake(scene);
+
+        if (Scene.Tracker.GetEntity<Player>() is Player player)
+            player.PreUpdate += (_) => {
+                Collidable = Enabled;
+            };
     }
 
     public static SliderCameraTargetTrigger CreateFlag(Level level, LevelData _, Vector2 offset, EntityData data)
@@ -50,9 +59,15 @@ public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
         );
 
     public override void OnStay(Player player) {
-        Target = TargetSource.Value;
+        Target = TargetSource.Value - new Vector2(320 / 2, 180 / 2);
         LerpStrength = LerpStrengthSource.Value;
         base.OnStay(player);
+    }
+
+    private static EntityData AddDummyNode(EntityData data) {
+        if (data.Nodes.Length == 0)
+            data.Nodes = [data.Position + new Vector2(data.Width, data.Height) / 2f];
+        return data;
     }
 
 }
@@ -82,6 +97,7 @@ public sealed class SliderCameraOffsetTrigger : CameraOffsetTrigger {
         Vector2Source offsetSourceTo
     ) : base(data, offset) {
 
+        Mode = data.Enum("direction", PositionModes.NoEffect);
         Coarse = data.Bool("coarse");
 
         Add(Condition = enabledCondition);

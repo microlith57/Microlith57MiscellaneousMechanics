@@ -8,6 +8,7 @@ local fieldInformation = {
     editable = false
   }
 }
+
 local fieldOrder = {
   "x", "y", "width", "height",
   "deleteFlag", "lerpStrength",
@@ -24,6 +25,7 @@ local fieldOrder = {
 }
 
 ignoredFields = {
+  "_name", "_id", "originX", "originY",
   "lerpStrength"
 }
 
@@ -53,7 +55,7 @@ return {
       }
     },
     fieldInformation = fieldInformation,
-    fieldOrder = fieldInformation,
+    fieldOrder = fieldOrder,
     ignoredFields = ignoredFields
   },
   {
@@ -81,7 +83,8 @@ return {
       }
     },
     fieldInformation = fieldInformation,
-    fieldOrder = fieldInformation,
-    ignoredFields = ignoredFields
+    fieldOrder = fieldOrder,
+    ignoredFields = ignoredFields,
+    triggerText = "Slider Camera Target (Expression)"
   }
 }

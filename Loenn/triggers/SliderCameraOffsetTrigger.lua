@@ -2,6 +2,13 @@ local enums = require("consts.celeste_enums")
 
 -- todo lang
 
+local fieldInformation = {
+  direction = {
+    options = enums.trigger_position_modes,
+    editable = false
+  }
+}
+
 local fieldOrder = {
   "x", "y", "width", "height",
   "cameraX", "cameraY",
@@ -12,13 +19,14 @@ local fieldOrder = {
   "offsetFromExpressionX", "offsetFromExpressionY",
   "offsetToExpressionX", "offsetToExpressionY",
 
-  "coarse",
+  "direction", "coarse",
 
   "enableFlag", "invertFlag",
   "enableExpression"
 }
 
 local ignoredFields = {
+  "_name", "_id", "originX", "originY",
   "cameraX", "cameraY"
 }
 
@@ -38,6 +46,7 @@ return {
           offsetToSliderX = "0.0",
           offsetToSliderY = "0.0",
 
+          direction = "LeftToRight",
           coarse = false,
 
           enableFlag = "",
@@ -45,11 +54,14 @@ return {
         }
       }
     },
+    fieldInformation = fieldInformation,
     fieldOrder = fieldOrder,
-    ignoredFields = ignoredFields
+    ignoredFields = ignoredFields,
+    triggerText = "Slider Camera Offset"
   },
   {
     name = "Microlith57Misc/SliderCameraOffsetTrigger_Expression",
+    associatedMods = {"Microlith57Misc", "FrostHelper"},
     category = "camera",
     placements = {
       {
@@ -63,13 +75,16 @@ return {
           offsetToExpressionX = "0.0",
           offsetToExpressionY = "0.0",
 
+          direction = "LeftToRight",
           coarse = false,
 
           enableExpression = ""
         }
       }
     },
+    fieldInformation = fieldInformation,
     fieldOrder = fieldOrder,
-    ignoredFields = ignoredFields
+    ignoredFields = ignoredFields,
+    triggerText = "Slider Camera Offset (Expression)"
   }
 }
