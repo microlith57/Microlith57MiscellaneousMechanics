@@ -6,6 +6,7 @@
         <RootNamespace>Celeste.Mod.Microlith57Misc</RootNamespace>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
+        <NuGetAuditLevel>critical</NuGetAuditLevel>
         <CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\..\Celeste.dll')">..\..\..</CelestePrefix>
         <CelestePrefix Condition="'$(CelestePrefix)' == ''">lib-stripped</CelestePrefix>
         <ZippedFiles>..\everest.yaml;..\Code\**\*.*;..\Audio\**\*.*;..\Dialog\**\*.*;..\Graphics\**\*.*;..\Ahorn\**\*.*;..\Loenn\**\*.*</ZippedFiles>
