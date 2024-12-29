@@ -97,18 +97,45 @@ entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.p
 entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.unpackedColorPrefix=R, G, B, and A will be appended to this value to get the slider names for the four components of the color.
 
 # Holdable Bouyancy Region
-triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region
+triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region (Flag)
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.minForce=How much force to exert (px/sec^2) when the holdable is just touching the surface.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.maxForce=How much force to exert (px/sec^2) when the holdable is fully submerged.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.damping=Coefficient controlling how much motion is slowed in the region; acts like viscosity.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.flag=If present, apply bouyancy only when the flag is set.
 
+triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region (Expression)
+triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.minForce=How much force to exert (px/sec^2) when the holdable is just touching the surface.
+triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.maxForce=How much force to exert (px/sec^2) when the holdable is fully submerged.
+triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.damping=Coefficient controlling how much motion is slowed in the region; acts like viscosity.
+triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.flag=If present, apply bouyancy only when the flag is set.
+
 # Set Player Facing Trigger
-triggers.Microlith57Misc/SetFacingTrigger.placements.name.setFacingTrigger=Set Player Facing Trigger
+triggers.Microlith57Misc/SetFacingTrigger.placements.name.setFacingTrigger=Set Player Facing Trigger (Flag)
 triggers.Microlith57Misc/SetFacingTrigger.attributes.description.direction=Direction to make the player face.
 triggers.Microlith57Misc/SetFacingTrigger.attributes.description.flag=If present, only make the player face that direction if the flag is set.
 triggers.Microlith57Misc/SetFacingTrigger.attributes.description.invertIfUnset=If the flag is unset, make the player face the other way.
 triggers.Microlith57Misc/SetFacingTrigger.attributes.description.continuous=Continue to set the player's facing direction the whole time they're in the trigger.
+
+triggers.Microlith57Misc/SetFacingTrigger_Expression.placements.name.setFacingTrigger=Set Player Facing Trigger (Expression)
+triggers.Microlith57Misc/SetFacingTrigger_Expression.attributes.description.direction=Direction to make the player face.
+triggers.Microlith57Misc/SetFacingTrigger_Expression.attributes.description.flag=If present, only make the player face that direction if the flag is set.
+triggers.Microlith57Misc/SetFacingTrigger_Expression.attributes.description.invertIfUnset=If the flag is unset, make the player face the other way.
+triggers.Microlith57Misc/SetFacingTrigger_Expression.attributes.description.continuous=Continue to set the player's facing direction the whole time they're in the trigger.
+
+# Slider Trigger
+triggers.Microlith57Misc/SliderTrigger.placements.name.sliderTrigger=Slider Trigger (Flag)
+triggers.Microlith57Misc/SliderTrigger.attributes.description.flag=If present, only change the slider if the flag is set.
+triggers.Microlith57Misc/SliderTrigger.attributes.description.slider=Slider to change.
+triggers.Microlith57Misc/SliderTrigger.attributes.description.to=Determines the parameter value at the end of the trigger area.
+triggers.Microlith57Misc/SliderTrigger.attributes.description.from=Determines the parameter value at the start of the trigger area.
+triggers.Microlith57Misc/SliderTrigger.attributes.description.direction=Determines the direction of the fade across the trigger area.\nThe slider fades between the "From" and the "To" value as the player moves through the trigger.
+
+triggers.Microlith57Misc/SliderTrigger_Expression.placements.name.sliderTrigger=Slider Trigger (Expression)
+triggers.Microlith57Misc/SliderTrigger_Expression.attributes.description.flag=If present, only change the slider if the flag is set.
+triggers.Microlith57Misc/SliderTrigger_Expression.attributes.description.slider=Slider to change.
+triggers.Microlith57Misc/SliderTrigger_Expression.attributes.description.to=Determines the parameter value at the end of the trigger area.
+triggers.Microlith57Misc/SliderTrigger_Expression.attributes.description.from=Determines the parameter value at the start of the trigger area.
+triggers.Microlith57Misc/SliderTrigger_Expression.attributes.description.direction=Determines the direction of the fade across the trigger area.\nThe slider fades between the "From" and the "To" value as the player moves through the trigger.
 
 # --- nonpublic ---
 

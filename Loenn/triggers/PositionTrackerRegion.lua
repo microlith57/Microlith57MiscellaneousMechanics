@@ -1,0 +1,172 @@
+local utils = require("utils")
+
+-- todo: lang
+
+local fieldInformation = {
+  target = {
+    options = {
+      "Player",
+      "Actor",
+      "Solid"
+    }
+  },
+  detection = {
+    options = {
+      "Within",
+      "Intersecting",
+      "Nearest"
+    }
+  },
+  stickiness = {
+    options = {
+      "Free",
+      "Transient",
+      "UntilNewMatch",
+      "UntilDeath",
+      "Lifelink",
+      "Soulbond"
+    }
+  },
+  tracking = {
+    options = {
+      "Position",
+      "Center",
+      "TopCenter",
+      "BottomCenter",
+      "CenterLeft",
+      "CenterRight",
+      "Size"
+    }
+  }
+}
+
+local abbreviations = {
+  target = {
+    Player = "P",
+    Actor = "A",
+    Solid = "S",
+  },
+  detection = {
+    Within = "W",
+    Intersecting = "I",
+    Nearest = "N",
+  },
+  stickiness = {
+    Free = "F",
+    Transient = "T",
+    UntilNewMatch = "N",
+    UntilDeath = "D",
+    Lifelink = "L",
+    Soulbond = "S",
+  },
+  tracking = {
+    Position = "P",
+    Center = "C",
+    TopCenter = "T",
+    BottomCenter = "B",
+    CenterLeft = "L",
+    CenterRight = "R",
+    Size = "S",
+  },
+}
+
+local fieldOrder = {
+  "x",
+  "y",
+  "width",
+  "height",
+  "flag",
+  "invertFlag",
+  "expression",
+
+  "target",
+  "detection",
+  "stickiness",
+  "tracking",
+
+  "sliderPrefix",
+  "targettingFlag",
+}
+
+local function abbr(str, options)
+  return options[str] or "?"
+end
+
+local function triggerTextFlag(room, trigger)
+  return (
+    "Position Tracker Region (Flag) - "
+    .. trigger.sliderPrefix
+    .. " ("
+    .. abbr(trigger.target, abbreviations.target)
+    .. abbr(trigger.detection, abbreviations.detection)
+    .. abbr(trigger.stickiness, abbreviations.stickiness)
+    .. abbr(trigger.tracking, abbreviations.tracking)
+    .. ")"
+  )
+end
+
+local function triggerTextExpr(room, trigger)
+  return (
+    "Position Tracker Region (Expression) - "
+    .. trigger.sliderPrefix
+    .. " ("
+    .. abbr(trigger.target, abbreviations.target)
+    .. abbr(trigger.detection, abbreviations.detection)
+    .. abbr(trigger.stickiness, abbreviations.stickiness)
+    .. abbr(trigger.tracking, abbreviations.tracking)
+    .. ")"
+  )
+end
+
+return {
+  {
+    name = "Microlith57Misc/PositionTrackerRegion",
+    placements = {
+      {
+        name = "positionTrackerRegion",
+        data = {
+          width = 16,
+          height = 16,
+          flag = "",
+          invertFlag = false,
+
+          target = "Player",
+          detection = "Intersecting",
+          stickiness = "Lifelink",
+          tracking = "Position",
+
+          sliderPrefix = "trackedPosition",
+          targettingFlag = "",
+        }
+      }
+    },
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder,
+    triggerText = triggerTextFlag,
+  },
+  {
+    name = "Microlith57Misc/PositionTrackerRegion_Expression",
+    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    placements = {
+      {
+        name = "positionTrackerRegion",
+        data = {
+          width = 16,
+          height = 16,
+          expression = "",
+
+          target = "Player",
+          detection = "Intersecting",
+          stickiness = "Lifelink",
+          tracking = "Position",
+
+          sliderPrefix = "trackedPosition",
+          targettingFlag = "",
+        }
+      }
+    },
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder,
+    triggerText = triggerTextExpr,
+  }
+}

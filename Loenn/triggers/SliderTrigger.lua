@@ -1,44 +1,46 @@
 local utils = require("utils")
+local celesteEnums = require("consts.celeste_enums")
 
 local fieldInformation = {
   direction = {
-    options = {
-      "Left",
-      "Right"
-    }
+    options = celesteEnums.trigger_position_modes
   }
 }
 
 return {
   {
-    name = "Microlith57Misc/SetFacingTrigger",
+    name = "Microlith57Misc/SliderTrigger",
     placements = {
       {
-        name = "setFacingTrigger",
+        name = "sliderTrigger",
         data = {
           width = 16,
           height = 16,
-          direction = "Left",
           flag = "",
-          invertIfUnset = false,
-          continuous = true
+          invertFlag = false,
+          slider = "slider",
+          from = 0.0,
+          to = 1.0,
+          direction = "LeftToRight"
         }
       }
     },
     fieldInformation = fieldInformation
   },
   {
-    name = "Microlith57Misc/SetFacingTrigger_Expression",
+    name = "Microlith57Misc/SliderTrigger_Expression",
     associatedMods = {"Microlith57Misc", "FrostHelper"},
     placements = {
       {
-        name = "setFacingTrigger",
+        name = "sliderTrigger",
         data = {
           width = 16,
           height = 16,
-          direction = "Left",
           expression = "",
-          continuous = true
+          slider = "slider",
+          from = 0.0,
+          to = 1.0,
+          direction = "LeftToRight"
         }
       }
     },

@@ -39,7 +39,7 @@ public sealed class SliderColorgradeController : SliderController {
         => new(
             data, offset,
             new ConditionSource.Expr(data) { Default = true },
-            new FloatSource.Expr(data, ifAbsent: "@colorgradeLerp")
+            new FloatSource.Expr(data, name: "lerp", ifAbsent: "@colorgradeLerp")
         );
 
     #endregion Init
@@ -48,24 +48,29 @@ public sealed class SliderColorgradeController : SliderController {
     public override void Update() {
         base.Update();
 
-        if (!Enabled || Scene is not Level level) return;
+        if (Scene is not Level level || !Enabled) return;
 
-        if (ColorgradeA == ColorgradeB) {
-            level.SnapColorGrade(ColorgradeA);
-        } else {
-            string from = ColorgradeA, to = ColorgradeB;
-            float lerp = Value;
+        LerpColorgrade(level, ColorgradeA, ColorgradeB, Value);
+    }
 
-            if (lerp > 0.5f) {
-                lerp = 0.5f - lerp;
-                (from, to) = (to, from);
-            }
-
-            level.lastColorGrade = from;
-            level.Session.ColorGrade = to;
-            level.colorGradeEase = lerp;
-            level.colorGradeEaseSpeed = 0f;
+    private static void LerpColorgrade(Level level, string from, string to, float lerp) {
+        if (from == to || lerp == 0f) {
+            level.SnapColorGrade(from);
+            return;
+        } else if (lerp == 1f) {
+            level.SnapColorGrade(to);
+            return;
         }
+
+        if (lerp > 0.5f) {
+            lerp = 1f - lerp;
+            (from, to) = (to, from);
+        }
+
+        level.lastColorGrade = from;
+        level.Session.ColorGrade = to;
+        level.colorGradeEase = lerp;
+        level.colorGradeEaseSpeed = 0f;
     }
 
     #endregion Behaviour

@@ -21,6 +21,7 @@ return {
   },
   {
     name = "Microlith57Misc/HoldableBouyancyRegion_Expression",
+    associatedMods = {"Microlith57Misc", "FrostHelper"},
     placements = {
       {
         name = "holdableBouyancyRegion",
