@@ -81,26 +81,26 @@ public sealed class SliderStylegroundController : Entity {
         if (Scene is not Level level) return;
 
         float? position_x = PositionSource.X.RawValue;
-        float? position_y = PositionSource.X.RawValue;
+        float? position_y = PositionSource.Y.RawValue;
 
         float? scroll_x = ScrollSource.X.RawValue;
-        float? scroll_y = ScrollSource.X.RawValue;
+        float? scroll_y = ScrollSource.Y.RawValue;
 
         float? speed_x = SpeedSource.X.RawValue;
-        float? speed_y = SpeedSource.X.RawValue;
+        float? speed_y = SpeedSource.Y.RawValue;
 
         float? alpha = Alpha;
         Color? color = Color;
 
         foreach (Backdrop backdrop in level.Background.GetEach<Backdrop>(StyleTag)) {
             if (position_x != null) backdrop.Position.X = position_x.Value;
-            if (position_y != null) backdrop.Position.X = position_y.Value;
+            if (position_y != null) backdrop.Position.Y = position_y.Value;
 
             if (scroll_x != null) backdrop.Scroll.X = scroll_x.Value;
-            if (scroll_y != null) backdrop.Scroll.X = scroll_y.Value;
+            if (scroll_y != null) backdrop.Scroll.Y = scroll_y.Value;
 
             if (speed_x != null) backdrop.Speed.X = speed_x.Value;
-            if (speed_y != null) backdrop.Speed.X = speed_y.Value;
+            if (speed_y != null) backdrop.Speed.Y = speed_y.Value;
 
             if (color != null) backdrop.Color = color.Value;
             if (alpha != null) backdrop.FadeAlphaMultiplier = alpha.Value;
@@ -108,13 +108,13 @@ public sealed class SliderStylegroundController : Entity {
 
         foreach (Backdrop backdrop in level.Foreground.GetEach<Backdrop>(StyleTag)) {
             if (position_x != null) backdrop.Position.X = position_x.Value;
-            if (position_y != null) backdrop.Position.X = position_y.Value;
+            if (position_y != null) backdrop.Position.Y = position_y.Value;
 
             if (scroll_x != null) backdrop.Scroll.X = scroll_x.Value;
-            if (scroll_y != null) backdrop.Scroll.X = scroll_y.Value;
+            if (scroll_y != null) backdrop.Scroll.Y = scroll_y.Value;
 
             if (speed_x != null) backdrop.Speed.X = speed_x.Value;
-            if (speed_y != null) backdrop.Speed.X = speed_y.Value;
+            if (speed_y != null) backdrop.Speed.Y = speed_y.Value;
 
             if (color != null) backdrop.Color = color.Value;
             if (alpha != null) backdrop.FadeAlphaMultiplier = alpha.Value;
