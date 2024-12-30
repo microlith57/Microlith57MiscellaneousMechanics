@@ -4,6 +4,7 @@ using Celeste.Mod.Entities;
 
 using Celeste.Mod.Microlith57Misc.Components;
 using static Celeste.Mod.Microlith57Misc.Components.ConditionSource;
+using System.Linq;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -14,6 +15,8 @@ namespace Celeste.Mod.Microlith57Misc.Entities;
 )]
 public sealed class FocusController : Entity {
 
+    // todo: sound, consumption
+
     #region --- State ---
 
     private readonly ConditionSource EnabledCondition;
@@ -22,11 +25,11 @@ public sealed class FocusController : Entity {
     private readonly ConditionSource TargetCondition;
     public bool TryingToFocus => CanFocus && TargetCondition.Value;
 
-    // public readonly (
-    //     ConsumableResource Resource,
-    //     float ConsumptionRate,
-    //     float RecoveryRate
-    // )? Consumption;
+    private string? consumptionUnbound;
+
+    public ConsumableResource? Consumption { get; private set; }
+    public readonly float ConsumptionMultiplier;
+    private ConsumableResource.Drain Drain;
 
     public readonly float FadeDuration;
     public readonly Session.Slider Slider;
@@ -48,13 +51,8 @@ public sealed class FocusController : Entity {
 
         Slider = slider;
 
-        // if (resource is not null)  {
-        //     Consumption = (
-        //         resource,
-        //         data.Float("consumptionRate"),
-        //         data.Float("recoveryRate")
-        //     );
-        // }
+        consumptionUnbound = data.Attr("consumptionResourceName");
+        ConsumptionMultiplier = data.Float("consumptionMultiplier", 1f);
 
         FadeDuration = data.Float("fadeDuration", 0f);
     }
@@ -71,7 +69,7 @@ public sealed class FocusController : Entity {
         => new(
             data, offset,
             new Flag(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
-            new Function(() => Input.Talk),
+            new Function(() => Input.Grab),
             level.Session.GetSliderObject(data.Attr("slider", "focus"))
         );
 
@@ -86,12 +84,26 @@ public sealed class FocusController : Entity {
     #endregion Init
     #region --- Behaviour ---
 
+    public override void Awake(Scene scene) {
+        base.Awake(scene);
+
+        if (consumptionUnbound != null) {
+            Consumption = (ConsumableResource?)Scene.Tracker
+                .GetEntities<ConsumableResource>()
+                .FirstOrDefault(c => c is ConsumableResource r && r.Name == consumptionUnbound);
+            consumptionUnbound = null;
+        }
+    }
+
     public override void Update() {
         base.Update();
 
         bool shouldSlow = TryingToFocus;
 
-        // TODO consumption
+        if (Consumption != null) {
+            if (!Consumption.CanConsume)
+                shouldSlow = false;
+        }
 
         float lerpTarget = shouldSlow ? 1f : 0f;
         if (FadeDuration == 0f)
