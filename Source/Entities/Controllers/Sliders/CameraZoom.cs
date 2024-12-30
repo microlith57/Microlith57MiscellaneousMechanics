@@ -16,6 +16,8 @@ public sealed class SliderCameraZoomController : SliderController {
     private readonly Vector2Source FocusSource;
     public Vector2 Focus => FocusSource.Value;
 
+    private bool wasEnabled = false;
+
     #endregion State
     #region --- Init ---
 
@@ -34,10 +36,10 @@ public sealed class SliderCameraZoomController : SliderController {
             data, offset,
             new ConditionSource.Flag(data) { Default = true },
             new(
-                new FloatSource.Slider(level.Session, data, "focusXSlider") { Default = 320 / 2 },
-                new FloatSource.Slider(level.Session, data, "focusYSlider") { Default = 180 / 2 }
+                new FloatSource.Slider(level.Session, data, "focusXSlider", ifAbsent: "160"),
+                new FloatSource.Slider(level.Session, data, "focusYSlider", ifAbsent: "90")
             ),
-            new FloatSource.Slider(level.Session, data, name: "amount") { Default = 1f }
+            new FloatSource.Slider(level.Session, data, name: "amount", ifAbsent: "1.0")
         );
 
     public static SliderCameraZoomController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
@@ -45,10 +47,10 @@ public sealed class SliderCameraZoomController : SliderController {
             data, offset,
             new ConditionSource.Expr(data) { Default = true },
             new(
-                new FloatSource.Expr(data, "focusXExpression") { Default = 320 / 2 },
-                new FloatSource.Expr(data, "focusYExpression") { Default = 180 / 2 }
+                new FloatSource.Expr(data, "focusXExpression", ifAbsent: "160"),
+                new FloatSource.Expr(data, "focusYExpression", ifAbsent: "90")
             ),
-            new FloatSource.Expr(data, name: "amount") { Default = 1f }
+            new FloatSource.Expr(data, name: "amount", ifAbsent: "1.0")
         );
 
     #endregion Init
@@ -59,8 +61,12 @@ public sealed class SliderCameraZoomController : SliderController {
 
         if (Scene is not Level level) return;
 
-        // todo: adv camera utils interop?
-        level.ZoomSnap(Focus, Value);
+        if (Enabled)
+            level.ZoomSnap(Focus, Value);
+        else if (wasEnabled)
+            level.ZoomSnap(new(320 / 2, 180 / 2), 1f);
+
+        wasEnabled = Enabled;
     }
 
     #endregion Behaviour

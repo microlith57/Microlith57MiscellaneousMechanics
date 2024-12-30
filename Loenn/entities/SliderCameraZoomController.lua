@@ -1,6 +1,6 @@
 local utils = require("utils")
 
--- TODO: lang, art
+-- TODO: art
 
 return {
   {
@@ -13,9 +13,9 @@ return {
         data = {
           flag = "",
           invertFlag = false,
-          focusXSlider = "",
-          focusYSlider = "",
-          amount = ""
+          focusXSlider = "160",
+          focusYSlider = "90",
+          amount = "1.0"
         }
       }
     }
@@ -30,9 +30,9 @@ return {
         name = "sliderCameraZoomController",
         data = {
           expression = "",
-          focusXExpression = "",
-          focusYExpression = "",
-          amount = ""
+          focusXExpression = "160",
+          focusYExpression = "90",
+          amount = "1.0"
         }
       }
     }
