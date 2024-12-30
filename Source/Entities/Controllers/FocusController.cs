@@ -1,21 +1,18 @@
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Celeste.Mod.Entities;
 
 using Celeste.Mod.Microlith57Misc.Components;
-using static Celeste.Mod.Microlith57Misc.Components.ConditionSource;
-using System.Linq;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(
     "Microlith57Misc/FocusController=Create",
     "Microlith57Misc/FocusController_Button=CreateButton",
-    "Microlith57Misc/FocusController_Expression=CreateExprs"
+    "Microlith57Misc/FocusController_Expression=CreateExpr"
 )]
 public sealed class FocusController : Entity {
-
-    // todo: sound, consumption
 
     #region --- State ---
 
@@ -25,11 +22,15 @@ public sealed class FocusController : Entity {
     private readonly ConditionSource TargetCondition;
     public bool TryingToFocus => CanFocus && TargetCondition.Value;
 
+    public readonly bool UseRawDeltaTime;
+    public float DeltaTime => UseRawDeltaTime ? Engine.RawDeltaTime : Engine.DeltaTime;
+
     private string? consumptionUnbound;
 
     public ConsumableResource? Consumption { get; private set; }
-    public readonly float ConsumptionMultiplier;
-    private ConsumableResource.Drain Drain;
+    public readonly float ConsumptionRate;
+    public readonly bool UnfocusWhenResourceLow = true;
+    private ConsumableResource.Drain? Drain;
 
     public readonly float FadeDuration;
     public readonly Session.Slider Slider;
@@ -49,35 +50,38 @@ public sealed class FocusController : Entity {
         Add(EnabledCondition = enabledCondition);
         Add(TargetCondition = targetCondition);
 
+        UseRawDeltaTime = data.Bool("useRawDeltaTime");
+
         Slider = slider;
 
         consumptionUnbound = data.Attr("consumptionResourceName");
-        ConsumptionMultiplier = data.Float("consumptionMultiplier", 1f);
+        ConsumptionRate = data.Float("consumptionRate", 12f);
+        UnfocusWhenResourceLow = data.Bool("unfocusWhenResourceLow", true);
 
-        FadeDuration = data.Float("fadeDuration", 0f);
+        FadeDuration = data.Float("fadeDuration", 1f);
     }
 
     public static FocusController Create(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new Flag(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
-            new Flag(data, name: "activeFlag", ifAbsent: "timeSlowActive", invertName: "invertActiveFlag"),
+            new ConditionSource.Flag(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
+            new ConditionSource.Flag(data, name: "activeFlag", ifAbsent: "tryingToFocus", invertName: "invertActiveFlag"),
             level.Session.GetSliderObject(data.Attr("slider", "focus"))
         );
 
     public static FocusController CreateButton(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new Flag(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
-            new Function(() => Input.Grab),
+            new ConditionSource.Flag(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
+            new ConditionSource.Function(() => Input.Grab),
             level.Session.GetSliderObject(data.Attr("slider", "focus"))
         );
 
-    public static FocusController CreateExprs(Level level, LevelData __, Vector2 offset, EntityData data)
+    public static FocusController CreateExpr(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
-            new Expr(data, name: "enabledExpression") { Default = true },
-            new Expr(data, name: "activeExpression", ifAbsent: "$input.talk"),
+            new ConditionSource.Expr(data, name: "enabledExpression") { Default = true },
+            new ConditionSource.Expr(data, name: "activeExpression", ifAbsent: "$input.grab"),
             level.Session.GetSliderObject(data.Attr("slider", "focus"))
         );
 
@@ -87,10 +91,19 @@ public sealed class FocusController : Entity {
     public override void Awake(Scene scene) {
         base.Awake(scene);
 
-        if (consumptionUnbound != null) {
+        if (consumptionUnbound != "") {
             Consumption = (ConsumableResource?)Scene.Tracker
                 .GetEntities<ConsumableResource>()
                 .FirstOrDefault(c => c is ConsumableResource r && r.Name == consumptionUnbound);
+
+            if (Consumption != null)
+                Add(Drain = new(
+                        Consumption,
+                        ConsumptionRate,
+                        UseRawDeltaTime,
+                        stacks: true
+                    ) { Active = false });
+
             consumptionUnbound = null;
         }
     }
@@ -101,15 +114,21 @@ public sealed class FocusController : Entity {
         bool shouldSlow = TryingToFocus;
 
         if (Consumption != null) {
+            Drain!.Active = shouldSlow;
+
             if (!Consumption.CanConsume)
                 shouldSlow = false;
         }
 
         float lerpTarget = shouldSlow ? 1f : 0f;
+
+        if (Consumption != null && UnfocusWhenResourceLow)
+            lerpTarget *= Calc.ClampedMap(Consumption.Current, 0f, Consumption.Low);
+
         if (FadeDuration == 0f)
             Slider.Value = lerpTarget;
         else
-            Slider.Value = Calc.Approach(Slider.Value, lerpTarget, Engine.RawDeltaTime / FadeDuration);
+            Slider.Value = Calc.Approach(Slider.Value, lerpTarget, DeltaTime / FadeDuration);
     }
 
     #endregion Behaviour

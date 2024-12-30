@@ -7,6 +7,7 @@ using Monocle;
 using Celeste.Mod.Microlith57Misc.Entities;
 using Celeste.Mod.Microlith57Misc.Entities.Recordings;
 using MonoMod.ModInterop;
+using Celeste.Mod.Microlith57Misc.Components;
 
 namespace Celeste.Mod.Microlith57Misc;
 
@@ -39,6 +40,8 @@ public class Module : EverestModule {
 
         On.Celeste.Level.Update += hookLevelUpdate;
 
+        CappedStamina.Load();
+
         typeof(Imports.FrostHelper).ModInterop();
     }
 
@@ -49,6 +52,8 @@ public class Module : EverestModule {
         On.Celeste.Player.Update -= hookPlayerUpdate;
         On.Celeste.Player.IsRiding_JumpThru -= hookPlayerIsRiding;
         On.Celeste.Player.DustParticleFromSurfaceIndex -= hookDustParticle;
+
+        CappedStamina.Unload();
 
         On.Celeste.Level.Update -= hookLevelUpdate;
     }

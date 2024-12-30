@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Celeste.Mod.Microlith57Misc.Components;
 
@@ -11,12 +12,15 @@ public abstract class ConsumableResource : Entity {
 
     public sealed class Drain : Component {
 
+        #region --- Drain ---
+
         public readonly ConsumableResource Resource;
         public float ConsumptionRate;
-        public bool UseRawDeltaTime;
         public bool Stacks;
 
-        public float ConsumptionThisFrame => ConsumptionRate * (UseRawDeltaTime ? Engine.RawDeltaTime : Engine.DeltaTime);
+        public float ConsumptionThisFrame => ConsumptionRate * Resource.DeltaTime;
+
+        #region > Init
 
         public Drain(
             ConsumableResource resource,
@@ -35,7 +39,6 @@ public abstract class ConsumableResource : Entity {
 
             Resource = resource;
             ConsumptionRate = consumptionRate;
-            UseRawDeltaTime = rawDeltaTime;
             Stacks = stacks;
         }
 
@@ -60,9 +63,17 @@ public abstract class ConsumableResource : Entity {
             Resource.Drains.Remove(this);
         }
 
+        #endregion Drain > Init
+        #endregion Drain
+
     }
 
+    #region --- Abstract ---
+
     public readonly string Name;
+
+    public readonly bool UseRawDeltaTime;
+    public float DeltaTime => UseRawDeltaTime ? Engine.RawDeltaTime : Engine.DeltaTime;
 
     // public readonly bool FlashPlayer;
     public bool DieWhenConsumed { get; private set; }
@@ -71,7 +82,29 @@ public abstract class ConsumableResource : Entity {
     public readonly Session.Slider Slider;
     private float prevSliderValue;
 
+    public readonly float RestoreCooldown;
+    public readonly float RestoreSpeed;
+    private float cooldown;
+
+    public virtual void BumpRestoreCooldown() => cooldown = RestoreCooldown;
+
     private HashSet<Drain> Drains = [];
+
+    public abstract float Low { get; }
+    public abstract float Maximum { get; }
+    public abstract float Current { get; set; }
+
+    public virtual bool CanConsume => Current > 0f;
+    protected virtual bool ShouldFlash => Current <= Low;
+    public virtual bool Flashing
+        => ShouldFlash
+        && Scene is Level level
+        && level.BetweenInterval(0.05f);
+
+    public virtual bool CanStartRestoring => true;
+    public bool CanRestore => !Drains.Any(d => d.Active) && cooldown <= 0f;
+
+    #region > Init
 
     protected ConsumableResource(
         EntityData data, Vector2 offset,
@@ -80,7 +113,7 @@ public abstract class ConsumableResource : Entity {
         ConditionSource instantDrainCondition
     ) : base(data.Position + offset) {
 
-        Name = data.Attr("name", "resource");
+        Name = data.Attr("resource", "resourceName");
 
         var prefix = data.Attr("flagPrefix");
         if (prefix != "")
@@ -93,39 +126,52 @@ public abstract class ConsumableResource : Entity {
 
         Slider = slider;
 
+        UseRawDeltaTime = data.Bool("useRawDeltaTime");
         DieWhenConsumed = data.Bool("dieWhenConsumed");
+
+        RestoreCooldown = data.Float("restoreCooldown", 0.1f);
+        RestoreSpeed = data.Float("restoreSpeed", 120f);
 
         PreUpdate += BeforeUpdate;
         PostUpdate += AfterUpdate;
     }
 
-    public abstract float Low { get; }
-    public abstract float Current { get; set; }
-    public abstract float Maximum { get; }
-
-    public virtual bool CanConsume => Current > 0f;
-    protected virtual bool ShouldFlash => Current <= Low;
-    public virtual bool Flashing
-        => ShouldFlash
-        && Scene is Level level
-        && level.BetweenInterval(0.05f);
-
     public override void Awake(Scene scene) {
         base.Awake(scene);
-
         Slider.Value = prevSliderValue = Current;
     }
 
-    private void BeforeUpdate(Entity _) {
-        if (prevSliderValue != Slider.Value)
-            Current = Slider.Value;
+    #endregion Abstract > Init
+    #region > Behaviour
 
-        foreach (var drain in Drains)
-            Current -= drain.ConsumptionThisFrame;
+    private void BeforeUpdate(Entity _) {
+        if (prevSliderValue != Slider.Value) {
+            if (Slider.Value < Current) BumpRestoreCooldown();
+            Current = Slider.Value;
+        }
+
+        foreach (var drain in Drains) {
+            if (!drain.Active) continue;
+
+            BumpRestoreCooldown();
+            if (CanConsume)
+                Current = Calc.Approach(Current, 0f, drain.ConsumptionThisFrame);
+            else break;
+        }
     }
 
     private void AfterUpdate(Entity _) {
         if (Scene is not Level level) return;
+
+        if (cooldown > 0) {
+            if (CanStartRestoring)
+                cooldown = Calc.Approach(cooldown, 0f, DeltaTime);
+        } else if (Current < Maximum) {
+            if (RestoreSpeed < 0)
+                Current = Maximum;
+            else
+                Current = Calc.Approach(Current, Maximum, RestoreSpeed * DeltaTime);
+        }
 
         var c = Current;
 
@@ -136,12 +182,67 @@ public abstract class ConsumableResource : Entity {
 
         if (FlagNames.HasValue) {
             level.Session.SetFlag(FlagNames.Value.Any, c > 0f);
-            level.Session.SetFlag(FlagNames.Value.Full, c > Maximum);
+            level.Session.SetFlag(FlagNames.Value.Full, c >= Maximum);
             level.Session.SetFlag(FlagNames.Value.Low, c <= Low);
             level.Session.SetFlag(FlagNames.Value.Flash, Flashing);
         }
 
         Slider.Value = prevSliderValue = c;
+    }
+
+    #endregion Abstract > Behaviour
+    #endregion Abstract
+
+    [CustomEntity(
+        "Microlith57Misc/ConsumableResource_Custom=Create",
+        "Microlith57Misc/ConsumableResource_Custom_Expresssion=CreateExpr"
+    )]
+    public class Custom : ConsumableResource {
+
+        #region --- Custom ---
+
+        private float _Low, _Maximum;
+
+        public override float Low => _Low;
+        public override float Maximum => _Maximum;
+        public override float Current { get; set; }
+
+        #region > Init
+
+        public Custom(
+            EntityData data, Vector2 offset,
+            Session.Slider slider,
+            ConditionSource instantRefillCondition,
+            ConditionSource instantDrainCondition
+        ) : base(
+            data, offset,
+            slider,
+            instantRefillCondition,
+            instantDrainCondition
+        ) {
+            _Low = data.Float("lowThreshold", 20f);
+            _Maximum = data.Float("maximum", 110f);
+        }
+
+        public static Custom Create(Level level, LevelData __, Vector2 offset, EntityData data)
+            => new(
+                data, offset,
+                level.Session.GetSliderObject(data.Attr("resource")),
+                new ConditionSource.Flag(data, "instantRefillFlag", invertName: "invertInstantRefillFlag"),
+                new ConditionSource.Flag(data, "instantDrainFlag", invertName: "invertInstantDrainFlag")
+            );
+
+        public static Custom CreateExpr(Level level, LevelData __, Vector2 offset, EntityData data)
+            => new(
+                data, offset,
+                level.Session.GetSliderObject(data.Attr("resource")),
+                new ConditionSource.Expr(data, "instantRefillExpression"),
+                new ConditionSource.Expr(data, "instantDrainExpression")
+            );
+
+        #endregion MaxStamina > Init
+        #endregion MaxStamina
+
     }
 
     [CustomEntity(
@@ -150,12 +251,32 @@ public abstract class ConsumableResource : Entity {
     )]
     public class Stamina : ConsumableResource {
 
-        private Player? Player => (Scene as Level)?.Tracker?.GetEntity<Player>();
-        private float _Current, _Maximum;
+        #region --- Stamina ---
+
+        private Player? _Player;
+        private Player? Player
+            => _Player ??= (Scene as Level)?.Tracker?.GetEntity<Player>();
+
+        private float _Maximum, _Current;
+
+        public override float Low => 20f;
+        public override float Maximum => _Maximum;
+
+        public override float Current {
+            get => _Current;
+            set {
+                if (Player is not Player player) return;
+                if (value < _Current) BumpRestoreCooldown();
+                player.Stamina = _Current = value;
+            }
+        }
 
         public override bool Flashing
-            => Player is Player player
+            => ShouldFlash
+            && Player is Player player
             && player.flash;
+
+        #region > Init
 
         public Stamina(
             EntityData data, Vector2 offset,
@@ -187,17 +308,8 @@ public abstract class ConsumableResource : Entity {
                 new ConditionSource.Expr(data, "instantDrainExpression")
             );
 
-        public override float Low => 20f;
-
-        public override float Current {
-            get => _Current;
-            set {
-                if (Player is not Player player) return;
-                player.Stamina = _Current = value;
-            }
-        }
-
-        public override float Maximum => _Maximum;
+        #endregion Stamina > Init
+        #region > Behaviour
 
         public override void Awake(Scene scene) {
             base.Awake(scene);
@@ -217,6 +329,100 @@ public abstract class ConsumableResource : Entity {
             if (Player is Player player)
                 _Current = player.Stamina;
         }
+
+        #endregion Stamina > Behaviour
+        #endregion Stamina
+
+    }
+
+    [CustomEntity(
+        "Microlith57Misc/ConsumableResource_MaxStamina=Create",
+        "Microlith57Misc/ConsumableResource_MaxStamina_Expresssion=CreateExpr"
+    )]
+    public class MaxStamina : ConsumableResource {
+
+        #region --- MaxStamina ---
+
+        private CappedStamina? Cap;
+
+        private float _Low;
+
+        public override float Low => _Low;
+        public override float Maximum => Cap?.UpperCap ?? 110f;
+
+        public override float Current {
+            get => Cap?.CurrentCap ?? 110f;
+            set {
+                Cap!.CurrentCap = value;
+                Cap.Enforce();
+            }
+        }
+
+        public override bool Flashing
+            => ShouldFlash
+            && (Cap?.Player.flash ?? false);
+
+        private bool _CanStartRestoring = true;
+        public override bool CanStartRestoring => base.CanStartRestoring && _CanStartRestoring;
+
+        public override void BumpRestoreCooldown() {
+            base.BumpRestoreCooldown();
+            _CanStartRestoring = false;
+        }
+
+        #region > Init
+
+        public MaxStamina(
+            EntityData data, Vector2 offset,
+            Session.Slider slider,
+            ConditionSource instantRefillCondition,
+            ConditionSource instantDrainCondition
+        ) : base(
+            data, offset,
+            slider,
+            instantRefillCondition,
+            instantDrainCondition
+        ) {
+            _Low = data.Float("lowThreshold", 20f);
+            // FlashPlayer = false;
+        }
+
+        public static MaxStamina Create(Level level, LevelData __, Vector2 offset, EntityData data)
+            => new(
+                data, offset,
+                level.Session.GetSliderObject(data.Attr("resource")),
+                new ConditionSource.Flag(data, "instantRefillFlag", invertName: "invertInstantRefillFlag"),
+                new ConditionSource.Flag(data, "instantDrainFlag", invertName: "invertInstantDrainFlag")
+            );
+
+        public static MaxStamina CreateExpr(Level level, LevelData __, Vector2 offset, EntityData data)
+            => new(
+                data, offset,
+                level.Session.GetSliderObject(data.Attr("resource")),
+                new ConditionSource.Expr(data, "instantRefillExpression"),
+                new ConditionSource.Expr(data, "instantDrainExpression")
+            );
+
+        #endregion MaxStamina > Init
+        #region > Behaviour
+
+        public override void Awake(Scene scene) {
+            base.Awake(scene);
+
+            var player = Scene.Tracker.GetEntity<Player>() ?? throw new Exception("player somehow dead when creating stamina resource");
+
+            if (player.Get<CappedStamina>() is CappedStamina cap)
+                Cap = cap;
+            else
+                player.Add(Cap = new());
+
+            Cap.OnRestore += () => {
+                _CanStartRestoring = true;
+            };
+        }
+
+        #endregion MaxStamina > Behaviour
+        #endregion MaxStamina
 
     }
 
