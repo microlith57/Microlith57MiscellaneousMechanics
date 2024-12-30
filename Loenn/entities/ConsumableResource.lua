@@ -1,6 +1,6 @@
 local utils = require("utils")
 
--- todo: lang, art
+-- todo: art
 
 return {
   {

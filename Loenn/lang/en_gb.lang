@@ -76,6 +76,19 @@ entities.Microlith57Misc/SliderTimeRateController_Expression.placements.name.sli
 entities.Microlith57Misc/SliderTimeRateController_Expression.attributes.description.flag=If present, only affect the time rate if the expression is truthy.
 entities.Microlith57Misc/SliderTimeRateController_Expression.attributes.description.multiplier=Expression containing the amount to multiply the time rate by, in [0.0, ∞).
 
+# Camera Zoom Controller
+entities.Microlith57Misc/SliderCameraZoomController.placements.name.sliderCameraZoomController=Camera Zoom Controller (Slider)
+entities.Microlith57Misc/SliderCameraZoomController.attributes.description.flag=If present, only affect the zoom if the flag is set.
+entities.Microlith57Misc/SliderCameraZoomController.attributes.description.amount=Slider containing the amount to zoom by, in [1.0, ∞).
+entities.Microlith57Misc/SliderCameraZoomController.attributes.description.focusXSlider=Slider containing the focus point's screen-space X position.
+entities.Microlith57Misc/SliderCameraZoomController.attributes.description.focusYSlider=Slider containing the focus point's screen-space Y position.
+
+entities.Microlith57Misc/SliderCameraZoomController_Expression.placements.name.sliderCameraZoomController=Camera Zoom Controller (Expression)
+entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.description.flag=If present, only affect the zoom if the flag is set.
+entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.description.amount=Expression for the amount to zoom by, in [1.0, ∞).
+entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.description.focusXSlider=Expression for the focus point's screen-space X position.
+entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.description.focusYSlider=Expression for the focus point's screen-space Y position.
+
 # Flag if Player Grounded Controller
 entities.Microlith57Misc/PlayerGroundedFlagController.placements.name.playerGroundedFlagController=Flag if Player Grounded Controller
 
@@ -95,6 +108,66 @@ entities.Microlith57Misc/ColorUnpacker_Float_Expression.placements.name.colorUnp
 entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.expression=If present, only update the sliders when the expression is truthy.
 entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.packedColor=Expression yielding the packed color data to unpack.\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.unpackedColorPrefix=R, G, B, and A will be appended to this value to get the slider names for the four components of the color.
+
+# Focus Controller
+entities.Microlith57Misc/FocusController.placements.name.focusController=Focus Controller (Flag)
+entities.Microlith57Misc/FocusController.attributes.description.enabledFlag=If present, only allow focusing when the flag is set.
+entities.Microlith57Misc/FocusController.attributes.description.activeFlag=If possible, focus whenever this flag is set.
+entities.Microlith57Misc/FocusController.attributes.description.slider=Name of the slider to set based on the focus amount, in [0-1] where 0 represents normal and 1 represents fully focused.
+entities.Microlith57Misc/FocusController.attributes.description.consumptionResourceName=If present, link to the consumption resource with this name.
+entities.Microlith57Misc/FocusController.attributes.description.consumptionRate=How fast (units/sec) to consume the linked resource.
+entities.Microlith57Misc/FocusController.attributes.description.unfocusWhenResourceLow=If true, gradually unfocus when the resource is running low.
+entities.Microlith57Misc/FocusController.attributes.description.fadeDuration=How quickly to fade between normal and focusing, in [0-∞).
+entities.Microlith57Misc/FocusController.attributes.description.useRawDeltaTime=If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time.
+
+entities.Microlith57Misc/FocusController_Button.placements.name.focusController=Focus Controller (Button)
+entities.Microlith57Misc/FocusController_Button.attributes.description.enabledFlag=If present, only allow focusing when the flag is set.
+entities.Microlith57Misc/FocusController_Button.attributes.description.slider=Name of the slider to set based on the focus amount, in [0-1] where 0 represents normal and 1 represents fully focused.
+entities.Microlith57Misc/FocusController_Button.attributes.description.consumptionResourceName=If present, link to the Consumable Resource entity with this name.
+entities.Microlith57Misc/FocusController_Button.attributes.description.consumptionRate=How fast (units/sec) to consume the linked resource.
+entities.Microlith57Misc/FocusController_Button.attributes.description.unfocusWhenResourceLow=If true, gradually unfocus when the resource is running low.
+entities.Microlith57Misc/FocusController_Button.attributes.description.fadeDuration=How quickly to fade between normal and focusing, in [0-∞).
+entities.Microlith57Misc/FocusController_Button.attributes.description.useRawDeltaTime=If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time.
+
+entities.Microlith57Misc/FocusController_Expression.placements.name.focusController=Focus Controller (Expression)
+entities.Microlith57Misc/FocusController_Expression.attributes.description.enabledExpression=If present, only allow focusing when the expression is truthy.
+entities.Microlith57Misc/FocusController_Expression.attributes.description.activeExpression=If possible, focus whenever this expression is truthy.
+entities.Microlith57Misc/FocusController_Expression.attributes.description.slider=Name of the slider to set based on the focus amount, in [0-1] where 0 represents normal and 1 represents fully focused.
+entities.Microlith57Misc/FocusController_Expression.attributes.description.consumptionResourceName=If present, link to the consumption resource with this name.
+entities.Microlith57Misc/FocusController_Expression.attributes.description.consumptionRate=How fast (units/sec) to consume the linked resource.
+entities.Microlith57Misc/FocusController_Expression.attributes.description.unfocusWhenResourceLow=If true, gradually unfocus when the resource is running low.
+entities.Microlith57Misc/FocusController_Expression.attributes.description.fadeDuration=How quickly to fade between normal and focusing, in [0-∞).
+entities.Microlith57Misc/FocusController_Expression.attributes.description.useRawDeltaTime=If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time.
+
+# Consumable Resource
+entities.Microlith57Misc/ConsumableResource_Custom.placements.name.consumableResource=Consumable Resource (Custom)
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.resource=Name of this Consumable Resource entity; and also of the slider it uses.
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.flagPrefix=If present, used as a prefix to generate "Any" / "Full" / "Low" / "Flash" flags.
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.lowThreshold=Amount of the resource that's considered low.
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.maximum=Maximum possible amount of the resource.
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.instantRefillFlag=When set, instantly refill the resource to its maximum.\n\nMay have unintended effects if set for more than a frame.
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.instantDrainFlag=When set, instantly set the resource to 0.\n\nMay have unintended effects if set for more than a frame.
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.restoreCooldown=Delay after being drained that a resource can start to refill.
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.restoreSpeed=Speed (units/sec) at which the resource refills, in [0,∞); or -1 for instant.
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.useRawDeltaTime=If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time.
+entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.dieWhenConsumed=If true, kill the player if the resource reaches 0.
+
+entities.Microlith57Misc/ConsumableResource_Stamina.placements.name.consumableResource=Consumable Resource (Stamina)
+entities.Microlith57Misc/ConsumableResource_Stamina.attributes.description.resource=Name of this Consumable Resource entity; and also of the slider it uses.
+entities.Microlith57Misc/ConsumableResource_Stamina.attributes.description.flagPrefix=If present, used as a prefix to generate "Any" / "Full" / "Low" / "Flash" flags.
+entities.Microlith57Misc/ConsumableResource_Stamina.attributes.description.instantRefillFlag=When set, instantly refill the stamina.\n\nMay have unintended effects if set for more than a frame.
+entities.Microlith57Misc/ConsumableResource_Stamina.attributes.description.instantDrainFlag=When set, instantly set the stamina to 0.\n\nMay have unintended effects if set for more than a frame.
+
+entities.Microlith57Misc/ConsumableResource_MaxStamina.placements.name.consumableResource=Consumable Resource (Max Stamina)
+entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.resource=Name of this Consumable Resource entity; and also of the slider it uses.
+entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.flagPrefix=If present, used as a prefix to generate "Any" / "Full" / "Low" / "Flash" flags.
+entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.lowThreshold=Amount of max stamina that's considered low.\nDistinct from the low threshold for stamina itself, which is always 20.
+entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.instantRefillFlag=When set, instantly refill the maximum stamina to its original value.\n\nMay have unintended effects if set for more than a frame.
+entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.instantDrainFlag=When set, instantly set the maximum stamina to 0.\n\nMay have unintended effects if set for more than a frame.
+entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.restoreCooldown=Delay after being drained that a resource can start to refill.
+entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.restoreSpeed=Speed (max stamina/sec) at which the resource refills, in [0,∞); or -1 for instant.
+entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.useRawDeltaTime=If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time.
+entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.dieWhenConsumed=If true, kill the player if the resource reaches 0.
 
 # Holdable Bouyancy Region
 triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region (Flag)
