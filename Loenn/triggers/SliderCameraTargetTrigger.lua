@@ -1,7 +1,5 @@
 local enums = require("consts.celeste_enums")
 
--- todo lang
-
 local fieldInformation = {
   positionMode = {
     options = enums.trigger_position_modes,
@@ -26,7 +24,7 @@ local fieldOrder = {
 
 ignoredFields = {
   "_name", "_id", "originX", "originY",
-  "lerpStrength"
+  "lerpStrengthX", "lerpStrengthY"
 }
 
 return {
@@ -39,7 +37,8 @@ return {
         name = "sliderCameraTargetTrigger",
         data = {
           deleteFlag = "",
-          lerpStrength = 1.0,
+          lerpStrengthX = 1.0,
+          lerpStrengthY = 1.0,
           positionMode = "NoEffect",
           xOnly = false,
           yOnly = false,
@@ -68,7 +67,8 @@ return {
         name = "sliderCameraTargetTrigger",
         data = {
           deleteFlag = "",
-          lerpStrength = 1.0,
+          lerpStrengthX = 1.0,
+          lerpStrengthY = 1.0,
           positionMode = "NoEffect",
           xOnly = false,
           yOnly = false,

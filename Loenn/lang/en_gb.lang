@@ -89,6 +89,31 @@ entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.descri
 entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.description.focusXSlider=Expression for the focus point's screen-space X position.
 entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.description.focusYSlider=Expression for the focus point's screen-space Y position.
 
+# Styleground Controller
+entities.Microlith57Misc/SliderStylegroundController.placements.name.sliderCameraZoomController=Styleground Controller (Slider)
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.tag=Affect stylegrounds with this tag.
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.flag=If present, only affect the stylegrounds if the flag is set.
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.positionX=Slider to set the X position to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.positionY=Slider to set the Y position to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.scrollX=Slider to set the X scroll to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.scrollY=Slider to set the Y scroll to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.speedX=Slider to set the X speed to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.speedY=Slider to set the Y speed to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.packedColor=Counter to use to set the colour, or empty to leave it unchanged.\n\nMust be packed eg. with the Colour Packer entity.
+entities.Microlith57Misc/SliderStylegroundController.attributes.description.alphaMultiplier=Slider to set the alpha multiplier by, or empty to leave it unchanged.
+
+entities.Microlith57Misc/SliderStylegroundController_Expression.placements.name.sliderCameraZoomController=Styleground Controller (Expression)
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.tag=Affect stylegrounds with this tag.
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.expression=If present, only affect the zoom if the expression is truthy.
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.positionX=Expression to set the X position to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.positionY=Expression to set the Y position to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.scrollX=Expression to set the X scroll to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.scrollY=Expression to set the Y scroll to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.speedX=Expression to set the X speed to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.speedY=Expression to set the Y speed to, or empty to leave it unchanged.
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.packedColor=Expression to use to set the colour, or empty to leave it unchanged.\n\nMust be packed eg. with the Colour Packer entity.
+entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.alphaMultiplier=Expression to set the alpha multiplier by, or empty to leave it unchanged.
+
 # Flag if Player Grounded Controller
 entities.Microlith57Misc/PlayerGroundedFlagController.placements.name.playerGroundedFlagController=Flag if Player Grounded Controller
 
@@ -108,6 +133,27 @@ entities.Microlith57Misc/ColorUnpacker_Float_Expression.placements.name.colorUnp
 entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.expression=If present, only update the sliders when the expression is truthy.
 entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.packedColor=Expression yielding the packed color data to unpack.\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorUnpacker_Float_Expression.attributes.description.unpackedColorPrefix=R, G, B, and A will be appended to this value to get the slider names for the four components of the color.
+
+# Sound Source
+entities.Microlith57Misc/SliderSoundSource.placements.name.colorUnpacker=Sound Source (Slider)
+entities.Microlith57Misc/SliderSoundSource.attributes.description.enableFlag=If present, play when the flag is set and stop when it is unset.\n\nWhile stopping, the sound's parameters cannot be changed.\nTo stop the sound instantly, you can set its volume to 0 and then stop it on the next frame.
+entities.Microlith57Misc/SliderSoundSource.attributes.description.playingFlag=If present, play when the flag is set and pause when it is unset.
+entities.Microlith57Misc/SliderSoundSource.attributes.description.positionSliderX=Slider for the X position of the sound.
+entities.Microlith57Misc/SliderSoundSource.attributes.description.positionSliderY=Slider for the Y position of the sound.
+entities.Microlith57Misc/SliderSoundSource.attributes.description.positionRelative=If checked, position sliders are relative to the sound source entity; otherwise they are in map coordinates.
+entities.Microlith57Misc/SliderSoundSource.attributes.description.paramSliders=List of parameter names and sliders to set them to.
+entities.Microlith57Misc/SliderSoundSource.attributes.description.volumeSlider=Slider to set the sound's volume.
+entities.Microlith57Misc/SliderSoundSource.attributes.description.sound=The sound event that will be played.
+
+entities.Microlith57Misc/SliderSoundSource_Expression.placements.name.colorUnpacker=Sound Source (Expression)
+entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.enableExpression=If present, play when the expression is truthy and stop when it is falsy.\n\nWhile stopping, the sound's parameters cannot be changed.\nTo stop the sound instantly, you can set its volume to 0 and then stop it on the next frame.
+entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.playingExpression=If present, play when the expression is truthy and pause when it is falsy.
+entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.positionExpressionX=Expression for the X position of the sound.
+entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.positionExpressionY=Expression for the Y position of the sound.
+entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.positionRelative=If checked, position expressions are relative to the sound source entity; otherwise they are in map coordinates.
+entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.paramExpressions=List of parameter names and expressions to set them to.
+entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.volumeExpression=Expression to set the sound's volume.
+entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.sound=The sound event that will be played.
 
 # Focus Controller
 entities.Microlith57Misc/FocusController.placements.name.focusController=Focus Controller (Flag)
@@ -229,6 +275,60 @@ triggers.Microlith57Misc/SliderTrigger_Expression.attributes.description.slider=
 triggers.Microlith57Misc/SliderTrigger_Expression.attributes.description.to=Determines the parameter value at the end of the trigger area.
 triggers.Microlith57Misc/SliderTrigger_Expression.attributes.description.from=Determines the parameter value at the start of the trigger area.
 triggers.Microlith57Misc/SliderTrigger_Expression.attributes.description.direction=Determines the direction of the fade across the trigger area.\nThe slider fades between the "From" and the "To" value as the player moves through the trigger.
+
+# Camera Target Trigger
+triggers.Microlith57Misc/SliderCameraTargetTrigger.placements.name.sliderCameraTargetTrigger=Camera Target Trigger (Slider)
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.positionMode=Determines which direction the camera position moves in.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.yOnly=The camera will only lock on the Y axis.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.xOnly=The camera will only lock on the X axis.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthX=The horizontal lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthY=The vertical lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.deleteFlag=Flag to deactivate the trigger, ignored if left empty. Camera will not reset if player is inside the trigger as it deactivates.\nIf the player transitions into the room with the flag set, the trigger can not be reactivated. However, if it was enabled and then disabled in the room, the player can reactivate it.
+
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.enableFlag=If present, only have an effect if the flag is set.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.targetSliderX=Slider for the map X position to target.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.targetSliderY=Slider for the map Y position to target.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthSliderX=Slider for the horizontal lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthSliderY=Slider for the vertical lerp strength.
+
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.placements.name.sliderCameraTargetTrigger=Camera Target Trigger (Expression)
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.positionMode=Determines which direction the camera position moves in.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.yOnly=The camera will only lock on the Y axis.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.xOnly=The camera will only lock on the X axis.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthX=The horizontal lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthY=The vertical lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.deleteFlag=Flag to deactivate the trigger, ignored if left empty. Camera will not reset if player is inside the trigger as it deactivates.\nIf the player transitions into the room with the flag set, the trigger can not be reactivated. However, if it was enabled and then disabled in the room, the player can reactivate it.
+
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.enableExpression=If present, only have an effect if the expression is truthy.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.targetExpressionX=Expression for the map X position to target.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.targetExpressionY=Expression for the map Y position to target.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthExpressionX=Expression for the horizontal lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthExpressionY=Expression for the vertical lerp strength.
+
+# Camera Offset Trigger
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.placements.name.sliderCameraOffsetTrigger=Camera Offset Trigger (Slider)
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.direction=Determines which direction the player position will affect the offset in.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.xOnly=Whether the trigger should only update the horizontal offset, keeping the current vertical offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.yOnly=Whether the trigger should only update the vertical offset, keeping the current horizontal offset.
+
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.enableFlag=If present, only have an effect if the flag is set.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.offsetFromSliderX=Slider for the first X position of the camera offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.offsetFromSliderY=Slider for the first Y position of the camera offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.offsetToSliderX=Slider for the second X position of the camera offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.offsetToSliderY=Slider for the second Y position of the camera offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.coarse=If checked, units are in pixels; otherwise, they are in the usual camera offset units.\n\nCamera offset units are 48px in the X direction and 32px in the Y direction.
+
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.placements.name.sliderCameraOffsetTrigger=Camera Offset Trigger (Expression)
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.direction=Determines which direction the player position will affect the offset in.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.xOnly=Whether the trigger should only update the horizontal offset, keeping the current vertical offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.yOnly=Whether the trigger should only update the vertical offset, keeping the current horizontal offset.
+
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.enableExpression=If present, only have an effect if the expression is truthy.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.offsetFromExpressionX=Expression for the first X position of the camera offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.offsetFromExpressionY=Expression for the first Y position of the camera offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.offsetToExpressionX=Expression for the second X position of the camera offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.offsetToExpressionY=Expression for the second Y position of the camera offset.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.coarse=If checked, units are in pixels; otherwise, they are in the usual camera offset units.\n\nCamera offset units are 48px in the X direction and 32px in the Y direction.
 
 # --- nonpublic ---
 

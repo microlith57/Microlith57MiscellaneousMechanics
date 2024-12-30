@@ -1,8 +1,8 @@
 local utils = require("utils")
 
--- TODO: lang, art
-
+-- TODO: art
 return {
+
   {
     name = "Microlith57Misc/SliderStylegroundController",
     depth = -1000000,

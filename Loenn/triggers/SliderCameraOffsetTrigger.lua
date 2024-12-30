@@ -1,7 +1,5 @@
 local enums = require("consts.celeste_enums")
 
--- todo lang
-
 local fieldInformation = {
   direction = {
     options = enums.trigger_position_modes,
