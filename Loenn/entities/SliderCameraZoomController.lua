@@ -2,6 +2,23 @@ local utils = require("utils")
 
 -- TODO: art
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local fieldInformation = {
+  focusX = {validator = nonEmptyValidator},
+  focusY = {validator = nonEmptyValidator},
+  amount = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression",
+  "focusX", "focusY",
+  "amount"
+}
+
 return {
   {
     name = "Microlith57Misc/SliderCameraZoomController",
@@ -13,12 +30,14 @@ return {
         data = {
           flag = "",
           invertFlag = false,
-          focusXSlider = "160",
-          focusYSlider = "90",
+          focusX = "160.0",
+          focusY = "90.0",
           amount = "1.0"
         }
       }
-    }
+    },
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/SliderCameraZoomController_Expression",
@@ -30,11 +49,13 @@ return {
         name = "sliderCameraZoomController",
         data = {
           expression = "",
-          focusXExpression = "160",
-          focusYExpression = "90",
+          focusX = "160.0",
+          focusY = "90.0",
           amount = "1.0"
         }
       }
-    }
+    },
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   }
 }

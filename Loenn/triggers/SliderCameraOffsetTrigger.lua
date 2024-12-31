@@ -1,21 +1,26 @@
 local enums = require("consts.celeste_enums")
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
 local fieldInformation = {
   direction = {
     options = enums.trigger_position_modes,
     editable = false
-  }
+  },
+  offsetFromX = {validator = nonEmptyValidator},
+  offsetFromY = {validator = nonEmptyValidator},
+  offsetToX = {validator = nonEmptyValidator},
+  offsetToY = {validator = nonEmptyValidator},
 }
 
 local fieldOrder = {
   "x", "y", "width", "height",
   "cameraX", "cameraY",
 
-  "offsetFromSliderX", "offsetFromSliderY",
-  "offsetToSliderX", "offsetToSliderY",
-
-  "offsetFromExpressionX", "offsetFromExpressionY",
-  "offsetToExpressionX", "offsetToExpressionY",
+  "offsetFromX", "offsetFromY",
+  "offsetToX", "offsetToY",
 
   "direction", "coarse",
 
@@ -39,10 +44,10 @@ return {
           cameraX = 0.0,
           cameraY = 0.0,
 
-          offsetFromSliderX = "0.0",
-          offsetFromSliderY = "0.0",
-          offsetToSliderX = "0.0",
-          offsetToSliderY = "0.0",
+          offsetFromX = "0.0",
+          offsetFromY = "0.0",
+          offsetToX = "0.0",
+          offsetToY = "0.0",
 
           direction = "LeftToRight",
           coarse = false,
@@ -68,10 +73,10 @@ return {
           cameraX = 0.0,
           cameraY = 0.0,
 
-          offsetFromExpressionX = "0.0",
-          offsetFromExpressionY = "0.0",
-          offsetToExpressionX = "0.0",
-          offsetToExpressionY = "0.0",
+          offsetFromX = "0.0",
+          offsetFromY = "0.0",
+          offsetToX = "0.0",
+          offsetToY = "0.0",
 
           direction = "LeftToRight",
           coarse = false,

@@ -1,5 +1,19 @@
 local utils = require("utils")
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local fieldInformation = {
+  multiplier = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression",
+  "multiplier"
+}
+
 return {
   {
     name = "Microlith57Misc/SliderTimeRateController",
@@ -11,7 +25,7 @@ return {
         data = {
           flag = "",
           invertFlag = false,
-          multiplier = ""
+          multiplier = "1.0"
         }
       }
     }
@@ -26,7 +40,7 @@ return {
         name = "sliderTimeRateController",
         data = {
           expression = "",
-          multiplier = ""
+          multiplier = "1.0"
         }
       }
     }

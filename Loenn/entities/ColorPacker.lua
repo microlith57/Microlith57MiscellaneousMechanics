@@ -2,6 +2,14 @@ local utils = require("utils")
 
 -- TODO: art
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local rgbFieldInformation = {
+  packedColor = {validator = nonEmptyValidator}
+}
+
 local hslFieldInformation = {
   format = {
     options = {
@@ -10,7 +18,18 @@ local hslFieldInformation = {
       "Degrees"
     },
     editable = false
-  }
+  },
+  packedColor = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression",
+  "packedColor",
+  "r", "g", "b", "a",
+  "h", "s", "l",
+  "alpha",
+  "format"
 }
 
 return {
@@ -25,14 +44,16 @@ return {
           flag = "",
           invertFlag = false,
           packedColor = "color",
-          r = "1",
-          g = "1",
-          b = "1",
-          a = "1",
-          alpha = "1"
+          r = "1.0",
+          g = "1.0",
+          b = "1.0",
+          a = "1.0",
+          alpha = "1.0"
         }
       }
-    }
+    },
+    fieldInformation = rgbFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorPacker_Float_Expression",
@@ -44,14 +65,16 @@ return {
         data = {
           expression = "",
           packedColor = "color",
-          r = "1",
-          g = "1",
-          b = "1",
-          a = "1",
-          alpha = "1"
+          r = "1.0",
+          g = "1.0",
+          b = "1.0",
+          a = "1.0",
+          alpha = "1.0"
         }
       }
-    }
+    },
+    fieldInformation = rgbFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorPacker_Int",
@@ -68,10 +91,12 @@ return {
           g = "255",
           b = "255",
           a = "255",
-          alpha = "1"
+          alpha = "1.0"
         }
       }
-    }
+    },
+    fieldInformation = rgbFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorPacker_Int_Expression",
@@ -87,10 +112,12 @@ return {
           g = "255",
           b = "255",
           a = "255",
-          alpha = "1"
+          alpha = "1.0"
         }
       }
-    }
+    },
+    fieldInformation = rgbFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorPacker_HSL",
@@ -103,15 +130,16 @@ return {
           flag = "",
           invertFlag = false,
           packedColor = "color",
-          h = "0",
-          s = "1",
-          l = "1",
-          alpha = "1",
-          angleFormat = "ZeroToOne"
+          h = "0.0",
+          s = "1.0",
+          l = "1.0",
+          alpha = "1.0",
+          format = "ZeroToOne"
         }
       }
     },
-    fieldInformation = hslFieldInformation
+    fieldInformation = hslFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorPacker_HSL_Expression",
@@ -123,14 +151,15 @@ return {
         data = {
           expression = "",
           packedColor = "color",
-          h = "0",
-          s = "1",
-          l = "1",
-          alpha = "1",
-          angleFormat = "ZeroToOne"
+          h = ".0",
+          s = ".0",
+          l = ".0",
+          alpha = "1.0",
+          format = "ZeroToOne"
         }
       }
     },
-    fieldInformation = hslFieldInformation
+    fieldInformation = hslFieldInformation,
+    fieldOrder = fieldOrder
   }
 }

@@ -80,9 +80,9 @@ public sealed class SliderSoundSource : Entity {
             data, offset,
             new ConditionSource.Flag(data, "enableFlag", invertName: "invertEnable") { Default = true },
             new ConditionSource.Flag(data, "playingFlag", invertName: "invertPlaying") { Default = true },
-            Vector2Source.SliderSource(level.Session, data, "positionSlider"),
-            UnpackParamAttr(data.Attr("paramSliders"), s => new FloatSource.Slider(level.Session.GetSliderObject(s))),
-            new FloatSource.Slider(level.Session, data, "volumeSlider", ifAbsent: "1")
+            Vector2Source.SliderSource(level.Session, data, "position"),
+            UnpackParamAttr(data.Attr("params"), s => new FloatSource.Slider(level.Session.GetSliderObject(s))),
+            new FloatSource.Slider(level.Session, data, "volume") { Default = 1f }
         );
 
     public static SliderSoundSource CreateExpr(Level level, LevelData __, Vector2 offset, EntityData data)
@@ -90,9 +90,9 @@ public sealed class SliderSoundSource : Entity {
             data, offset,
             new ConditionSource.Expr(data, "enableExpression") { Default = true },
             new ConditionSource.Expr(data, "playingExpression") { Default = true },
-            Vector2Source.ExprSource(data, "positionExpression"),
-            UnpackParamAttr(data.Attr("paramExpressions"), s => new FloatSource.Expr(s)),
-            new FloatSource.Expr(data, "volumeExpression", ifAbsent: "1")
+            Vector2Source.ExprSource(data, "position"),
+            UnpackParamAttr(data.Attr("params"), s => new FloatSource.Expr(s)),
+            new FloatSource.Expr(data, "volume") { Default = 1f }
         );
 
 

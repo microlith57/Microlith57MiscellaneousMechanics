@@ -1,5 +1,20 @@
 local utils = require("utils")
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local fieldInformation = {
+  value = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression",
+  "param", "isAmbience",
+  "value"
+}
+
 return {
   {
     name = "Microlith57Misc/SliderAudioParamController",
@@ -13,10 +28,12 @@ return {
           invertFlag = false,
           param = "fade",
           isAmbience = false,
-          value = ""
+          value = "0.0"
         }
       }
-    }
+    },
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/SliderAudioParamController_Expression",
@@ -30,9 +47,11 @@ return {
           expression = "",
           param = "fade",
           isAmbience = false,
-          value = ""
+          value = "0.0"
         }
       }
-    }
+    },
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   }
 }

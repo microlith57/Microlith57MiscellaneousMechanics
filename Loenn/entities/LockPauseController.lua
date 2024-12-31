@@ -12,6 +12,12 @@ local fieldInformation = {
   }
 }
 
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression",
+  "mode", "unlockWhenControllerRemoved"
+}
+
 return {
   {
     name = "Microlith57Misc/LockPauseController",
@@ -46,7 +52,8 @@ return {
         }
       }
     },
-    fieldInformation = fieldInformation
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/LockPauseController_Expression",
@@ -79,6 +86,7 @@ return {
         }
       }
     },
-    fieldInformation = fieldInformation
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   }
 }

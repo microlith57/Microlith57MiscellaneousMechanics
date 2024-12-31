@@ -15,8 +15,16 @@ local listInformation = {
 }
 
 local fieldInformation = {
-  paramSliders = listInformation,
-  paramExpressions = listInformation
+  params = listInformation
+}
+
+local fieldOrder = {
+  "x", "y",
+  "enableFlag", "invertEnable", "enableExpression",
+  "playingFlag", "invertPlaying", "playingExpression",
+  "positionX", "positionY", "positionRelative",
+  "params", "volume",
+  "sound"
 }
 
 return {
@@ -32,16 +40,17 @@ return {
           invertEnable = false,
           playingFlag = "",
           invertPlaying = false,
-          positionSliderX = "",
-          positionSliderY = "",
+          positionX = "",
+          positionY = "",
           positionRelative = true,
-          paramSliders = "",
-          volumeSlider = "1",
+          params = "",
+          volume = "1.0",
           sound = ""
         }
       }
     },
-    fieldInformation = fieldInformation
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/SliderSoundSource_Expression",
@@ -54,15 +63,16 @@ return {
         data = {
           enableExpression = "",
           playingExpression = "",
-          positionExpressionX = "",
-          positionExpressionY = "",
+          positionX = "",
+          positionY = "",
           positionRelative = true,
-          paramExpressions = "",
-          volumeExpression = "",
+          params = "",
+          volume = "1.0",
           sound = ""
         }
       }
     },
-    fieldInformation = fieldInformation
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   }
 }

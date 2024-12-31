@@ -17,45 +17,50 @@ public sealed class HoldableBouyancyRegion : Entity {
     private readonly ConditionSource Condition;
     public bool BouyancyActive => Condition.Value;
 
+    private readonly FloatSource MinForceSource, MaxForceSource, DampingSource;
+    public float MinForce => MinForceSource.Value;
+    public float MaxForce => MaxForceSource.Value;
+    public float Damping => DampingSource.Value;
+
     public bool AlsoAffectPlayer;
-    // todo: sliders?
-    public float MinForce, MaxForce, Damping;
 
     #endregion State
     #region --- Init ---
 
     public HoldableBouyancyRegion(
-        Vector2 position,
+        EntityData data, Vector2 offset,
         ConditionSource condition,
-        bool alsoAffectPlayer,
-        float minForce, float maxForce, float damping
-    ) : base(position) {
+        FloatSource minForce, FloatSource maxForce, FloatSource damping
+    ) : base(data.Position + offset) {
+
+        Collider = new Hitbox(data.Width, data.Height);
+        Depth = Depths.Top;
 
         Add(Condition = condition);
-        AlsoAffectPlayer = alsoAffectPlayer;
-        MinForce = minForce;
-        MaxForce = maxForce;
-        Damping = damping;
+        Add(MinForceSource = minForce);
+        Add(MaxForceSource = maxForce);
+        Add(DampingSource = damping);
+
+        AlsoAffectPlayer = data.Bool("alsoAffectPlayer");
     }
 
-    private static HoldableBouyancyRegion Create(EntityData data, Vector2 offset, ConditionSource condition)
+    public static HoldableBouyancyRegion CreateFlag(Level level, LevelData _, Vector2 offset, EntityData data)
         => new(
-            data.Position + offset,
-            condition,
-            data.Bool("alsoAffectPlayer"),
-            data.Float("minForce", 0f),
-            data.Float("maxForce", 300f),
-            data.Float("damping", 1f)
-        ) {
-            Collider = new Hitbox(data.Width, data.Height),
-            Depth = Depths.Top
-        };
+            data, offset,
+            new ConditionSource.Flag(data) { Default = true },
+            new FloatSource.Slider(level.Session, data, "minForce", "0"),
+            new FloatSource.Slider(level.Session, data, "maxForce", "300"),
+            new FloatSource.Slider(level.Session, data, "damping", "1")
+        );
 
-    public static HoldableBouyancyRegion CreateFlag(Level _1, LevelData _2, Vector2 offset, EntityData data)
-        => Create(data, offset, new ConditionSource.Flag(data) { Default = true });
-
-    public static HoldableBouyancyRegion CreateExpr(Level _1, LevelData _2, Vector2 offset, EntityData data)
-        => Create(data, offset, new ConditionSource.Expr(data) { Default = true });
+    public static HoldableBouyancyRegion CreateExpr(Level level, LevelData _, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Expr(data) { Default = true },
+            new FloatSource.Expr(data, "minForce", "0"),
+            new FloatSource.Expr(data, "maxForce", "300"),
+            new FloatSource.Expr(data, "damping", "1")
+        );
 
     #endregion Init
     #region --- Behaviour ---

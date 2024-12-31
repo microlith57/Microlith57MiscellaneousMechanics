@@ -2,6 +2,15 @@ local utils = require("utils")
 
 -- TODO: art
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local rgbFieldInformation = {
+  packedColor = {validator = nonEmptyValidator},
+  unpackedColorPrefix = {validator = nonEmptyValidator}
+}
+
 local hslFieldInformation = {
   format = {
     options = {
@@ -10,7 +19,16 @@ local hslFieldInformation = {
       "Degrees"
     },
     editable = false
-  }
+  },
+  packedColor = {validator = nonEmptyValidator},
+  unpackedColorPrefix = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression",
+  "packedColor", "unpackedColorPrefix",
+  "format"
 }
 
 return {
@@ -28,7 +46,9 @@ return {
           unpackedColorPrefix = "unpackedColor"
         }
       }
-    }
+    },
+    fieldInformation = rgbFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorUnpacker_Float_Expression",
@@ -44,7 +64,9 @@ return {
           unpackedColorPrefix = "unpackedColor"
         }
       }
-    }
+    },
+    fieldInformation = rgbFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorUnpacker_Int",
@@ -60,7 +82,9 @@ return {
           unpackedColorPrefix = "unpackedColor"
         }
       }
-    }
+    },
+    fieldInformation = rgbFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorUnpacker_Int_Expression",
@@ -76,7 +100,9 @@ return {
           unpackedColorPrefix = "unpackedColor"
         }
       }
-    }
+    },
+    fieldInformation = rgbFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorUnpacker_HSL",
@@ -94,7 +120,8 @@ return {
         }
       }
     },
-    fieldInformation = hslFieldInformation
+    fieldInformation = hslFieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/ColorUnpacker_HSL_Expression",
@@ -112,6 +139,7 @@ return {
         }
       }
     },
-    fieldInformation = hslFieldInformation
+    fieldInformation = hslFieldInformation,
+    fieldOrder = fieldOrder
   }
 }

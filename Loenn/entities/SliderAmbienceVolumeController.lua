@@ -1,5 +1,19 @@
 local utils = require("utils")
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local fieldInformation = {
+  slider = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression",
+  "volume"
+}
+
 return {
   {
     name = "Microlith57Misc/SliderAmbienceVolumeController",
@@ -11,10 +25,11 @@ return {
         data = {
           flag = "",
           invertFlag = false,
-          volume = ""
+          volume = "1.0"
         }
       }
-    }
+    },
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/SliderAmbienceVolumeController_Expression",
@@ -26,9 +41,10 @@ return {
         name = "sliderAmbienceVolumeController",
         data = {
           expression = "",
-          volume = ""
+          volume = "1.0"
         }
       }
-    }
+    },
+    fieldOrder = fieldOrder
   }
 }

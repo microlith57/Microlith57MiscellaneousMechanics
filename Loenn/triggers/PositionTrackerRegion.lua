@@ -1,5 +1,9 @@
 local utils = require("utils")
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
 local fieldInformation = {
   target = {
     options = {
@@ -40,7 +44,8 @@ local fieldInformation = {
       "Size"
     },
     editable = false
-  }
+  },
+  sliderPrefix = {validator = nonEmptyValidator}
 }
 
 local abbreviations = {

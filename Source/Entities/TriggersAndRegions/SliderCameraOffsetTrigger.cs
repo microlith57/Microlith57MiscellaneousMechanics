@@ -48,16 +48,16 @@ public sealed class SliderCameraOffsetTrigger : CameraOffsetTrigger {
         => new(
             data, offset,
             new ConditionSource.Flag(data, "enableFlag", invertName: "invertFlag") { Default = true },
-            Vector2Source.SliderSource(level.Session, data, "offsetFromSlider"),
-            Vector2Source.SliderSource(level.Session, data, "offsetToSlider")
+            Vector2Source.SliderSource(level.Session, data, "offsetFrom"),
+            Vector2Source.SliderSource(level.Session, data, "offsetTo")
         );
 
     public static SliderCameraOffsetTrigger CreateExpr(Level level, LevelData _, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Expr(data, "enableExpression") { Default = true },
-            Vector2Source.ExprSource(data, "offsetFromExpression"),
-            Vector2Source.ExprSource(data, "offsetToExpression")
+            Vector2Source.ExprSource(data, "offsetFrom"),
+            Vector2Source.ExprSource(data, "offsetTo")
         );
 
     #endregion Init

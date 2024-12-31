@@ -1,6 +1,23 @@
 local utils = require("utils")
 
--- todo: art
+-- todo: art; choose bind
+
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local fieldInformation = {
+  slider = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y",
+  "enabledFlag", "invertEnabledFlag", "enabledExpression",
+  "activeFlag", "invertActiveFlag", "activeExpression",
+  "slider",
+  "consumptionResourceName", "consumptionRate", "unfocusWhenResourceLow",
+  "fadeDuration", "useRawDeltaTime"
+}
 
 return {
   {
@@ -22,7 +39,9 @@ return {
           useRawDeltaTime = false
         }
       }
-    }
+    },
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/FocusController_Button",
@@ -41,7 +60,9 @@ return {
           useRawDeltaTime = false
         }
       }
-    }
+    },
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/FocusController_Expression",
@@ -60,6 +81,8 @@ return {
           useRawDeltaTime = false
         }
       }
-    }
+    },
+    fieldInformation = fieldInformation,
+    fieldOrder = fieldOrder
   }
 }

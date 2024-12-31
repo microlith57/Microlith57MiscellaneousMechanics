@@ -88,6 +88,8 @@ public abstract class ConsumableResource : Entity {
 
     public virtual void BumpRestoreCooldown() => cooldown = RestoreCooldown;
 
+    public readonly float FlashRate;
+
     private HashSet<Drain> Drains = [];
 
     public abstract float Low { get; }
@@ -99,7 +101,7 @@ public abstract class ConsumableResource : Entity {
     public virtual bool Flashing
         => ShouldFlash
         && Scene is Level level
-        && level.BetweenInterval(0.05f);
+        && level.BetweenInterval(FlashRate);
 
     public virtual bool CanStartRestoring => true;
     public bool CanRestore => !Drains.Any(d => d.Active) && cooldown <= 0f;
@@ -131,6 +133,8 @@ public abstract class ConsumableResource : Entity {
 
         RestoreCooldown = data.Float("restoreCooldown", 0.1f);
         RestoreSpeed = data.Float("restoreSpeed", 120f);
+
+        FlashRate = data.Float("flashRate", 0.05f);
 
         PreUpdate += BeforeUpdate;
         PostUpdate += AfterUpdate;

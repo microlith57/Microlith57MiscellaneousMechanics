@@ -157,7 +157,7 @@ entities.Microlith57Misc/ColorUnpacker_HSL_Expression.attributes.description.unp
 entities.Microlith57Misc/ColorUnpacker_HSL_Expression.attributes.description.angleFormat=Format to use for the hue component.
 
 # Color Packer
-entities.Microlith57Misc/ColorPacker_Float.placements.name.colorPacker=Color Unpacker (Sliders to Counter)
+entities.Microlith57Misc/ColorPacker_Float.placements.name.colorPacker=Color Packer (Sliders to Counter)
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.flag=If present, only update the counter when the flag is set.
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.packedColor=Counter containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.r=Slider for the red component, in [0, 1].
@@ -166,7 +166,7 @@ entities.Microlith57Misc/ColorPacker_Float.attributes.description.b=Slider for t
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.a=Slider for the premultiplied alpha component, in [0, 1].
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.alpha=Slider for an additional alpha multiplier.\n\nIf you don't know what premultiplied alpha is, use this instead.
 
-entities.Microlith57Misc/ColorPacker_Float_Expression.placements.name.colorPacker=Color Unpacker (Float Expressions to Counter)
+entities.Microlith57Misc/ColorPacker_Float_Expression.placements.name.colorPacker=Color Packer (Float Expressions to Counter)
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.flag=If present, only update the counter when the flag is set.
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.packedColor=Expression containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.r=Expression for the red component, in [0, 1].
@@ -175,7 +175,7 @@ entities.Microlith57Misc/ColorPacker_Float.attributes.description.b=Expression f
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.a=Expression for the premultiplied alpha component, in [0, 1].
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.alpha=Expression for an additional alpha multiplier.\n\nIf you don't know what premultiplied alpha is, use this instead.
 
-entities.Microlith57Misc/ColorPacker_Int.placements.name.colorPacker=Color Unpacker (Sliders to Counter)
+entities.Microlith57Misc/ColorPacker_Int.placements.name.colorPacker=Color Packer (Sliders to Counter)
 entities.Microlith57Misc/ColorPacker_Int.attributes.description.flag=If present, only update the counter when the flag is set.
 entities.Microlith57Misc/ColorPacker_Int.attributes.description.packedColor=Counter containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_Int.attributes.description.r=Counter for the red component, in [0, 255].
@@ -184,7 +184,7 @@ entities.Microlith57Misc/ColorPacker_Int.attributes.description.b=Counter for th
 entities.Microlith57Misc/ColorPacker_Int.attributes.description.a=Counter for the premultiplied alpha component, in [0, 255].
 entities.Microlith57Misc/ColorPacker_Int.attributes.description.alpha=Slider for an additional alpha multiplier.\n\nIf you don't know what premultiplied alpha is, use this instead.
 
-entities.Microlith57Misc/ColorPacker_Int_Expression.placements.name.colorPacker=Color Unpacker (Float Expressions to Counter)
+entities.Microlith57Misc/ColorPacker_Int_Expression.placements.name.colorPacker=Color Packer (Float Expressions to Counter)
 entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.flag=If present, only update the counter when the flag is set.
 entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.packedColor=Expression containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.r=Expression for the red component, in [0, 255].
@@ -193,7 +193,7 @@ entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.b=Exp
 entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.a=Expression for the premultiplied alpha component, in [0, 255].
 entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.alpha=Expression for an additional alpha multiplier.\n\nIf you don't know what premultiplied alpha is, use this instead.
 
-entities.Microlith57Misc/ColorPacker_HSL.placements.name.colorPacker=Color Unpacker (HSL Sliders to Counter)
+entities.Microlith57Misc/ColorPacker_HSL.placements.name.colorPacker=Color Packer (HSL Sliders to Counter)
 entities.Microlith57Misc/ColorPacker_HSL.attributes.description.flag=If present, only update the counter when the flag is set.
 entities.Microlith57Misc/ColorPacker_HSL.attributes.description.packedColor=Counter containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_HSL.attributes.description.h=Slider for the hue component.
@@ -202,7 +202,7 @@ entities.Microlith57Misc/ColorPacker_HSL.attributes.description.l=Slider for the
 entities.Microlith57Misc/ColorPacker_HSL.attributes.description.alpha=Expression for the alpha multiplier.
 entities.Microlith57Misc/ColorPacker_HSL.attributes.description.angleFormat=Format to use for the hue component.
 
-entities.Microlith57Misc/ColorPacker_HSL_Expression.placements.name.colorPacker=Color Unpacker (HSL Expressions to Counter)
+entities.Microlith57Misc/ColorPacker_HSL_Expression.placements.name.colorPacker=Color Packer (HSL Expressions to Counter)
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.flag=If present, only update the counter when the flag is set.
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.packedColor=Expression containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.h=Expression for the hue component.
@@ -293,16 +293,16 @@ entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.us
 entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.dieWhenConsumed=If true, kill the player if the resource reaches 0.
 
 # Holdable Bouyancy Region
-triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region (Flag)
-triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.minForce=How much force to exert (px/sec^2) when the holdable is just touching the surface.
-triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.maxForce=How much force to exert (px/sec^2) when the holdable is fully submerged.
-triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.damping=Coefficient controlling how much motion is slowed in the region; acts like viscosity.
+triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region (Slider)
+triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.minForce=Slider for how much force to exert (px/sec^2) when the holdable is just touching the surface.
+triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.maxForce=Slider for how much force to exert (px/sec^2) when the holdable is fully submerged.
+triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.damping=Slider for the coefficient controlling how much motion is slowed in the region; acts like viscosity.
 triggers.Microlith57Misc/HoldableBouyancyRegion.attributes.description.flag=If present, apply bouyancy only when the flag is set.
 
 triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region (Expression)
-triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.minForce=How much force to exert (px/sec^2) when the holdable is just touching the surface.
-triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.maxForce=How much force to exert (px/sec^2) when the holdable is fully submerged.
-triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.damping=Coefficient controlling how much motion is slowed in the region; acts like viscosity.
+triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.minForce=Expression for how much force to exert (px/sec^2) when the holdable is just touching the surface.
+triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.maxForce=Expression for how much force to exert (px/sec^2) when the holdable is fully submerged.
+triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.damping=Expression for the coefficient controlling how much motion is slowed in the region; acts like viscosity.
 triggers.Microlith57Misc/HoldableBouyancyRegion_Expression.attributes.description.flag=If present, apply bouyancy only when the flag is set.
 
 # Position Tracker Region

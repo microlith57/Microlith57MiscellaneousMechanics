@@ -36,10 +36,10 @@ public sealed class SliderCameraZoomController : SliderController {
             data, offset,
             new ConditionSource.Flag(data) { Default = true },
             new(
-                new FloatSource.Slider(level.Session, data, "focusXSlider", ifAbsent: "160"),
-                new FloatSource.Slider(level.Session, data, "focusYSlider", ifAbsent: "90")
+                new FloatSource.Slider(level.Session, data, "focusX") { Default = 320 / 2 },
+                new FloatSource.Slider(level.Session, data, "focusY") { Default = 180 / 2 }
             ),
-            new FloatSource.Slider(level.Session, data, name: "amount", ifAbsent: "1.0")
+            new FloatSource.Slider(level.Session, data, "amount") { Default = 1f }
         );
 
     public static SliderCameraZoomController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
@@ -47,10 +47,10 @@ public sealed class SliderCameraZoomController : SliderController {
             data, offset,
             new ConditionSource.Expr(data) { Default = true },
             new(
-                new FloatSource.Expr(data, "focusXExpression", ifAbsent: "160"),
-                new FloatSource.Expr(data, "focusYExpression", ifAbsent: "90")
+                new FloatSource.Expr(data, "focusX") { Default = 320 / 2 },
+                new FloatSource.Expr(data, "focusY") { Default = 180 / 2 }
             ),
-            new FloatSource.Expr(data, name: "amount", ifAbsent: "1.0")
+            new FloatSource.Expr(data, "amount") { Default = 1f }
         );
 
     #endregion Init

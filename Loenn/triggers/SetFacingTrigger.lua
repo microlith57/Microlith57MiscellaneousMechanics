@@ -10,6 +10,12 @@ local fieldInformation = {
   }
 }
 
+local fieldOrder = {
+  "x", "y", "width", "height",
+  "direction", "flag", "invertIfUnset", "expression",
+  "continuous"
+}
+
 return {
   {
     name = "Microlith57Misc/SetFacingTrigger",

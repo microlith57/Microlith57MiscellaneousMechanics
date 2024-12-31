@@ -1,5 +1,9 @@
 local enums = require("consts.celeste_enums")
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
 local fieldInformation = {
   positionMode = {
     options = enums.trigger_position_modes,
@@ -12,11 +16,8 @@ local fieldOrder = {
   "deleteFlag", "lerpStrength",
   "positionMode", "xOnly", "yOnly",
 
-  "targetSliderX", "targetSliderY",
-  "lerpStrengthSliderX", "lerpStrengthSliderY",
-
-  "targetExpressionX", "targetExpressionY",
-  "lerpStrengthExpressionX", "lerpStrengthExpressionY",
+  "targetX", "targetY",
+  "lerpStrengthX", "lerpStrengthY",
 
   "enableFlag", "invertFlag",
   "enableExpression"
@@ -43,10 +44,10 @@ return {
           xOnly = false,
           yOnly = false,
 
-          targetSliderX = "",
-          targetSliderY = "",
-          lerpStrengthSliderX = "",
-          lerpStrengthSliderY = "",
+          targetSliderX = "targetX",
+          targetSliderY = "targetY",
+          lerpStrengthSliderX = "1.0",
+          lerpStrengthSliderY = "1.0",
 
           enableFlag = "",
           invertFlag = false,
@@ -73,10 +74,10 @@ return {
           xOnly = false,
           yOnly = false,
 
-          targetExpressionX = "",
-          targetExpressionY = "",
-          lerpStrengthExpressionX = "",
-          lerpStrengthExpressionY = "",
+          targetExpressionX = "@targetX",
+          targetExpressionY = "@targetX",
+          lerpStrengthExpressionX = "1.0",
+          lerpStrengthExpressionY = "1.0",
 
           enableExpression = ""
         }

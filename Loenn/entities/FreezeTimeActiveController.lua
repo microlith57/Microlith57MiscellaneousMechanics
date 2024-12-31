@@ -1,5 +1,10 @@
 local utils = require("utils")
 
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression"
+}
+
 return {
   {
     name = "Microlith57Misc/FreezeTimeActiveController",
@@ -13,7 +18,8 @@ return {
           invertFlag = false
         }
       }
-    }
+    },
+    fieldOrder = fieldOrder
   },
   {
     name = "Microlith57Misc/FreezeTimeActiveController_Expression",
@@ -27,6 +33,7 @@ return {
           expression = "freezeTimeActive"
         }
       }
-    }
+    },
+    fieldOrder = fieldOrder
   }
 }

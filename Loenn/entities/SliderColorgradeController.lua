@@ -1,5 +1,21 @@
 local utils = require("utils")
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local fieldInformation = {
+  colorgradeA = {validator = nonEmptyValidator},
+  colorgradeB = {validator = nonEmptyValidator},
+  lerp = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression",
+  "colorgradeA", "colorgradeB", "lerp"
+}
+
 return {
   {
     name = "Microlith57Misc/SliderColorgradeController",

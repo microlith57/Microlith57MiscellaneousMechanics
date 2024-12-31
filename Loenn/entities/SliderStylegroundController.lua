@@ -1,6 +1,26 @@
 local utils = require("utils")
 
 -- TODO: art
+
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local fieldInformation = {
+  tag = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y",
+  "flag", "invertFlag", "expression",
+  "tag",
+  "positionX", "positionY",
+  "scrollX", "scrollY",
+  "speedX", "speedY",
+  "packedColor",
+  "alphaMultiplier"
+}
+
 return {
 
   {

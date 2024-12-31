@@ -1,5 +1,23 @@
 local utils = require("utils")
 
+local nonEmptyValidator = function(s)
+  return s ~= ""
+end
+
+local fieldInformation = {
+  slider = {validator = nonEmptyValidator},
+  minForce = {validator = nonEmptyValidator},
+  maxForce = {validator = nonEmptyValidator},
+  damping = {validator = nonEmptyValidator}
+}
+
+local fieldOrder = {
+  "x", "y", "width", "height",
+  "flag", "invertFlag", "expression",
+  "minForce", "maxForce", "damping",
+  "alsoAffectPlayer"
+}
+
 return {
   {
     name = "Microlith57Misc/HoldableBouyancyRegion",
@@ -11,9 +29,9 @@ return {
           height = 16,
           flag = "",
           invertFlag = false,
-          minForce = 0,
-          maxForce = 600,
-          damping = 0.5,
+          minForce = "0.0",
+          maxForce = "600.0",
+          damping = "0.5",
           alsoAffectPlayer = false
         }
       }
@@ -29,9 +47,9 @@ return {
           width = 16,
           height = 16,
           expression = "",
-          minForce = 0,
-          maxForce = 600,
-          damping = 0.5,
+          minForce = "0.0",
+          maxForce = "600.0",
+          damping = "0.5",
           alsoAffectPlayer = false
         }
       }
