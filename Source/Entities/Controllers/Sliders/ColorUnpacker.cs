@@ -1,10 +1,13 @@
 using Microsoft.Xna.Framework;
 using Celeste.Mod.Entities;
-
-using Celeste.Mod.Microlith57Misc.Components;
 using Monocle;
 
+using Celeste.Mod.Microlith57Misc.Components;
+using static Celeste.Mod.Microlith57Misc.Utils;
+
 namespace Celeste.Mod.Microlith57Misc.Entities;
+
+#region --- Float ---
 
 [CustomEntity(
     "Microlith57Misc/ColorUnpacker_Float=Create",
@@ -89,3 +92,172 @@ public sealed class ColorUnpackerFloat : Entity {
     }
 
 }
+
+#endregion Float
+#region --- Int ---
+
+[CustomEntity(
+    "Microlith57Misc/ColorUnpacker_Int=Create",
+    "Microlith57Misc/ColorUnpacker_Int_Expression=CreateExpr"
+)]
+public sealed class ColorUnpackerInt : Entity {
+
+    #region --- State ---
+
+    private readonly ConditionSource EnabledCondition;
+    public bool Enabled => EnabledCondition.Value;
+
+    private readonly IntSource ColorSource;
+    public Color Color => new() { PackedValue = unchecked((uint)ColorSource.Value) };
+
+    private string CounterR, CounterG, CounterB, CounterA;
+
+    #endregion State
+    #region --- Init ---
+
+    public ColorUnpackerInt(
+        EntityData data, Vector2 offset,
+        ConditionSource enabledCondition,
+        IntSource colorSource,
+        string counterR,
+        string counterG,
+        string counterB,
+        string counterA
+    ) : base(data.Position + offset) {
+
+        Add(EnabledCondition = enabledCondition);
+        Add(ColorSource = colorSource);
+        CounterR = counterR;
+        CounterG = counterG;
+        CounterB = counterB;
+        CounterA = counterA;
+    }
+
+    private ColorUnpackerInt(
+        EntityData data, Vector2 offset,
+        ConditionSource enabledCondition,
+        IntSource colorSource, string prefix
+    ) : this(
+        data, offset,
+        enabledCondition,
+        colorSource,
+        prefix + "R", prefix + "G", prefix + "B", prefix + "A"
+    ) {}
+
+    public static ColorUnpackerInt Create(Level level, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Flag(data) { Default = true },
+            new IntSource.Counter(level.Session, data, "packedColor", ifAbsent: "color"),
+            data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor")
+        );
+
+    public static ColorUnpackerInt CreateExpr(Level level, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Expr(data) { Default = true },
+            new IntSource.Expr(data, "packedColor", ifAbsent: "#color"),
+            data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor")
+        );
+
+    #endregion Init
+
+    public override void Update() {
+        base.Update();
+
+        if (!Enabled || Scene is not Level level) return;
+
+        var col = Color;
+        level.Session.SetCounter(CounterR, col.R);
+        level.Session.SetCounter(CounterG, col.G);
+        level.Session.SetCounter(CounterB, col.B);
+        level.Session.SetCounter(CounterA, col.A);
+    }
+
+}
+
+#endregion Int
+#region --- HSL ---
+
+[CustomEntity(
+    "Microlith57Misc/ColorUnpacker_HSL=Create",
+    "Microlith57Misc/ColorUnpacker_HSL_Expression=CreateExpr"
+)]
+public sealed class ColorUnpackerHSL : Entity {
+
+    #region --- State ---
+
+    private readonly ConditionSource EnabledCondition;
+    public bool Enabled => EnabledCondition.Value;
+
+    private readonly IntSource ColorSource;
+    public Color Color => new() { PackedValue = unchecked((uint)ColorSource.Value) };
+
+    public readonly AngleFormat Format;
+
+    private Session.Slider SliderH, SliderS, SliderL;
+
+    #endregion State
+    #region --- Init ---
+
+    public ColorUnpackerHSL(
+        EntityData data, Vector2 offset,
+        ConditionSource enabledCondition,
+        IntSource colorSource,
+        Session.Slider sliderH,
+        Session.Slider sliderS,
+        Session.Slider sliderL
+    ) : base(data.Position + offset) {
+
+        Format = data.Enum("format", AngleFormat.ZeroToOne);
+
+        Add(EnabledCondition = enabledCondition);
+        Add(ColorSource = colorSource);
+        SliderH = sliderH;
+        SliderS = sliderS;
+        SliderL = sliderL;
+    }
+
+    private ColorUnpackerHSL(
+        EntityData data, Vector2 offset,
+        ConditionSource enabledCondition,
+        IntSource colorSource,
+        Session session, string prefix
+    ) : this(
+        data, offset,
+        enabledCondition,
+        colorSource,
+        session.GetSliderObject(prefix + "H"),
+        session.GetSliderObject(prefix + "S"),
+        session.GetSliderObject(prefix + "L")
+    ) {}
+
+    public static ColorUnpackerHSL Create(Level level, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Flag(data) { Default = true },
+            new IntSource.Counter(level.Session, data, "packedColor", ifAbsent: "color"),
+            level.Session, data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor")
+        );
+
+    public static ColorUnpackerHSL CreateExpr(Level level, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Expr(data) { Default = true },
+            new IntSource.Expr(data, "packedColor", ifAbsent: "#color"),
+            level.Session, data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor")
+        );
+
+    #endregion Init
+
+    public override void Update() {
+        base.Update();
+
+        if (!Enabled) return;
+
+        (SliderH.Value, SliderS.Value, SliderL.Value) = Color.ToHSL(Format);
+    }
+
+}
+
+#endregion Int

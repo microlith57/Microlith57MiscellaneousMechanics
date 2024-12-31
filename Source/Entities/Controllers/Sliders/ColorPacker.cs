@@ -1,8 +1,9 @@
 using Microsoft.Xna.Framework;
 using Celeste.Mod.Entities;
+using Monocle;
 
 using Celeste.Mod.Microlith57Misc.Components;
-using Monocle;
+using static Celeste.Mod.Microlith57Misc.Utils;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -157,3 +158,78 @@ public sealed class ColorPackerInt : Entity {
 }
 
 #endregion Int
+#region --- HSL ---
+
+[CustomEntity(
+    "Microlith57Misc/ColorPacker_HSL=Create",
+    "Microlith57Misc/ColorPacker_HSL_Expression=CreateExpr"
+)]
+public sealed class ColorPackerHSL : Entity {
+
+    #region --- State ---
+
+    private readonly ConditionSource EnabledCondition;
+    public bool Enabled => EnabledCondition.Value;
+
+    public readonly AngleFormat Format;
+
+    private readonly FloatSource HSource, SSource, LSource, AlphaSource;
+    public Color Color => HSLToColor(HSource.Value, SSource.Value, LSource.Value, Format) * AlphaSource.Value;
+
+    private string Counter;
+
+    #endregion State
+    #region --- Init ---
+
+    public ColorPackerHSL(
+        EntityData data, Vector2 offset,
+        ConditionSource enabledCondition,
+        FloatSource hSource,
+        FloatSource sSource,
+        FloatSource lSource,
+        FloatSource alphaSource
+    ) : base(data.Position + offset) {
+
+        Format = data.Enum("format", AngleFormat.ZeroToOne);
+
+        Add(EnabledCondition = enabledCondition);
+        Add(HSource = hSource);
+        Add(SSource = sSource);
+        Add(LSource = lSource);
+        Add(AlphaSource = alphaSource);
+
+        Counter = data.Attr("packedColor", "color");
+    }
+
+    public static ColorPackerHSL Create(Level level, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Flag(data) { Default = true },
+            new FloatSource.Slider(level.Session, data, "h") { Default = 0f },
+            new FloatSource.Slider(level.Session, data, "s") { Default = 1f },
+            new FloatSource.Slider(level.Session, data, "l") { Default = 1f },
+            new FloatSource.Slider(level.Session, data, "alpha") { Default = 1f }
+        );
+
+    public static ColorPackerHSL CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Expr(data) { Default = true },
+            new FloatSource.Expr(data, "h") { Default = 0f },
+            new FloatSource.Expr(data, "s") { Default = 1f },
+            new FloatSource.Expr(data, "l") { Default = 1f },
+            new FloatSource.Expr(data, "alpha") { Default = 1f }
+        );
+
+    #endregion Init
+
+    public override void Update() {
+        base.Update();
+
+        if (Scene is not Level level) return;
+        level.Session.SetCounter(Counter, unchecked((int)Color.PackedValue));
+    }
+
+}
+
+#endregion Float
