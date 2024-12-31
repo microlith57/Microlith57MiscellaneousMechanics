@@ -120,6 +120,9 @@ entities.Microlith57Misc/PlayerGroundedFlagController.placements.name.playerGrou
 # Player Facing to Flags Controller
 entities.Microlith57Misc/PlayerFacingFlagController.placements.name.playerFacingFlagController=Player Facing to Flags Controller
 
+# Player State Name to Counter Controller
+entities.Microlith57Misc/PlayerStateNameToCounterController.placements.name.playerStateNameToCounterController=Player State Name to Counter Controller
+
 # Rainbow Light
 entities.Microlith57Misc/RainbowLight.placements.name.rainbowLight=Rainbow Light
 
