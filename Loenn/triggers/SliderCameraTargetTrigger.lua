@@ -13,7 +13,7 @@ local fieldInformation = {
 
 local fieldOrder = {
   "x", "y", "width", "height",
-  "deleteFlag", "lerpStrength",
+  "deleteFlag",
   "positionMode", "xOnly", "yOnly",
 
   "targetX", "targetY",
@@ -24,8 +24,7 @@ local fieldOrder = {
 }
 
 ignoredFields = {
-  "_name", "_id", "originX", "originY",
-  "lerpStrengthX", "lerpStrengthY"
+  "_name", "_id", "originX", "originY"
 }
 
 return {
@@ -38,16 +37,14 @@ return {
         name = "sliderCameraTargetTrigger",
         data = {
           deleteFlag = "",
-          lerpStrengthX = 1.0,
-          lerpStrengthY = 1.0,
           positionMode = "NoEffect",
           xOnly = false,
           yOnly = false,
 
-          targetSliderX = "targetX",
-          targetSliderY = "targetY",
-          lerpStrengthSliderX = "1.0",
-          lerpStrengthSliderY = "1.0",
+          targetX = "targetX",
+          targetY = "targetY",
+          lerpStrengthX = "1.0",
+          lerpStrengthY = "1.0",
 
           enableFlag = "",
           invertFlag = false,
@@ -68,16 +65,14 @@ return {
         name = "sliderCameraTargetTrigger",
         data = {
           deleteFlag = "",
-          lerpStrengthX = 1.0,
-          lerpStrengthY = 1.0,
           positionMode = "NoEffect",
           xOnly = false,
           yOnly = false,
 
-          targetExpressionX = "@targetX",
-          targetExpressionY = "@targetX",
-          lerpStrengthExpressionX = "1.0",
-          lerpStrengthExpressionY = "1.0",
+          targetX = "@targetX",
+          targetY = "@targetY",
+          lerpStrengthX = "1.0",
+          lerpStrengthY = "1.0",
 
           enableExpression = ""
         }

@@ -360,29 +360,25 @@ triggers.Microlith57Misc/SliderCameraTargetTrigger.placements.name.sliderCameraT
 triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.positionMode=Determines which direction the camera position moves in.
 triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.yOnly=The camera will only lock on the Y axis.
 triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.xOnly=The camera will only lock on the X axis.
-triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthX=The horizontal lerp strength.
-triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthY=The vertical lerp strength.
 triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.deleteFlag=Flag to deactivate the trigger, ignored if left empty. Camera will not reset if player is inside the trigger as it deactivates.\nIf the player transitions into the room with the flag set, the trigger can not be reactivated. However, if it was enabled and then disabled in the room, the player can reactivate it.
 
 triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.enableFlag=If present, only have an effect if the flag is set.
-triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.targetSliderX=Slider for the map X position to target.
-triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.targetSliderY=Slider for the map Y position to target.
-triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthSliderX=Slider for the horizontal lerp strength.
-triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthSliderY=Slider for the vertical lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.targetX=Slider for the map X position to target.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.targetY=Slider for the map Y position to target.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthX=Slider for the horizontal lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthY=Slider for the vertical lerp strength.
 
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.placements.name.sliderCameraTargetTrigger=Camera Target Trigger (Expression)
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.positionMode=Determines which direction the camera position moves in.
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.yOnly=The camera will only lock on the Y axis.
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.xOnly=The camera will only lock on the X axis.
-triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthX=The horizontal lerp strength.
-triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthY=The vertical lerp strength.
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.deleteFlag=Flag to deactivate the trigger, ignored if left empty. Camera will not reset if player is inside the trigger as it deactivates.\nIf the player transitions into the room with the flag set, the trigger can not be reactivated. However, if it was enabled and then disabled in the room, the player can reactivate it.
 
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.enableExpression=If present, only have an effect if the expression is truthy.
-triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.targetExpressionX=Expression for the map X position to target.
-triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.targetExpressionY=Expression for the map Y position to target.
-triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthExpressionX=Expression for the horizontal lerp strength.
-triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthExpressionY=Expression for the vertical lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.targetX=Expression for the map X position to target.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.targetY=Expression for the map Y position to target.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthX=Expression for the horizontal lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthY=Expression for the vertical lerp strength.
 
 # Camera Offset Trigger
 triggers.Microlith57Misc/SliderCameraOffsetTrigger.placements.name.sliderCameraOffsetTrigger=Camera Offset Trigger (Slider)
