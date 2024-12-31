@@ -73,7 +73,7 @@ public sealed class FocusController : Entity {
         => new(
             data, offset,
             new ConditionSource.Flag(data, name: "enabledFlag", invertName: "invertEnabledFlag") { Default = true },
-            new ConditionSource.Function(() => Input.Grab),
+            new ConditionSource.Function(() => Module.Settings.Focus),
             level.Session.GetSliderObject(data.Attr("slider", "focus"))
         );
 

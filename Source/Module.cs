@@ -17,6 +17,9 @@ public class Module : EverestModule {
     public static Module Instance { get; private set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
+    public override Type SettingsType => typeof(Microlith57MiscSettings);
+    public static Microlith57MiscSettings Settings => (Microlith57MiscSettings)Instance._Settings;
+
     public const string LOGGING_TAG = "Microlith57Misc";
 
     public Module() {
