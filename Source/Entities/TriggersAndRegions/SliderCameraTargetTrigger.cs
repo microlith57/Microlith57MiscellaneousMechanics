@@ -41,16 +41,16 @@ public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
         => new(
             data, offset,
             new ConditionSource.Flag(data, "enableFlag", invertName: "invertFlag") { Default = true },
-            Vector2Source.SliderSource(level.Session, data, "targetSlider"),
-            Vector2Source.SliderSource(level.Session, data, "lerpStrengthSlider")
+            Vector2Source.SliderSource(level.Session, data, "target"),
+            Vector2Source.SliderSource(level.Session, data, "lerpStrength")
         );
 
     public static SliderCameraTargetTrigger CreateExpr(Level level, LevelData _, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Expr(data, "enableExpression") { Default = true },
-            Vector2Source.ExprSource(data, "targetExpression"),
-            Vector2Source.ExprSource(data, "lerpStrengthExpression")
+            Vector2Source.ExprSource(data, "target"),
+            Vector2Source.ExprSource(data, "lerpStrength")
         );
 
     #endregion Init
