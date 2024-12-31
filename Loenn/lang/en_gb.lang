@@ -90,7 +90,7 @@ entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.descri
 entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.description.focusYSlider=Expression for the focus point's screen-space Y position.
 
 # Styleground Controller
-entities.Microlith57Misc/SliderStylegroundController.placements.name.sliderCameraZoomController=Styleground Controller (Slider)
+entities.Microlith57Misc/SliderStylegroundController.placements.name.sliderStylegroundController=Styleground Controller (Slider)
 entities.Microlith57Misc/SliderStylegroundController.attributes.description.tag=Affect stylegrounds with this tag.
 entities.Microlith57Misc/SliderStylegroundController.attributes.description.flag=If present, only affect the stylegrounds if the flag is set.
 entities.Microlith57Misc/SliderStylegroundController.attributes.description.positionX=Slider to set the X position to, or empty to leave it unchanged.
@@ -102,7 +102,7 @@ entities.Microlith57Misc/SliderStylegroundController.attributes.description.spee
 entities.Microlith57Misc/SliderStylegroundController.attributes.description.packedColor=Counter to use to set the colour, or empty to leave it unchanged.\n\nMust be packed eg. with the Colour Packer entity.
 entities.Microlith57Misc/SliderStylegroundController.attributes.description.alphaMultiplier=Slider to set the alpha multiplier by, or empty to leave it unchanged.
 
-entities.Microlith57Misc/SliderStylegroundController_Expression.placements.name.sliderCameraZoomController=Styleground Controller (Expression)
+entities.Microlith57Misc/SliderStylegroundController_Expression.placements.name.sliderStylegroundController=Styleground Controller (Expression)
 entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.tag=Affect stylegrounds with this tag.
 entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.expression=If present, only affect the zoom if the expression is truthy.
 entities.Microlith57Misc/SliderStylegroundController_Expression.attributes.description.positionX=Expression to set the X position to, or empty to leave it unchanged.
@@ -215,7 +215,7 @@ entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.alpha
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.angleFormat=Format to use for the hue component.
 
 # Sound Source
-entities.Microlith57Misc/SliderSoundSource.placements.name.colorUnpacker=Sound Source (Slider)
+entities.Microlith57Misc/SliderSoundSource.placements.name.sliderSoundSource=Sound Source (Slider)
 entities.Microlith57Misc/SliderSoundSource.attributes.description.enableFlag=If present, play when the flag is set and stop when it is unset.\n\nWhile stopping, the sound's parameters cannot be changed.\nTo stop the sound instantly, you can set its volume to 0 and then stop it on the next frame.
 entities.Microlith57Misc/SliderSoundSource.attributes.description.playingFlag=If present, play when the flag is set and pause when it is unset.
 entities.Microlith57Misc/SliderSoundSource.attributes.description.positionSliderX=Slider for the X position of the sound.
@@ -226,7 +226,7 @@ entities.Microlith57Misc/SliderSoundSource.attributes.description.volumeSlider=S
 entities.Microlith57Misc/SliderSoundSource.attributes.description.sound=The sound event that will be played.
 entities.Microlith57Misc/SliderSoundSource.attributes.description.globalRoomCompat=Enable this if placing the sound source in a global room.\n\nIf this is ticked, when transitioning between two rooms with the same sound source (i.e. both with this ticked, and with the same event name), the transition will be seamless.
 
-entities.Microlith57Misc/SliderSoundSource_Expression.placements.name.colorUnpacker=Sound Source (Expression)
+entities.Microlith57Misc/SliderSoundSource_Expression.placements.name.sliderSoundSource=Sound Source (Expression)
 entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.enableExpression=If present, play when the expression is truthy and stop when it is falsy.\n\nWhile stopping, the sound's parameters cannot be changed.\nTo stop the sound instantly, you can set its volume to 0 and then stop it on the next frame.
 entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.playingExpression=If present, play when the expression is truthy and pause when it is falsy.
 entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.positionExpressionX=Expression for the X position of the sound.
@@ -280,11 +280,29 @@ entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.restor
 entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.useRawDeltaTime=If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time.
 entities.Microlith57Misc/ConsumableResource_Custom.attributes.description.dieWhenConsumed=If true, kill the player if the resource reaches 0.
 
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.placements.name.consumableResource=Consumable Resource (Custom; Expression)
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.resource=Name of this Consumable Resource entity; and also of the slider it uses.
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.flagPrefix=If present, used as a prefix to generate "Any" / "Full" / "Low" / "Flash" flags.
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.lowThreshold=Amount of the resource that's considered low.
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.maximum=Maximum possible amount of the resource.
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.instantRefillExpression=When truthy, instantly refill the resource to its maximum.\n\nMay have unintended effects if truthy for more than a frame.
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.instantDrainExpression=When truthy, instantly set the resource to 0.\n\nMay have unintended effects if truthy for more than a frame.
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.restoreCooldown=Delay after being drained that a resource can start to refill.
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.restoreSpeed=Speed (units/sec) at which the resource refills, in [0,∞); or -1 for instant.
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.useRawDeltaTime=If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time.
+entities.Microlith57Misc/ConsumableResource_Custom_Expresssion.attributes.description.dieWhenConsumed=If true, kill the player if the resource reaches 0.
+
 entities.Microlith57Misc/ConsumableResource_Stamina.placements.name.consumableResource=Consumable Resource (Stamina)
 entities.Microlith57Misc/ConsumableResource_Stamina.attributes.description.resource=Name of this Consumable Resource entity; and also of the slider it uses.
 entities.Microlith57Misc/ConsumableResource_Stamina.attributes.description.flagPrefix=If present, used as a prefix to generate "Any" / "Full" / "Low" / "Flash" flags.
 entities.Microlith57Misc/ConsumableResource_Stamina.attributes.description.instantRefillFlag=When set, instantly refill the stamina.\n\nMay have unintended effects if set for more than a frame.
 entities.Microlith57Misc/ConsumableResource_Stamina.attributes.description.instantDrainFlag=When set, instantly set the stamina to 0.\n\nMay have unintended effects if set for more than a frame.
+
+entities.Microlith57Misc/ConsumableResource_Stamina_Expresssion.placements.name.consumableResource=Consumable Resource (Stamina; Expression)
+entities.Microlith57Misc/ConsumableResource_Stamina_Expresssion.attributes.description.resource=Name of this Consumable Resource entity; and also of the slider it uses.
+entities.Microlith57Misc/ConsumableResource_Stamina_Expresssion.attributes.description.flagPrefix=If present, used as a prefix to generate "Any" / "Full" / "Low" / "Flash" flags.
+entities.Microlith57Misc/ConsumableResource_Stamina_Expresssion.attributes.description.instantRefillExpression=When truthy, instantly refill the resource to its maximum.\n\nMay have unintended effects if truthy for more than a frame.
+entities.Microlith57Misc/ConsumableResource_Stamina_Expresssion.attributes.description.instantDrainExpression=When truthy, instantly set the resource to 0.\n\nMay have unintended effects if truthy for more than a frame.
 
 entities.Microlith57Misc/ConsumableResource_MaxStamina.placements.name.consumableResource=Consumable Resource (Max Stamina)
 entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.resource=Name of this Consumable Resource entity; and also of the slider it uses.
@@ -296,6 +314,17 @@ entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.re
 entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.restoreSpeed=Speed (max stamina/sec) at which the resource refills, in [0,∞); or -1 for instant.
 entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.useRawDeltaTime=If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time.
 entities.Microlith57Misc/ConsumableResource_MaxStamina.attributes.description.dieWhenConsumed=If true, kill the player if the resource reaches 0.
+
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.placements.name.consumableResource=Consumable Resource (Max Stamina; Expression)
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.attributes.description.resource=Name of this Consumable Resource entity; and also of the slider it uses.
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.attributes.description.flagPrefix=If present, used as a prefix to generate "Any" / "Full" / "Low" / "Flash" flags.
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.attributes.description.lowThreshold=Amount of max stamina that's considered low.\nDistinct from the low threshold for stamina itself, which is always 20.
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.attributes.description.instantRefillExpression=When truthy, instantly refill the resource to its maximum.\n\nMay have unintended effects if truthy for more than a frame.
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.attributes.description.instantDrainExpression=When truthy, instantly set the resource to 0.\n\nMay have unintended effects if truthy for more than a frame.
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.attributes.description.restoreCooldown=Delay after being drained that a resource can start to refill.
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.attributes.description.restoreSpeed=Speed (max stamina/sec) at which the resource refills, in [0,∞); or -1 for instant.
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.attributes.description.useRawDeltaTime=If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time.
+entities.Microlith57Misc/ConsumableResource_MaxStamina_Expresssion.attributes.description.dieWhenConsumed=If true, kill the player if the resource reaches 0.
 
 # Holdable Bouyancy Region
 triggers.Microlith57Misc/HoldableBouyancyRegion.placements.name.holdableBouyancyRegion=Holdable Bouyancy Region (Slider)
