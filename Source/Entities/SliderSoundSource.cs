@@ -13,22 +13,21 @@ namespace Celeste.Mod.Microlith57Misc.Entities;
     "Microlith57Misc/SliderSoundSource=Create",
     "Microlith57Misc/SliderSoundSource_Expression=CreateExpr"
 )]
+[Tracked]
 public sealed class SliderSoundSource : Entity {
-
-    // todo: global room support
 
     #region --- State ---
 
     private string Event;
-    private SoundSource Source;
+    private SoundSource? Source;
 
     private ConditionSource EnabledSource;
     private bool Enable => EnabledSource.Value;
-    private bool isEnabled => Source.instance != null;
+    private bool isEnabled => Source?.instance != null;
 
     private ConditionSource PlayingSource;
     private bool Play => PlayingSource.Value;
-    private bool isPlaying => Source.Playing;
+    private bool isPlaying => Source != null && Source.Playing;
 
     private Vector2Source PositionSource;
     private Vector2 SoundPosition => PositionSource.Value;
@@ -39,6 +38,8 @@ public sealed class SliderSoundSource : Entity {
 
     private FloatSource VolumeSource;
     private float Volume => VolumeSource.Value;
+
+    private bool GlobalRoomCompat;
 
     #endregion State
     #region --- Init ---
@@ -70,8 +71,8 @@ public sealed class SliderSoundSource : Entity {
 
         Add(VolumeSource = volumeSource);
 
-        Add(Source = new SoundSource() { Position = PositionSource.Default });
         Event = SFX.EventnameByHandle(data.Attr("sound"));
+        GlobalRoomCompat = data.Bool("globalRoomCompat");
     }
 
 
@@ -106,8 +107,29 @@ public sealed class SliderSoundSource : Entity {
     #region --- Behaviour ---
 
     public override void Awake(Scene scene) {
-        base.Awake(scene);
+        if (GlobalRoomCompat) {
+            var bind = scene.Tracker
+                .GetEntities<SliderSoundSource>()
+                .Cast<SliderSoundSource>()
+                .Where(s => s.GlobalRoomCompat
+                         && s.Source != null
+                         && s.Event == Event)
+                .FirstOrDefault();
+
+            if (bind != null) {
+                Source = bind.Source;
+                bind.Source = null;
+                bind.RemoveSelf();
+                goto added_source;
+            }
+        }
+
+        Add(Source = new SoundSource() { Position = PositionSource.Default });
+
+    added_source:
         Apply();
+
+        base.Awake(scene);
     }
 
     public override void Update() {
@@ -118,17 +140,17 @@ public sealed class SliderSoundSource : Entity {
     private void Apply() {
         var shouldEnable = Enable;
         if (isEnabled && !shouldEnable) {
-            Source.Stop(); return;
+            Source!.Stop(); return;
         } else if (!isEnabled && shouldEnable)
-            Source.Play(Event);
+            Source!.Play(Event);
 
         var shouldPlay = Play;
         if (isPlaying && !shouldPlay)
-            Source.Pause();
+            Source!.Pause();
         else if (!isPlaying && shouldPlay)
-            Source.Resume();
+            Source!.Resume();
 
-        Source.Position = SoundPosition;
+        Source!.Position = SoundPosition;
 
         foreach (var (param, value) in Params)
             Source.Param(param, value);

@@ -24,7 +24,8 @@ local fieldOrder = {
   "playingFlag", "invertPlaying", "playingExpression",
   "positionX", "positionY", "positionRelative",
   "params", "volume",
-  "sound"
+  "sound",
+  "globalRoomCompat"
 }
 
 return {
@@ -45,7 +46,8 @@ return {
           positionRelative = true,
           params = "",
           volume = "1.0",
-          sound = ""
+          sound = "",
+          globalRoomCompat = false
         }
       }
     },
@@ -68,7 +70,8 @@ return {
           positionRelative = true,
           params = "",
           volume = "1.0",
-          sound = ""
+          sound = "",
+          globalRoomCompat = false
         }
       }
     },

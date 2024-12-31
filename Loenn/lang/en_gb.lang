@@ -221,6 +221,7 @@ entities.Microlith57Misc/SliderSoundSource.attributes.description.positionRelati
 entities.Microlith57Misc/SliderSoundSource.attributes.description.paramSliders=List of parameter names and sliders to set them to.
 entities.Microlith57Misc/SliderSoundSource.attributes.description.volumeSlider=Slider to set the sound's volume.
 entities.Microlith57Misc/SliderSoundSource.attributes.description.sound=The sound event that will be played.
+entities.Microlith57Misc/SliderSoundSource.attributes.description.globalRoomCompat=Enable this if placing the sound source in a global room.\n\nIf this is ticked, when transitioning between two rooms with the same sound source (i.e. both with this ticked, and with the same event name), the transition will be seamless.
 
 entities.Microlith57Misc/SliderSoundSource_Expression.placements.name.colorUnpacker=Sound Source (Expression)
 entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.enableExpression=If present, play when the expression is truthy and stop when it is falsy.\n\nWhile stopping, the sound's parameters cannot be changed.\nTo stop the sound instantly, you can set its volume to 0 and then stop it on the next frame.
@@ -231,6 +232,7 @@ entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.pos
 entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.paramExpressions=List of parameter names and expressions to set them to.
 entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.volumeExpression=Expression to set the sound's volume.
 entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.sound=The sound event that will be played.
+entities.Microlith57Misc/SliderSoundSource_Expression.attributes.description.globalRoomCompat=Enable this if placing the sound source in a global room.\n\nIf this is ticked, when transitioning between two rooms with the same sound source (i.e. both with this ticked, and with the same event name), the transition will be seamless.
 
 # Focus Controller
 entities.Microlith57Misc/FocusController.placements.name.focusController=Focus Controller (Flag)
