@@ -1,19 +1,17 @@
 local utils = require("utils")
 
-local PlayerFacingFlagController = {}
-
-PlayerFacingFlagController.name = "Microlith57Misc/PlayerFacingFlagController"
-PlayerFacingFlagController.depth = -1000000
-PlayerFacingFlagController.texture = "objects/microlith57/misc/player_facing_flag_controller"
-PlayerFacingFlagController.placements = {
+return {
+  name = "Microlith57Misc/PlayerFacingFlagController",
+  depth = -1000000,
+  texture = "objects/microlith57/misc/player_facing_flag_controller",
+  placements = {
     {
-        name = "playerFacingFlagController",
-        data = {
-            flagLeft = "playerFacingLeft",
-            flagRight = "playerFacingRight",
-            persistOnDeath = false
-        }
+      name = "playerFacingFlagController",
+      data = {
+        flagLeft = "playerFacingLeft",
+        flagRight = "playerFacingRight",
+        persistOnDeath = false
+      }
     }
+  }
 }
-
-return PlayerFacingFlagController

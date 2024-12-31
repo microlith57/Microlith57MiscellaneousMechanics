@@ -1,29 +1,6 @@
-local GravitySwitch = {}
+local utils = require("utils")
 
-GravitySwitch.name = "Microlith57Misc/GravitySwitch"
-GravitySwitch.depth = 2000
-GravitySwitch.placements = {
-  {
-    name = "normal",
-    data = {
-      gravityType = "Normal"
-    }
-  },
-  {
-    name = "inverted",
-    data = {
-      gravityType = "Inverted"
-    }
-  },
-  {
-    name = "toggle",
-    data = {
-      gravityType = "Toggle"
-    }
-  }
-}
-
-function GravitySwitch.texture(room, entity)
+local function texture(room, entity)
   local grav = entity.gravityType or "Toggle"
 
   if grav == "Normal" then
@@ -35,4 +12,28 @@ function GravitySwitch.texture(room, entity)
   end
 end
 
-return GravitySwitch
+return {
+  name = "Microlith57Misc/GravitySwitch",
+  depth = 2000,
+  placements = {
+    {
+      name = "normal",
+      data = {
+        gravityType = "Normal"
+      }
+    },
+    {
+      name = "inverted",
+      data = {
+        gravityType = "Inverted"
+      }
+    },
+    {
+      name = "toggle",
+      data = {
+        gravityType = "Toggle"
+      }
+    }
+  },
+  texture = texture
+}

@@ -1,18 +1,16 @@
 local utils = require("utils")
 
-local HoldablePriorityController = {}
-
-HoldablePriorityController.name = "Microlith57Misc/HoldablePriorityController"
-HoldablePriorityController.depth = -1000000
-HoldablePriorityController.texture = "objects/microlith57/misc/holdable_priority_controller"
-HoldablePriorityController.placements = {
+return {
+  name = "Microlith57Misc/HoldablePriorityController",
+  depth = -1000000,
+  texture = "objects/microlith57/misc/holdable_priority_controller",
+  placements = {
     {
-        name = "holdablePriorityController",
-        data = {
-            checkOffsetX=6,
-            checkOffsetY=0
-        }
+      name = "holdablePriorityController",
+      data = {
+        checkOffsetX = 6,
+        checkOffsetY = 0
+      }
     }
+  }
 }
-
-return HoldablePriorityController
