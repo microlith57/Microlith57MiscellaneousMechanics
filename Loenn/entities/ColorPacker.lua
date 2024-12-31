@@ -120,7 +120,7 @@ return {
   {
     name = "Microlith57Misc/ColorPacker_HSL",
     depth = -1000000,
-    texture = "objects/microlith57/misc/color_packer",
+    texture = "objects/microlith57/misc/color_packer_hsl",
     placements = {
       {
         name = "colorPacker",
@@ -142,16 +142,16 @@ return {
   {
     name = "Microlith57Misc/ColorPacker_HSL_Expression",
     depth = -1000000,
-    texture = "objects/microlith57/misc/color_packer",
+    texture = "objects/microlith57/misc/color_packer_hsl",
     placements = {
       {
         name = "colorPacker",
         data = {
           expression = "",
           packedColor = "color",
-          h = ".0",
-          s = ".0",
-          l = ".0",
+          h = "0.0",
+          s = "1.0",
+          l = "1.0",
           alpha = "1.0",
           format = "ZeroToOne"
         }

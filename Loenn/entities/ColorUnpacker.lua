@@ -105,7 +105,7 @@ return {
   {
     name = "Microlith57Misc/ColorUnpacker_HSL",
     depth = -1000000,
-    texture = "objects/microlith57/misc/color_unpacker",
+    texture = "objects/microlith57/misc/color_unpacker_hsl",
     placements = {
       {
         name = "colorUnpacker",
@@ -125,7 +125,7 @@ return {
     name = "Microlith57Misc/ColorUnpacker_HSL_Expression",
     associatedMods = {"Microlith57Misc", "FrostHelper"},
     depth = -1000000,
-    texture = "objects/microlith57/misc/color_unpacker",
+    texture = "objects/microlith57/misc/color_unpacker_hsl",
     placements = {
       {
         name = "colorUnpacker",
