@@ -1,7 +1,5 @@
 local utils = require("utils")
 
--- TODO: art
-
 local nonEmptyValidator = function(s)
   return s ~= ""
 end

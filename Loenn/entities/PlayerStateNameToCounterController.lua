@@ -1,7 +1,5 @@
 local utils = require("utils")
 
--- todo: art
-
 local nonEmptyValidator = function(s)
   return s ~= ""
 end
@@ -20,7 +18,7 @@ return {
   {
     name = "Microlith57Misc/PlayerStateNameToCounterController",
     depth = -1000000,
-    texture = "objects/microlith57/misc/slider_sound_source",
+    texture = "objects/microlith57/misc/player_state_name_to_counter_controller",
     placements = {
       {
         name = "playerStateNameToCounterController",

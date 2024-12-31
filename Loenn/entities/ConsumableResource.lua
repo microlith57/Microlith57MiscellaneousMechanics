@@ -1,7 +1,5 @@
 local utils = require("utils")
 
--- todo: art
-
 local nonEmptyValidator = function(s)
   return s ~= ""
 end
@@ -24,6 +22,7 @@ return {
   {
     name = "Microlith57Misc/ConsumableResource_Custom",
     depth = -1000000,
+    texture = "objects/microlith57/misc/consumable_resource",
     placements = {
       {
         name = "consumableResource",
@@ -48,6 +47,7 @@ return {
   {
     name = "Microlith57Misc/ConsumableResource_Custom_Expresssion",
     depth = -1000000,
+    texture = "objects/microlith57/misc/consumable_resource",
     placements = {
       {
         name = "consumableResource",
@@ -71,6 +71,7 @@ return {
   {
     name = "Microlith57Misc/ConsumableResource_Stamina",
     depth = -1000000,
+    texture = "objects/microlith57/misc/consumable_resource",
     placements = {
       {
         name = "consumableResource",
@@ -88,6 +89,7 @@ return {
   {
     name = "Microlith57Misc/ConsumableResource_Stamina_Expresssion",
     depth = -1000000,
+    texture = "objects/microlith57/misc/consumable_resource",
     placements = {
       {
         name = "consumableResource",
@@ -105,6 +107,7 @@ return {
   {
     name = "Microlith57Misc/ConsumableResource_MaxStamina",
     depth = -1000000,
+    texture = "objects/microlith57/misc/consumable_resource",
     placements = {
       {
         name = "consumableResource",
@@ -127,6 +130,7 @@ return {
   {
     name = "Microlith57Misc/ConsumableResource_MaxStamina_Expresssion",
     depth = -1000000,
+    texture = "objects/microlith57/misc/consumable_resource",
     placements = {
       {
         name = "consumableResource",

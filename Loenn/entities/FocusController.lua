@@ -1,7 +1,5 @@
 local utils = require("utils")
 
--- todo: art; choose bind
-
 local nonEmptyValidator = function(s)
   return s ~= ""
 end
@@ -23,6 +21,7 @@ return {
   {
     name = "Microlith57Misc/FocusController",
     depth = -1000000,
+    texture = "objects/microlith57/misc/focus_controller",
     placements = {
       {
         name = "focusController",
@@ -46,6 +45,7 @@ return {
   {
     name = "Microlith57Misc/FocusController_Button",
     depth = -1000000,
+    texture = "objects/microlith57/misc/focus_controller",
     placements = {
       {
         name = "focusController",
@@ -67,6 +67,7 @@ return {
   {
     name = "Microlith57Misc/FocusController_Expression",
     depth = -1000000,
+    texture = "objects/microlith57/misc/focus_controller",
     placements = {
       {
         name = "focusController",

@@ -1,7 +1,5 @@
 local utils = require("utils")
 
--- todo: art
-
 local listInformation = {
   fieldType = "list",
   elementSeparator = ",",
