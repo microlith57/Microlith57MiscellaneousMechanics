@@ -399,6 +399,7 @@ triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.target
 triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.targetY=Slider for the map Y position to target.
 triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthX=Slider for the horizontal lerp strength.
 triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.lerpStrengthY=Slider for the vertical lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger.attributes.description.snapMode=When to snap the camera so its position exactly matches the target (rather than trying to catch up to it).\n\nNeverSnap: Don't snap.\nSnapWhenInitiallyEnabled: Snap when the trigger becomes enabled (where the previous frame it wasn't).\nAlwaysSnap: Snap every frame.\nAlwaysSnapIgnoringRoomBounds: Snap every frame, unconstrained by the room's bounds.
 
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.placements.name.sliderCameraTargetTrigger=Camera Target Trigger (Expression)
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.positionMode=Determines which direction the camera position moves in.
@@ -411,6 +412,7 @@ triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.descrip
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.targetY=Expression for the map Y position to target.
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthX=Expression for the horizontal lerp strength.
 triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.lerpStrengthY=Expression for the vertical lerp strength.
+triggers.Microlith57Misc/SliderCameraTargetTrigger_Expression.attributes.description.snapMode=When to snap the camera so its position exactly matches the target (rather than trying to catch up to it).\n\nNeverSnap: Don't snap.\nSnapWhenInitiallyEnabled: Snap when the trigger becomes enabled (where the previous frame it wasn't).\nAlwaysSnap: Snap every frame.\nAlwaysSnapIgnoringRoomBounds: Snap every frame, unconstrained by the room's bounds.
 
 # Camera Offset Trigger
 triggers.Microlith57Misc/SliderCameraOffsetTrigger.placements.name.sliderCameraOffsetTrigger=Camera Offset Trigger (Slider)
