@@ -9,7 +9,7 @@ local rgbFieldInformation = {
   unpackedColorPrefix = {validator = nonEmptyValidator}
 }
 
-local hslFieldInformation = {
+local hslvFieldInformation = {
   format = {
     options = {
       "ZeroToOne",
@@ -118,7 +118,7 @@ return {
         }
       }
     },
-    fieldInformation = hslFieldInformation,
+    fieldInformation = hslvFieldInformation,
     fieldOrder = fieldOrder
   },
   {
@@ -137,7 +137,45 @@ return {
         }
       }
     },
-    fieldInformation = hslFieldInformation,
+    fieldInformation = hslvFieldInformation,
+    fieldOrder = fieldOrder
+  },
+  {
+    name = "Microlith57Misc/ColorUnpacker_HSV",
+    depth = -1000000,
+    texture = "objects/microlith57/misc/color_unpacker_hsv",
+    placements = {
+      {
+        name = "colorUnpacker",
+        data = {
+          flag = "",
+          invertFlag = false,
+          packedColor = "color",
+          unpackedColorPrefix = "unpackedColor",
+          format = "ZeroToOne"
+        }
+      }
+    },
+    fieldInformation = hslvFieldInformation,
+    fieldOrder = fieldOrder
+  },
+  {
+    name = "Microlith57Misc/ColorUnpacker_HSV_Expression",
+    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    depth = -1000000,
+    texture = "objects/microlith57/misc/color_unpacker_hsv",
+    placements = {
+      {
+        name = "colorUnpacker",
+        data = {
+          expression = "",
+          packedColor = "#color",
+          unpackedColorPrefix = "unpackedColor",
+          format = "ZeroToOne"
+        }
+      }
+    },
+    fieldInformation = hslvFieldInformation,
     fieldOrder = fieldOrder
   }
 }
