@@ -168,6 +168,61 @@ public static class Utils {
         return (FormatAngle(hue, angleFormat), s, l);
     }
 
+    public static Color HSVToColor(float h, float s, float v, AngleFormat angleFormat = AngleFormat.ZeroToOne) {
+        if (s == 0)
+            return new Color(v, v, v);
+
+        float hue = UnformatAngle(h, angleFormat);
+
+        if (hue == 1f) hue = 0f;
+        else hue /= 6f;
+
+        int i = (int)Math.Truncate(hue);
+        float f = hue - i;
+
+        float p = v * (1f - s);
+        float q = v * (1f - (s * f));
+        float t = v * (1f - (s * (1f - f)));
+
+        switch (i) {
+            case 0: return new(v, t, p);
+            case 1: return new(q, v, p);
+            case 2: return new(p, v, t);
+            case 3: return new(p, q, v);
+            case 4: return new(t, p, v);
+            default: return new(v, p, q);
+        }
+    }
+
+    public static (float h, float s, float v) ToHSV(this Color color, AngleFormat angleFormat = AngleFormat.ZeroToOne) {
+        (float r, float g, float b) = (color.R / 255f, color.G / 255f, color.B / 255f);
+
+        float h = 0f, s, v;
+
+        float min = Math.Min(Math.Min(r, g), b);
+        v = Math.Max(Math.Max(r, g), b);
+        float delta = v - min;
+
+        if (v == 0.0) s = 0;
+        else s = delta / v;
+
+        if (s != 0) {
+            if (r == v)
+                h = (g - b) / delta;
+            else if (g == v)
+                h = 2 + (b - r) / delta;
+            else if (b == v)
+                h = 4 + (r - g) / delta;
+
+            h *= 60;
+
+            if (h < 0.0)
+                h += 360;
+        }
+
+        return new (FormatAngle(h, angleFormat), s, v);
+    }
+
     public static float FormatAngle(float angle, AngleFormat angleFormat) {
         switch (angleFormat) {
             case AngleFormat.Radians: return angle * Calc.HalfCircle;
