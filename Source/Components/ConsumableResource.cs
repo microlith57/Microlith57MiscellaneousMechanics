@@ -78,9 +78,15 @@ public abstract class ConsumableResource : Entity {
     // public readonly bool FlashPlayer;
     public bool DieWhenConsumed { get; private set; }
 
-    public readonly (string Any, string Full, string Low, string Flash)? FlagNames;
     public readonly Session.Slider Slider;
     private float prevSliderValue;
+
+    public readonly (
+        string Any,
+        string Full,
+        string Low,
+        string Flash
+    )? FlagNames;
 
     public readonly float RestoreCooldown;
     public readonly float RestoreSpeed;

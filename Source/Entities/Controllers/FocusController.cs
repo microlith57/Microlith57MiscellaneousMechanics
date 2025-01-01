@@ -35,6 +35,13 @@ public sealed class FocusController : Entity {
     public readonly float FadeDuration;
     public readonly Session.Slider Slider;
 
+    public readonly (
+        string Trying,
+        string Focusing,
+        string AnyFocus,
+        string FullFocus
+    )? FlagNames;
+
     public bool Slowing { get; private set; }
 
     #endregion State
@@ -53,6 +60,15 @@ public sealed class FocusController : Entity {
         UseRawDeltaTime = data.Bool("useRawDeltaTime");
 
         Slider = slider;
+
+        var prefix = data.Attr("flagPrefix");
+        if (prefix != "")
+            FlagNames = (
+                prefix + "Trying",
+                prefix + "Focusing",
+                prefix + "AnyFocus",
+                prefix + "FullFocus"
+            );
 
         consumptionUnbound = data.Attr("consumptionResourceName");
         ConsumptionRate = data.Float("consumptionRate", 12f);
@@ -111,7 +127,12 @@ public sealed class FocusController : Entity {
     public override void Update() {
         base.Update();
 
+        if (Scene is not Level level) return;
+
         bool shouldSlow = TryingToFocus;
+
+        if (FlagNames != null)
+            level.Session.SetFlag(FlagNames.Value.Trying, shouldSlow);
 
         if (Consumption != null) {
             Drain!.Active = shouldSlow;
@@ -119,6 +140,9 @@ public sealed class FocusController : Entity {
             if (!Consumption.CanConsume)
                 shouldSlow = false;
         }
+
+        if (FlagNames != null)
+            level.Session.SetFlag(FlagNames.Value.Focusing, shouldSlow);
 
         float lerpTarget = shouldSlow ? 1f : 0f;
 
@@ -129,6 +153,11 @@ public sealed class FocusController : Entity {
             Slider.Value = lerpTarget;
         else
             Slider.Value = Calc.Approach(Slider.Value, lerpTarget, DeltaTime / FadeDuration);
+
+        if (FlagNames != null) {
+            level.Session.SetFlag(FlagNames.Value.AnyFocus, Slider.Value > 0f);
+            level.Session.SetFlag(FlagNames.Value.FullFocus, Slider.Value == 1f);
+        }
     }
 
     #endregion Behaviour

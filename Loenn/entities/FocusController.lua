@@ -12,7 +12,7 @@ local fieldOrder = {
   "x", "y",
   "enabledFlag", "invertEnabledFlag", "enabledExpression",
   "activeFlag", "invertActiveFlag", "activeExpression",
-  "slider",
+  "slider", "flagPrefix",
   "consumptionResourceName", "consumptionRate", "unfocusWhenResourceLow",
   "fadeDuration", "useRawDeltaTime"
 }
@@ -31,6 +31,7 @@ return {
           activeFlag = "tryingToFocus",
           invertActiveFlag = "",
           slider = "focus",
+          flagPrefix = "",
           consumptionResourceName = "",
           consumptionRate = 12.0,
           unfocusWhenResourceLow = true,
@@ -53,6 +54,7 @@ return {
           enabledFlag = "",
           invertEnabledFlag = false,
           slider = "focus",
+          flagPrefix = "",
           consumptionResourceName = "",
           consumptionRate = 12.0,
           unfocusWhenResourceLow = true,
@@ -75,6 +77,7 @@ return {
           enabledExpression = "",
           activeExpression = "$input.grab",
           slider = "focus",
+          flagPrefix = "",
           consumptionResourceName = "",
           consumptionRate = 12.0,
           unfocusWhenResourceLow = true,
