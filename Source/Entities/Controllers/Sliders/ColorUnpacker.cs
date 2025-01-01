@@ -81,7 +81,6 @@ public sealed class ColorUnpackerFloat : Entity {
 
     public override void Update() {
         base.Update();
-
         if (!Enabled) return;
 
         var col = Color;
@@ -164,7 +163,6 @@ public sealed class ColorUnpackerInt : Entity {
 
     public override void Update() {
         base.Update();
-
         if (!Enabled || Scene is not Level level) return;
 
         var col = Color;
@@ -177,13 +175,15 @@ public sealed class ColorUnpackerInt : Entity {
 }
 
 #endregion Int
-#region --- HSL ---
+#region --- HSL / HSV ---
 
 [CustomEntity(
-    "Microlith57Misc/ColorUnpacker_HSL=Create",
-    "Microlith57Misc/ColorUnpacker_HSL_Expression=CreateExpr"
+    "Microlith57Misc/ColorUnpacker_HSL=CreateHSL",
+    "Microlith57Misc/ColorUnpacker_HSL_Expression=CreateHSLExpr",
+    "Microlith57Misc/ColorUnpacker_HSV=CreateHSV",
+    "Microlith57Misc/ColorUnpacker_HSV_Expression=CreateHSVExpr"
 )]
-public sealed class ColorUnpackerHSL : Entity {
+public sealed class ColorUnpackerHSLV : Entity {
 
     #region --- State ---
 
@@ -194,70 +194,94 @@ public sealed class ColorUnpackerHSL : Entity {
     public Color Color => new() { PackedValue = unchecked((uint)ColorSource.Value) };
 
     public readonly AngleFormat Format;
+    public readonly bool IsHSV;
 
-    private Session.Slider SliderH, SliderS, SliderL;
+    private Session.Slider SliderH, SliderS, SliderLV;
 
     #endregion State
     #region --- Init ---
 
-    public ColorUnpackerHSL(
+    public ColorUnpackerHSLV(
         EntityData data, Vector2 offset,
         ConditionSource enabledCondition,
         IntSource colorSource,
         Session.Slider sliderH,
         Session.Slider sliderS,
-        Session.Slider sliderL
+        Session.Slider sliderLV,
+        bool isHSV
     ) : base(data.Position + offset) {
 
         Format = data.Enum("format", AngleFormat.ZeroToOne);
+        IsHSV = isHSV;
 
         Add(EnabledCondition = enabledCondition);
         Add(ColorSource = colorSource);
         SliderH = sliderH;
         SliderS = sliderS;
-        SliderL = sliderL;
+        SliderLV = sliderLV;
     }
 
-    private ColorUnpackerHSL(
+    private ColorUnpackerHSLV(
         EntityData data, Vector2 offset,
         ConditionSource enabledCondition,
         IntSource colorSource,
-        Session session, string prefix
+        Session session, string prefix,
+        bool isHSV
     ) : this(
         data, offset,
         enabledCondition,
         colorSource,
         session.GetSliderObject(prefix + "H"),
         session.GetSliderObject(prefix + "S"),
-        session.GetSliderObject(prefix + "L")
+        session.GetSliderObject(prefix + (isHSV ? "V" : "L")),
+        isHSV
     ) {}
 
-    public static ColorUnpackerHSL Create(Level level, LevelData __, Vector2 offset, EntityData data)
+    public static ColorUnpackerHSLV CreateHSL(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Flag(data) { Default = true },
             new IntSource.Counter(level.Session, data, "packedColor", ifAbsent: "color"),
-            level.Session, data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor")
+            level.Session, data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor"),
+            isHSV: false
         );
 
-    public static ColorUnpackerHSL CreateExpr(Level level, LevelData __, Vector2 offset, EntityData data)
+    public static ColorUnpackerHSLV CreateHSLExpr(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Expr(data) { Default = true },
             new IntSource.Expr(data, "packedColor", ifAbsent: "#color"),
-            level.Session, data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor")
+            level.Session, data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor"),
+            isHSV: false
+        );
+
+    public static ColorUnpackerHSLV CreateHSV(Level level, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Flag(data) { Default = true },
+            new IntSource.Counter(level.Session, data, "packedColor", ifAbsent: "color"),
+            level.Session, data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor"),
+            isHSV: true
+        );
+
+    public static ColorUnpackerHSLV CreateHSVExpr(Level level, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Expr(data) { Default = true },
+            new IntSource.Expr(data, "packedColor", ifAbsent: "#color"),
+            level.Session, data.Attr("unpackedColorPrefix", defaultValue: "unpackedColor"),
+            isHSV: true
         );
 
     #endregion Init
 
     public override void Update() {
         base.Update();
-
         if (!Enabled) return;
 
-        (SliderH.Value, SliderS.Value, SliderL.Value) = Color.ToHSL(Format);
+        (SliderH.Value, SliderS.Value, SliderLV.Value) = IsHSV ? Color.ToHSV(Format) : Color.ToHSL(Format);
     }
 
 }
 
-#endregion Int
+#endregion HSL / HSV

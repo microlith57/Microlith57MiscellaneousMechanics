@@ -74,8 +74,8 @@ public sealed class ColorPackerFloat : Entity {
 
     public override void Update() {
         base.Update();
+        if (!Enabled || Scene is not Level level) return;
 
-        if (Scene is not Level level) return;
         level.Session.SetCounter(Counter, unchecked((int)Color.PackedValue));
     }
 
@@ -150,21 +150,23 @@ public sealed class ColorPackerInt : Entity {
 
     public override void Update() {
         base.Update();
+        if (!Enabled || Scene is not Level level) return;
 
-        if (Scene is not Level level) return;
         level.Session.SetCounter(Counter, unchecked((int)Color.PackedValue));
     }
 
 }
 
 #endregion Int
-#region --- HSL ---
+#region --- HSL / HSV ---
 
 [CustomEntity(
-    "Microlith57Misc/ColorPacker_HSL=Create",
-    "Microlith57Misc/ColorPacker_HSL_Expression=CreateExpr"
+    "Microlith57Misc/ColorPacker_HSL=CreateHSL",
+    "Microlith57Misc/ColorPacker_HSL_Expression=CreateHSLExpr",
+    "Microlith57Misc/ColorPacker_HSV=CreateHSV",
+    "Microlith57Misc/ColorPacker_HSV_Expression=CreateHSVExpr"
 )]
-public sealed class ColorPackerHSL : Entity {
+public sealed class ColorPackerHSLV : Entity {
 
     #region --- State ---
 
@@ -172,22 +174,25 @@ public sealed class ColorPackerHSL : Entity {
     public bool Enabled => EnabledCondition.Value;
 
     public readonly AngleFormat Format;
+    public readonly bool IsHSV;
 
-    private readonly FloatSource HSource, SSource, LSource, AlphaSource;
-    public Color Color => HSLToColor(HSource.Value, SSource.Value, LSource.Value, Format) * AlphaSource.Value;
+    private readonly FloatSource HSource, SSource, LVSource, AlphaSource;
+    public Color ColorHSL => HSLToColor(HSource.Value, SSource.Value, LVSource.Value, Format) * AlphaSource.Value;
+    public Color ColorHSV => HSVToColor(HSource.Value, SSource.Value, LVSource.Value, Format) * AlphaSource.Value;
 
     private string Counter;
 
     #endregion State
     #region --- Init ---
 
-    public ColorPackerHSL(
+    public ColorPackerHSLV(
         EntityData data, Vector2 offset,
         ConditionSource enabledCondition,
         FloatSource hSource,
         FloatSource sSource,
-        FloatSource lSource,
-        FloatSource alphaSource
+        FloatSource lvSource,
+        FloatSource alphaSource,
+        bool isHSV
     ) : base(data.Position + offset) {
 
         Format = data.Enum("format", AngleFormat.ZeroToOne);
@@ -195,41 +200,67 @@ public sealed class ColorPackerHSL : Entity {
         Add(EnabledCondition = enabledCondition);
         Add(HSource = hSource);
         Add(SSource = sSource);
-        Add(LSource = lSource);
+        Add(LVSource = lvSource);
         Add(AlphaSource = alphaSource);
 
         Counter = data.Attr("packedColor", "color");
+
+        IsHSV = isHSV;
     }
 
-    public static ColorPackerHSL Create(Level level, LevelData __, Vector2 offset, EntityData data)
+    public static ColorPackerHSLV CreateHSL(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Flag(data) { Default = true },
             new FloatSource.Slider(level.Session, data, "h") { Default = 0f },
             new FloatSource.Slider(level.Session, data, "s") { Default = 1f },
             new FloatSource.Slider(level.Session, data, "l") { Default = 1f },
-            new FloatSource.Slider(level.Session, data, "alpha") { Default = 1f }
+            new FloatSource.Slider(level.Session, data, "alpha") { Default = 1f },
+            isHSV: false
         );
 
-    public static ColorPackerHSL CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
+    public static ColorPackerHSLV CreateHSLExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
             data, offset,
             new ConditionSource.Expr(data) { Default = true },
             new FloatSource.Expr(data, "h") { Default = 0f },
             new FloatSource.Expr(data, "s") { Default = 1f },
             new FloatSource.Expr(data, "l") { Default = 1f },
-            new FloatSource.Expr(data, "alpha") { Default = 1f }
+            new FloatSource.Expr(data, "alpha") { Default = 1f },
+            isHSV: false
+        );
+
+    public static ColorPackerHSLV CreateHSV(Level level, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Flag(data) { Default = true },
+            new FloatSource.Slider(level.Session, data, "h") { Default = 0f },
+            new FloatSource.Slider(level.Session, data, "s") { Default = 1f },
+            new FloatSource.Slider(level.Session, data, "v") { Default = 1f },
+            new FloatSource.Slider(level.Session, data, "alpha") { Default = 1f },
+            isHSV: true
+        );
+
+    public static ColorPackerHSLV CreateHSVExpr(Level _, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            new ConditionSource.Expr(data) { Default = true },
+            new FloatSource.Expr(data, "h") { Default = 0f },
+            new FloatSource.Expr(data, "s") { Default = 1f },
+            new FloatSource.Expr(data, "v") { Default = 1f },
+            new FloatSource.Expr(data, "alpha") { Default = 1f },
+            isHSV: true
         );
 
     #endregion Init
 
     public override void Update() {
         base.Update();
+        if (!Enabled || Scene is not Level level) return;
 
-        if (Scene is not Level level) return;
-        level.Session.SetCounter(Counter, unchecked((int)Color.PackedValue));
+        level.Session.SetCounter(Counter, unchecked((int)(IsHSV ? ColorHSV : ColorHSL).PackedValue));
     }
 
 }
 
-#endregion Float
+#endregion HSL / HSV
