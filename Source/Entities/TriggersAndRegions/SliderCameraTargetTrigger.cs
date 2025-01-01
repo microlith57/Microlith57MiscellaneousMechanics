@@ -13,10 +13,20 @@ public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
 
     #region --- State ---
 
+    public enum SnapMode {
+        NeverSnap,
+        SnapWhenInitiallyEnabled,
+        AlwaysSnap,
+        AlwaysSnapIgnoringRoomBounds
+    }
+
     private readonly ConditionSource Condition;
     public bool Enabled => Condition.Value;
 
     private Vector2Source TargetSource, LerpStrengthSource;
+
+    public readonly SnapMode Snap;
+    private bool JustEnabled = false;
 
     #endregion State
     #region --- Init ---
@@ -34,6 +44,8 @@ public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
 
         TargetSource.Default = Target;
         LerpStrengthSource.Default = LerpStrength;
+
+        Snap = data.Enum("snapMode", SnapMode.NeverSnap);
     }
 
 
@@ -65,10 +77,33 @@ public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
             };
     }
 
+    public override void Update() {
+        base.Update();
+        Collidable = Enabled;
+    }
+
+    public override void OnEnter(Player player) {
+        base.OnEnter(player);
+        JustEnabled = true;
+    }
+
     public override void OnStay(Player player) {
         Target = TargetSource.Value - new Vector2(320 / 2, 180 / 2);
         LerpStrength = LerpStrengthSource.Value;
+
         base.OnStay(player);
+
+        if (Snap != SnapMode.NeverSnap &&
+            (Snap != SnapMode.SnapWhenInitiallyEnabled || JustEnabled) &&
+            Scene is Level level
+        ) {
+            var origEnforceLevelBounds = player.EnforceLevelBounds;
+            player.EnforceLevelBounds = Snap != SnapMode.AlwaysSnapIgnoringRoomBounds;
+            level.Camera.Position = player.CameraTarget;
+            player.EnforceLevelBounds = origEnforceLevelBounds;
+        }
+
+        JustEnabled = false;
     }
 
     private static EntityData AddDummyNode(EntityData data) {

@@ -8,7 +8,16 @@ local fieldInformation = {
   positionMode = {
     options = enums.trigger_position_modes,
     editable = false
-  }
+  },
+  snapMode = {
+    options = {
+      "NeverSnap",
+      "SnapWhenInitiallyEnabled",
+      "AlwaysSnap",
+      "AlwaysSnapIgnoringRoomBounds"
+    },
+    editable = false
+  },
 }
 
 local fieldOrder = {
@@ -18,6 +27,7 @@ local fieldOrder = {
 
   "targetX", "targetY",
   "lerpStrengthX", "lerpStrengthY",
+  "snapMode",
 
   "enableFlag", "invertFlag",
   "enableExpression"
@@ -45,6 +55,7 @@ return {
           targetY = "targetY",
           lerpStrengthX = "1.0",
           lerpStrengthY = "1.0",
+          snapMode = "NeverSnap",
 
           enableFlag = "",
           invertFlag = false,
@@ -73,6 +84,7 @@ return {
           targetY = "@targetY",
           lerpStrengthX = "1.0",
           lerpStrengthY = "1.0",
+          snapMode = "NeverSnap",
 
           enableExpression = ""
         }
