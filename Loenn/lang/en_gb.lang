@@ -159,10 +159,22 @@ entities.Microlith57Misc/ColorUnpacker_HSL_Expression.attributes.description.pac
 entities.Microlith57Misc/ColorUnpacker_HSL_Expression.attributes.description.unpackedColorPrefix=H, S, and L will be appended to this value to get the slider names for the three components of the color. Alpha is ignored.
 entities.Microlith57Misc/ColorUnpacker_HSL_Expression.attributes.description.angleFormat=Format to use for the hue component.
 
+entities.Microlith57Misc/ColorUnpacker_HSV.placements.name.colorUnpacker=Color Unpacker (Counter to HSV Sliders)
+entities.Microlith57Misc/ColorUnpacker_HSV.attributes.description.flag=If present, only update the sliders when the flag is set.
+entities.Microlith57Misc/ColorUnpacker_HSV.attributes.description.packedColor=Counter containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorUnpacker_HSV.attributes.description.unpackedColorPrefix=H, S, and V will be appended to this value to get the slider names for the three components of the color. Alpha is ignored.
+entities.Microlith57Misc/ColorUnpacker_HSV.attributes.description.angleFormat=Format to use for the hue component.
+
+entities.Microlith57Misc/ColorUnpacker_HSV_Expression.placements.name.colorUnpacker=Color Unpacker (Expression to HSV Sliders)
+entities.Microlith57Misc/ColorUnpacker_HSV_Expression.attributes.description.expression=If present, only update the sliders when the expression is truthy.
+entities.Microlith57Misc/ColorUnpacker_HSV_Expression.attributes.description.packedColor=Expression yielding the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorUnpacker_HSV_Expression.attributes.description.unpackedColorPrefix=H, S, and V will be appended to this value to get the slider names for the three components of the color. Alpha is ignored.
+entities.Microlith57Misc/ColorUnpacker_HSV_Expression.attributes.description.angleFormat=Format to use for the hue component.
+
 # Color Packer
 entities.Microlith57Misc/ColorPacker_Float.placements.name.colorPacker=Color Packer (Sliders to Counter)
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.flag=If present, only update the counter when the flag is set.
-entities.Microlith57Misc/ColorPacker_Float.attributes.description.packedColor=Counter containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorPacker_Float.attributes.description.packedColor=Counter containing the packed color data to pack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.r=Slider for the red component, in [0, 1].
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.g=Slider for the green component, in [0, 1].
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.b=Slider for the blue component, in [0, 1].
@@ -171,7 +183,7 @@ entities.Microlith57Misc/ColorPacker_Float.attributes.description.alpha=Slider f
 
 entities.Microlith57Misc/ColorPacker_Float_Expression.placements.name.colorPacker=Color Packer (Float Expressions to Counter)
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.flag=If present, only update the counter when the flag is set.
-entities.Microlith57Misc/ColorPacker_Float.attributes.description.packedColor=Expression containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorPacker_Float.attributes.description.packedColor=Expression containing the packed color data to pack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.r=Expression for the red component, in [0, 1].
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.g=Expression for the green component, in [0, 1].
 entities.Microlith57Misc/ColorPacker_Float.attributes.description.b=Expression for the blue component, in [0, 1].
@@ -180,7 +192,7 @@ entities.Microlith57Misc/ColorPacker_Float.attributes.description.alpha=Expressi
 
 entities.Microlith57Misc/ColorPacker_Int.placements.name.colorPacker=Color Packer (Sliders to Counter)
 entities.Microlith57Misc/ColorPacker_Int.attributes.description.flag=If present, only update the counter when the flag is set.
-entities.Microlith57Misc/ColorPacker_Int.attributes.description.packedColor=Counter containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorPacker_Int.attributes.description.packedColor=Counter containing the packed color data to pack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_Int.attributes.description.r=Counter for the red component, in [0, 255].
 entities.Microlith57Misc/ColorPacker_Int.attributes.description.g=Counter for the green component, in [0, 255].
 entities.Microlith57Misc/ColorPacker_Int.attributes.description.b=Counter for the blue component, in [0, 255].
@@ -189,7 +201,7 @@ entities.Microlith57Misc/ColorPacker_Int.attributes.description.alpha=Slider for
 
 entities.Microlith57Misc/ColorPacker_Int_Expression.placements.name.colorPacker=Color Packer (Float Expressions to Counter)
 entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.flag=If present, only update the counter when the flag is set.
-entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.packedColor=Expression containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.packedColor=Expression containing the packed color data to pack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.r=Expression for the red component, in [0, 255].
 entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.g=Expression for the green component, in [0, 255].
 entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.b=Expression for the blue component, in [0, 255].
@@ -198,7 +210,7 @@ entities.Microlith57Misc/ColorPacker_Int_Expression.attributes.description.alpha
 
 entities.Microlith57Misc/ColorPacker_HSL.placements.name.colorPacker=Color Packer (HSL Sliders to Counter)
 entities.Microlith57Misc/ColorPacker_HSL.attributes.description.flag=If present, only update the counter when the flag is set.
-entities.Microlith57Misc/ColorPacker_HSL.attributes.description.packedColor=Counter containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorPacker_HSL.attributes.description.packedColor=Counter containing the packed color data to pack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_HSL.attributes.description.h=Slider for the hue component.
 entities.Microlith57Misc/ColorPacker_HSL.attributes.description.s=Slider for the saturation component, in [0, 1].
 entities.Microlith57Misc/ColorPacker_HSL.attributes.description.l=Slider for the lightness component, in [0, 1].
@@ -207,12 +219,30 @@ entities.Microlith57Misc/ColorPacker_HSL.attributes.description.angleFormat=Form
 
 entities.Microlith57Misc/ColorPacker_HSL_Expression.placements.name.colorPacker=Color Packer (HSL Expressions to Counter)
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.flag=If present, only update the counter when the flag is set.
-entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.packedColor=Expression containing the packed color data to unpack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.packedColor=Expression containing the packed color data to pack.\n\nPacked color data is Color.PackedValue as an int.
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.h=Expression for the hue component.
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.s=Expression for the saturation component, in [0, 1].
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.l=Expression for the lightness component, in [0, 1].
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.alpha=Expression for the alpha multiplier.
 entities.Microlith57Misc/ColorPacker_HSL_Expression.attributes.description.angleFormat=Format to use for the hue component.
+
+entities.Microlith57Misc/ColorPacker_HSV.placements.name.colorPacker=Color Packer (HSV Sliders to Counter)
+entities.Microlith57Misc/ColorPacker_HSV.attributes.description.flag=If present, only update the counter when the flag is set.
+entities.Microlith57Misc/ColorPacker_HSV.attributes.description.packedColor=Counter containing the packed color data to pack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorPacker_HSV.attributes.description.h=Slider for the hue component.
+entities.Microlith57Misc/ColorPacker_HSV.attributes.description.s=Slider for the saturation component, in [0, 1].
+entities.Microlith57Misc/ColorPacker_HSV.attributes.description.v=Slider for the value component, in [0, 1].
+entities.Microlith57Misc/ColorPacker_HSV.attributes.description.alpha=Expression for the alpha multiplier.
+entities.Microlith57Misc/ColorPacker_HSV.attributes.description.angleFormat=Format to use for the hue component.
+
+entities.Microlith57Misc/ColorPacker_HSV_Expression.placements.name.colorPacker=Color Packer (HSV Expressions to Counter)
+entities.Microlith57Misc/ColorPacker_HSV_Expression.attributes.description.flag=If present, only update the counter when the flag is set.
+entities.Microlith57Misc/ColorPacker_HSV_Expression.attributes.description.packedColor=Expression containing the packed color data to pack.\n\nPacked color data is Color.PackedValue as an int.
+entities.Microlith57Misc/ColorPacker_HSV_Expression.attributes.description.h=Expression for the hue component.
+entities.Microlith57Misc/ColorPacker_HSV_Expression.attributes.description.s=Expression for the saturation component, in [0, 1].
+entities.Microlith57Misc/ColorPacker_HSV_Expression.attributes.description.v=Expression for the value component, in [0, 1].
+entities.Microlith57Misc/ColorPacker_HSV_Expression.attributes.description.alpha=Expression for the alpha multiplier.
+entities.Microlith57Misc/ColorPacker_HSV_Expression.attributes.description.angleFormat=Format to use for the hue component.
 
 # Sound Source
 entities.Microlith57Misc/SliderSoundSource.placements.name.sliderSoundSource=Sound Source (Slider)

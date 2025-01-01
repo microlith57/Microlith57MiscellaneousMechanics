@@ -175,7 +175,7 @@ public static class Utils {
         float hue = UnformatAngle(h, angleFormat);
 
         if (hue == 1f) hue = 0f;
-        else hue /= 6f;
+        else hue *= 6f;
 
         int i = (int)Math.Truncate(hue);
         float f = hue - i;

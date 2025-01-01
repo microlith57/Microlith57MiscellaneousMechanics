@@ -8,7 +8,7 @@ local rgbFieldInformation = {
   packedColor = {validator = nonEmptyValidator}
 }
 
-local hslFieldInformation = {
+local hslvFieldInformation = {
   format = {
     options = {
       "ZeroToOne",
@@ -25,7 +25,7 @@ local fieldOrder = {
   "flag", "invertFlag", "expression",
   "packedColor",
   "r", "g", "b", "a",
-  "h", "s", "l",
+  "h", "s", "l", "v",
   "alpha",
   "format"
 }
@@ -136,7 +136,7 @@ return {
         }
       }
     },
-    fieldInformation = hslFieldInformation,
+    fieldInformation = hslvFieldInformation,
     fieldOrder = fieldOrder
   },
   {
@@ -157,7 +157,50 @@ return {
         }
       }
     },
-    fieldInformation = hslFieldInformation,
+    fieldInformation = hslvFieldInformation,
+    fieldOrder = fieldOrder
+  },
+  {
+    name = "Microlith57Misc/ColorPacker_HSV",
+    depth = -1000000,
+    texture = "objects/microlith57/misc/color_packer_hsv",
+    placements = {
+      {
+        name = "colorPacker",
+        data = {
+          flag = "",
+          invertFlag = false,
+          packedColor = "color",
+          h = "0.0",
+          s = "1.0",
+          v = "1.0",
+          alpha = "1.0",
+          format = "ZeroToOne"
+        }
+      }
+    },
+    fieldInformation = hslvFieldInformation,
+    fieldOrder = fieldOrder
+  },
+  {
+    name = "Microlith57Misc/ColorPacker_HSV_Expression",
+    depth = -1000000,
+    texture = "objects/microlith57/misc/color_packer_hsv",
+    placements = {
+      {
+        name = "colorPacker",
+        data = {
+          expression = "",
+          packedColor = "color",
+          h = "0.0",
+          s = "1.0",
+          v = "1.0",
+          alpha = "1.0",
+          format = "ZeroToOne"
+        }
+      }
+    },
+    fieldInformation = hslvFieldInformation,
     fieldOrder = fieldOrder
   }
 }
