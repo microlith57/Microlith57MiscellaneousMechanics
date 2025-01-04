@@ -149,9 +149,9 @@ public sealed class PositionTrackerRegion : Entity {
 
             case DirectionalityType.AddDeltas:
                 if (LastValue != null) {
-                    position = LastValue.Value;
-                    position += LastValue.Value - new Vector2(SliderX.Value, SliderY.Value);
-                    position += LastValue.Value - Value;
+                    position = LastValue.Value
+                             + LastValue.Value - new Vector2(SliderX.Value, SliderY.Value)
+                             + LastValue.Value - Value;
                 } else
                     position = Value;
                 break;
