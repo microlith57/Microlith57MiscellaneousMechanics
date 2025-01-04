@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Cil;
+using Mono.Cecil.Cil;
 
 using Celeste.Mod.Microlith57Misc.Entities;
 using Celeste.Mod.Microlith57Misc.Entities.Recordings;
@@ -156,6 +158,40 @@ public class Module : EverestModule {
     private static void hookLevelUpdate(On.Celeste.Level.orig_Update orig, Level self) {
         Box.updatedThisFrame = false;
         orig(self);
+    }
+
+    public class AudioListenerOverride {
+        public Vector2 Position;
+        public float Factor;
+        public bool Relative;
+    }
+
+    private static ConditionalWeakTable<Camera, AudioListenerOverride> audioListenerOverrides = [];
+    public static void OverrideAudioListener(Camera camera, AudioListenerOverride? o) {
+        if (o != null)
+            audioListenerOverrides.AddOrUpdate(camera, o);
+        else
+            audioListenerOverrides.Remove(camera);
+    }
+
+    private static void patchAudioPosition(ILContext il) {
+        ILCursor cursor = new(il);
+
+        cursor.GotoNext(instr => instr.MatchCallOrCallvirt<Camera>("get_Position"));
+        cursor.GotoNext(MoveType.Before, instr => instr.MatchStloc0());
+
+        cursor.EmitDelegate(modAudioPosition);
+    }
+
+    private static Vector2 modAudioPosition(Vector2 orig) {
+        Camera? cam = Audio.currentCamera;
+        if (cam == null || !audioListenerOverrides.TryGetValue(cam, out var o))
+            return orig;
+
+        if (o.Relative)
+            return orig + o.Position * o.Factor;
+        else
+            return Calc.LerpSnap(orig, o.Position, o.Factor, 0f);
     }
 
 }
