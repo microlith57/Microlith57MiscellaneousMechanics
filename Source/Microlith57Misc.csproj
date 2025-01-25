@@ -12,6 +12,11 @@
         <ZippedFiles>..\everest.yaml;..\Code\**\*.*;..\Audio\**\*.*;..\Dialog\**\*.*;..\Graphics\**\*.*;..\Ahorn\**\*.*;..\Loenn\**\*.*</ZippedFiles>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- If any feature flags were enabled, they would go here. -->
+        <DefineConstants>$(DefineConstants)</DefineConstants>
+    </PropertyGroup>
+
     <!--Disable "Copy Local" for all references-->
     <ItemDefinitionGroup>
         <PackageReference PrivateAssets="all" ExcludeAssets="runtime" />

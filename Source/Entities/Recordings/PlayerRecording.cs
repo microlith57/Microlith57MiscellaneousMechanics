@@ -1,3 +1,5 @@
+#if FEATURE_FLAG_RECORDINGS
+
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -197,3 +199,5 @@ public class PlayerRecording : Recording {
     }
 
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if FEATURE_FLAG_INTERPOLATOR
+
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -187,3 +189,5 @@ internal class InterpolatorTrack : Entity {
     #endregion Behaviour
 
 }
+
+#endif

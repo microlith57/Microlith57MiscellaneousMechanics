@@ -1,3 +1,5 @@
+#if FEATURE_FLAG_RECORDINGS && FEATURE_FLAG_BOX
+
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -146,3 +148,5 @@ public class BoxRecording : Recording {
     }
 
 }
+
+#endif

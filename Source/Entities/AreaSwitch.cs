@@ -8,7 +8,9 @@ using System.Linq;
 
 using FlagSwitchGate = Celeste.Mod.MaxHelpingHand.Entities.FlagSwitchGate;
 
+#if FEATURE_FLAG_RECORDINGS
 using Celeste.Mod.Microlith57Misc.Entities.Recordings;
+#endif
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -252,18 +254,24 @@ public sealed class AreaSwitch : Entity {
         switch (Mode) {
             case ActivationMode.Anything:
                 return true;
+
+#if FEATURE_FLAG_BOX
             case ActivationMode.BoxOnly:
                 return activator.Entity is Box or BoxRecording;
             case ActivationMode.DestroysBox:
                 return activator.Entity is Box;
+#endif
+
             default:
                 return false;
         }
     }
 
     public bool Accepts(Activator activator) {
+#if FEATURE_FLAG_BOX
         if (Mode == ActivationMode.DestroysBox)
             return activator.Entity is Box box && !box.Hold.IsHeld;
+#endif
 
         return Senses(activator);
     }
@@ -364,10 +372,12 @@ public sealed class AreaSwitch : Entity {
     private IEnumerator FinishedRoutine() {
         if (Scene is not Level level || Icon.Rate <= 0.1f) yield break;
 
+#if FEATURE_FLAG_BOX
         var box = Mode == ActivationMode.DestroysBox
                 ? Activators.FirstOrDefault(a => a.Entity is Box)?.Entity as Box
                 : null;
         box?.BeginShatter();
+#endif
 
         Activators.Clear();
 
@@ -376,20 +386,26 @@ public sealed class AreaSwitch : Entity {
         for (; fac < 0.4f; fac += Engine.DeltaTime / 1.95f) {
             Icon.Rate = Calc.ClampedMap(fac, 0f, 1f, 4f, 0.1f);
 
+#if FEATURE_FLAG_BOX
             if (box != null)
                 AttractBox(box, fac);
+#endif
 
             yield return null;
         }
 
+#if FEATURE_FLAG_BOX
         if (box != null)
             box.Shaking = true;
+#endif
 
         for (; fac < 1f; fac += Engine.DeltaTime / 1.95f) {
             Icon.Rate = Calc.ClampedMap(fac, 0f, 1f, 4f, 0.1f);
 
+#if FEATURE_FLAG_BOX
             if (box != null)
                 AttractBox(box, fac);
+#endif
 
             yield return null;
         }
@@ -397,13 +413,16 @@ public sealed class AreaSwitch : Entity {
         Icon.Play("idle");
         Icon.Rate = 0.1f;
 
+#if FEATURE_FLAG_BOX
         box?.Shatter();
+#endif
 
         Wiggler.Start();
         level.Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
         LineParticles(level, FinishLineColor);
     }
 
+#if FEATURE_FLAG_BOX
     private void AttractBox(Box box, float fac) {
         {
             var force = Calc.ClampedMap(fac, 0f, 0.5f, 60f, 0f);
@@ -422,6 +441,7 @@ public sealed class AreaSwitch : Entity {
             box.Position += delta * guide;
         }
     }
+#endif
 
     #endregion
     #endregion

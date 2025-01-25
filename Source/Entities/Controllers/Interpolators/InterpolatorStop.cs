@@ -1,3 +1,5 @@
+#if FEATURE_FLAG_INTERPOLATOR
+
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.Entities;
@@ -269,3 +271,5 @@ internal class InterpolatorStopHolder : Entity {
 }
 
 #endregion --- Holder ---
+
+#endif

@@ -1,3 +1,5 @@
+#if FEATURE_FLAG_RECORDINGS
+
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -83,3 +85,5 @@ public abstract class Recording : Entity {
     }
 
 }
+
+#endif

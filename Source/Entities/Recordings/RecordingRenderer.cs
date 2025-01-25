@@ -1,3 +1,5 @@
+#if FEATURE_FLAG_RECORDINGS
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,15 +56,20 @@ public class RecordingRenderer : Entity {
         if (buffer == null || buffer.IsDisposed)
             buffer = new("Microlith57Misc/RecordingRenderer", 320, 180, 0, false, true);
 
+
+#if FEATURE_FLAG_BOX
         List<BoxRecording> unheld_boxes = [];
         List<BoxRecording> held_boxes = [];
 
         foreach (BoxRecording box in recordings.Where(e => e is BoxRecording).OrderBy(b => ((BoxRecording)b).LastInteraction).ToList())
             (box.IsHeld ? held_boxes : unheld_boxes).Add(box);
+#endif
 
         // draw unheld boxes to tempA
         Engine.Graphics.GraphicsDevice.SetRenderTarget(GameplayBuffers.TempA);
         Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
+
+#if FEATURE_FLAG_BOX
         beginBatch();
 
         foreach (var box in unheld_boxes)
@@ -71,6 +78,7 @@ public class RecordingRenderer : Entity {
             box.RenderSprite();
 
         endBatch();
+#endif
 
         // draw opaque players to tempB
         Engine.Graphics.GraphicsDevice.SetRenderTarget(GameplayBuffers.TempB);
@@ -88,10 +96,12 @@ public class RecordingRenderer : Entity {
 
         Draw.SpriteBatch.Draw((RenderTarget2D)GameplayBuffers.TempB, Level.Camera.Position, Color.White * 0.8f);
 
+#if FEATURE_FLAG_BOX
         foreach (var box in held_boxes)
             box.RenderOutline();
         foreach (var box in held_boxes)
             box.RenderSprite();
+#endif
 
         endBatch();
 
@@ -150,3 +160,5 @@ public class RecordingRenderer : Entity {
     }
 
 }
+
+#endif

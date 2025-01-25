@@ -1,3 +1,5 @@
+#if FEATURE_FLAG_BOX
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -628,3 +630,5 @@ public partial class Box : Actor {
     #endregion Rendering
 
 }
+
+#endif

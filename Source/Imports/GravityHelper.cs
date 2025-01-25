@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Monocle;
 using MonoMod.ModInterop;
 
@@ -8,6 +7,27 @@ namespace Celeste.Mod.Microlith57Misc.Imports;
 [ModImportName("GravityHelper")]
 public static class GravityHelper {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
+    internal struct GravityType {
+
+        public static GravityType None, Normal, Inverted, Toggle;
+
+        private readonly int gravityType;
+
+        public GravityType(int type) {
+            gravityType = type;
+        }
+
+        public GravityType(string type) {
+            gravityType = GravityTypeToInt(type);
+        }
+
+        public static implicit operator int(GravityType g) => g.gravityType;
+        public static implicit operator GravityType(int i) => new(i);
+
+        public override readonly string ToString() => GravityTypeFromInt(gravityType);
+
+    }
 
     // public static void RegisterModSupportBlacklist(string modName) => ThirdPartyModSupport.BlacklistedMods.Add(modName);
 
@@ -71,6 +91,13 @@ public static class GravityHelper {
     public static Action BeginOverride, EndOverride;
     public static Action<Action> ExecuteOverride;
     public static Func<IDisposable> WithOverride;
+
+    internal static void OnImport() {
+        GravityType.None = GravityTypeToInt("None");
+        GravityType.Normal = GravityTypeToInt("Normal");
+        GravityType.Inverted = GravityTypeToInt("Inverted");
+        GravityType.Toggle = GravityTypeToInt("Toggle");
+    }
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 }
