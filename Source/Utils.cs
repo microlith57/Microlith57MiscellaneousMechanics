@@ -2,51 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Celeste.Mod.EeveeHelper.Entities;
-using Celeste.Mod.GravityHelper;
-using Celeste.Mod.GravityHelper.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.Microlith57Misc;
 
 public static class Utils {
-
-    private static bool checkedGravityHelper;
-    internal static bool GravityHelperLoaded {
-        get {
-            if (checkedGravityHelper || Everest.Loader.DependencyLoaded(new EverestModuleMetadata { Name = "GravityHelper", Version = new Version(1, 0, 0) })) {
-                checkedGravityHelper = true;
-                return true;
-            }
-            return false;
-        }
-    }
-
-    internal static bool CheckGravityHelper(string erroringEntity) {
-        if (GravityHelperLoaded)
-            return true;
-
-        Audio.SetMusic(null);
-        LevelEnter.ErrorMessage = "{big}Oops!{/big}{n}To use {# F94A4A}" + erroringEntity + "{#}, you need to have {# d678db}Gravity Helper{#} installed!";
-        var session = Engine.Scene is Level level ? new Session(level.Session.Area) : new Session();
-        LevelEnter.Go(session, fromSaveData: false);
-
-        return false;
-    }
-
-    internal static bool ShouldInvert(this Entity e) => GravityHelperLoaded && GravityHelperContainmentChamber.shouldInvert(e);
-
-    internal static void SetInverted(this Entity e, bool inverted, string entityNameJustInCaseHahaNoReason) {
-        if (!GravityHelperLoaded) {
-            if (inverted) {
-                CheckGravityHelper(entityNameJustInCaseHahaNoReason);
-            }
-        } else {
-            GravityHelperContainmentChamber.setInverted(e, inverted);
-        }
-    }
-
-    internal static Component? GravityComponentIfExists() => GravityHelperLoaded ? GravityHelperContainmentChamber.makeGravityComponent() : null;
 
     private static bool checkedHelpingHand;
     internal static bool HelpingHandLoaded {
@@ -238,14 +199,6 @@ public static class Utils {
             default: return angle;
         }
     }
-
-}
-
-internal static class GravityHelperContainmentChamber {
-
-    internal static bool shouldInvert(Entity e) => e.Get<GravityComponent>() is GravityComponent g && g.ShouldInvert;
-    internal static void setInverted(Entity e, bool inverted) => e.Get<GravityComponent>()!.SetGravity(inverted ? GravityType.Inverted : GravityType.Normal);
-    internal static Component makeGravityComponent() => new GravityComponent();
 
 }
 

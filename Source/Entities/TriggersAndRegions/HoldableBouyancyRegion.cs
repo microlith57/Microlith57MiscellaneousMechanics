@@ -87,11 +87,11 @@ public sealed class HoldableBouyancyRegion : Entity {
     private Vector2 Affect(Entity e, Vector2 speed) {
         float force;
 
-        if (!e.ShouldInvert()) {
-            var bottom = e.Bottom + (e is Actor a ? a.ExactPosition.Y - a.Position.Y : 0f);
+        if (Imports.GravityHelper.IsActorInverted == null || e is not Actor a || !Imports.GravityHelper.IsActorInverted(a)) {
+            var bottom = e.Bottom + (e is Actor a2 ? a2.ExactPosition.Y - a2.Position.Y : 0f);
             force = Calc.ClampedMap(bottom, Top, Top + e.Height, MinForce, MaxForce);
         } else {
-            var top = e.Top + (e is Actor a ? a.ExactPosition.Y - a.Position.Y : 0f);
+            var top = e.Top + (e is Actor a3 ? a3.ExactPosition.Y - a3.Position.Y : 0f);
             force = Calc.ClampedMap(top, Bottom, Bottom - e.Height, MinForce, MaxForce);
         }
 

@@ -30,7 +30,6 @@
         <Reference Include="$(CelestePrefix)\FNA.dll" Private="false" />
 
         <Reference Include="lib\MaxHelpingHand.dll" Private="false" />
-        <Reference Include="lib\GravityHelper.dll" Private="false" />
         <Reference Include="lib\EeveeHelper.dll" Private="false" />
     </ItemGroup>
 
