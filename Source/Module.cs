@@ -20,16 +20,16 @@ public class Module : EverestModule {
     public override Type SettingsType => typeof(Microlith57MiscSettings);
     public static Microlith57MiscSettings Settings => (Microlith57MiscSettings)Instance._Settings;
 
-    public const string LOGGING_TAG = "Microlith57Misc";
+    public const string MOD_NAME = "Microlith57Misc";
 
     public Module() {
         Instance = this;
 #if DEBUG
         // debug builds use verbose logging
-        Logger.SetLogLevel(LOGGING_TAG, LogLevel.Verbose);
+        Logger.SetLogLevel(MOD_NAME, LogLevel.Verbose);
 #else
         // release builds use info logging to reduce spam in log files
-        Logger.SetLogLevel(LOGGING_TAG, LogLevel.Info);
+        Logger.SetLogLevel(MOD_NAME, LogLevel.Info);
 #endif
     }
 
