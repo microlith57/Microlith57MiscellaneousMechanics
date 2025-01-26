@@ -380,7 +380,8 @@ triggers.Microlith57Misc/PositionTrackerRegion.attributes.description.target=Wha
 triggers.Microlith57Misc/PositionTrackerRegion.attributes.description.detection=Whether an entity must be entirely within the region; just intersecting the region; or anywhere.
 triggers.Microlith57Misc/PositionTrackerRegion.attributes.description.stickiness=What to do once an entity is targetted.\n\nFree: Can retarget at any time; stop tracking when entity is no longer detected.\nTransient: Stop tracking when entity is no longer detected, and then perhaps retarget.\nUntilNewMatch: Keep tracking even after entity is no longer detected, but after this retarget if possible.\nUntilDeath: Only retarget once entity is removed.\nLifelink: Keep entity targeted until it is removed, at which point also remove the region.\nSoulbond: Ensure entity exists when region is created, and remove region when entity is removed.
 triggers.Microlith57Misc/PositionTrackerRegion.attributes.description.tracking=What position to track; or "Size" for width/height.
-triggers.Microlith57Misc/PositionTrackerRegion.attributes.description.sliderPrefix=Set sliders whose names start with this and end in X and Y.
+triggers.Microlith57Misc/PositionTrackerRegion.attributes.description.directionality=EntityToSliders: The sliders will be set based on the entity's position.\nSlidersToEntity: The entity's position will be set based on the sliders.\nAddDeltas: Changes in both the sliders and entity's position will be merged, and they will stay in sync.
+triggers.Microlith57Misc/PositionTrackerRegion.attributes.description.sliderPrefix=Get/set sliders whose names start with this and end in X and Y.
 triggers.Microlith57Misc/PositionTrackerRegion.attributes.description.targettingFlag=If present, set flag with this name when a target is found.
 
 triggers.Microlith57Misc/PositionTrackerRegion_Expression.placements.name.positionTrackerRegion=Position Tracker Region (Flag)
@@ -388,8 +389,9 @@ triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description
 triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description.target=What type of entity to track.\n\nPlayer: Just the player.\nActor: Players, holdables, and similar entities.\nNonPlayerActor: Holdables and similar entities.\nSolid: Solid entities of any kind.
 triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description.detection=Whether an entity must be entirely within the region; just intersecting the region; or anywhere.
 triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description.stickiness=What to do once an entity is targetted.\n\nFree: Can retarget at any time; stop tracking when entity is no longer detected.\nTransient: Stop tracking when entity is no longer detected, and then perhaps retarget.\nUntilNewMatch: Keep tracking even after entity is no longer detected, but after this retarget if possible.\nUntilDeath: Only retarget once entity is removed.\nLifelink: Keep entity targeted until it is removed, at which point also remove the region.\nSoulbond: Ensure entity exists when region is created, and remove region when entity is removed.
-triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description.tracking=What position to track; or "Size" for width/height.
-triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description.sliderPrefix=Set sliders whose names start with this and end in X and Y.
+triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description.tracking=What position to track; or "Size" for width/height; or "Speed" for Player/Holdable speed.
+triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description.directionality=EntityToSliders: The sliders will be set based on the entity's position.\nSlidersToEntity: The entity's position will be set based on the sliders.\nAddDeltas: Changes in both the sliders and entity's position will be merged, and they will stay in sync.
+triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description.sliderPrefix=Get/set sliders whose names start with this and end in X and Y.
 triggers.Microlith57Misc/PositionTrackerRegion_Expression.attributes.description.targettingFlag=If present, set flag with this name when a target is found.
 
 # Set Player Facing Trigger
