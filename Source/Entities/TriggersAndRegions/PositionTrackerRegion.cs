@@ -179,12 +179,8 @@ public sealed class PositionTrackerRegion : Entity {
         get {
             if (Target == null) return null;
             switch (Tracking) {
-                case TrackingType.Position: return Target.Position;
-                case TrackingType.Center: return Target.Center;
-                case TrackingType.TopCenter: return Target.TopCenter;
-                case TrackingType.BottomCenter: return Target.BottomCenter;
-                case TrackingType.CenterLeft: return Target.CenterLeft;
-                case TrackingType.CenterRight: return Target.CenterRight;
+                default:
+                    return GetPositionWithSubpixels(Target, Tracking);
                 case TrackingType.Size:
                     return new(Target.Collider?.Width ?? 0f, Target.Collider?.Height ?? 0f);
                 case TrackingType.Speed:
@@ -194,25 +190,14 @@ public sealed class PositionTrackerRegion : Entity {
                         return hold.GetSpeed();
 
                     return null;
-
-                default: throw new Exception("unreachable");
             }
         }
         set {
             if (Target == null || value == null) return;
             switch (Tracking) {
-                case TrackingType.Position:
-                    Target.Position = value.Value; return;
-                case TrackingType.Center:
-                    Target.Center = value.Value; return;
-                case TrackingType.TopCenter:
-                    Target.TopCenter = value.Value; return;
-                case TrackingType.BottomCenter:
-                    Target.BottomCenter = value.Value; return;
-                case TrackingType.CenterLeft:
-                    Target.CenterLeft = value.Value; return;
-                case TrackingType.CenterRight:
-                    Target.CenterRight = value.Value; return;
+                default:
+                    SetPositionWithSubpixels(Target, Tracking, value.Value);
+                    return;
                 case TrackingType.Size:
                     if (Target.Collider != null) {
                         Target.Collider.Width = value.Value.X;
@@ -226,9 +211,43 @@ public sealed class PositionTrackerRegion : Entity {
                         hold.SetSpeed(value.Value);
 
                     return;
-                default: throw new Exception("unreachable");
             }
         }
+    }
+
+    private static Vector2 GetPositionWithoutSubpixels(Entity e, TrackingType t) {
+        switch (t) {
+            case TrackingType.Position: return e.Position;
+            case TrackingType.Center: return e.Center;
+            case TrackingType.TopCenter: return e.TopCenter;
+            case TrackingType.BottomCenter: return e.BottomCenter;
+            case TrackingType.CenterLeft: return e.CenterLeft;
+            case TrackingType.CenterRight: return e.CenterRight;
+            default: throw new Exception("unreachable");
+        }
+    }
+
+    private static Vector2 GetPositionWithSubpixels(Entity e, TrackingType t)
+        => GetPositionWithoutSubpixels(e, t) + ((e is Actor a) ? a.movementCounter : Vector2.Zero);
+
+    private static void SetPositionWithoutSubpixels(Entity e, TrackingType t, Vector2 pos) {
+        switch (t) {
+            case TrackingType.Position: e.Position = pos; return;
+            case TrackingType.Center: e.Center = pos; return;
+            case TrackingType.TopCenter: e.TopCenter = pos; return;
+            case TrackingType.BottomCenter: e.BottomCenter = pos; return;
+            case TrackingType.CenterLeft: e.CenterLeft = pos; return;
+            case TrackingType.CenterRight: e.CenterRight = pos; return;
+            default: throw new Exception("unreachable");
+        }
+    }
+
+    private static void SetPositionWithSubpixels(Entity e, TrackingType t, Vector2 pos) {
+        if (e is Actor a) {
+            var floor = Calc.Floor(pos);
+            SetPositionWithoutSubpixels(e, t, floor);
+            a.movementCounter = pos - floor;
+        } else SetPositionWithoutSubpixels(e, t, pos);
     }
 
     #endregion Behaviour
