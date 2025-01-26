@@ -32,7 +32,7 @@ return {
   },
   {
     name = "Microlith57Misc/SliderTimeRateController_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     depth = -1000000,
     texture = "objects/microlith57/misc/slider_time_rate_controller",
     placements = {

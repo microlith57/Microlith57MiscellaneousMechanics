@@ -68,7 +68,7 @@ return {
   },
   {
     name = "Microlith57Misc/SliderCameraTargetTrigger_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     category = "camera",
     nodeLimits = {0, 1},
     placements = {

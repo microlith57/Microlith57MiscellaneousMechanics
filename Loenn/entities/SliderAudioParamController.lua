@@ -37,7 +37,7 @@ return {
   },
   {
     name = "Microlith57Misc/SliderAudioParamController_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     depth = -1000000,
     texture = "objects/microlith57/misc/slider_audio_param_controller",
     placements = {

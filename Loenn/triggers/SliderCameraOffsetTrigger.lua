@@ -64,7 +64,7 @@ return {
   },
   {
     name = "Microlith57Misc/SliderCameraOffsetTrigger_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     category = "camera",
     placements = {
       {

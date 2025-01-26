@@ -57,7 +57,7 @@ return {
   },
   {
     name = "Microlith57Misc/LockPauseController_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     depth = -1000000,
     texture = "objects/microlith57/misc/lock_pause_controller",
     placements = {

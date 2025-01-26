@@ -36,7 +36,7 @@ return {
   },
   {
     name = "Microlith57Misc/SliderColorgradeController_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     depth = -1000000,
     texture = "objects/microlith57/misc/slider_colorgrade_controller",
     placements = {

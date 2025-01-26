@@ -31,7 +31,7 @@ return {
   },
   {
     name = "Microlith57Misc/SliderTrigger_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     placements = {
       {
         name = "sliderTrigger",

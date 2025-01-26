@@ -156,7 +156,7 @@ return {
   },
   {
     name = "Microlith57Misc/PositionTrackerRegion_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     placements = {
       {
         name = "positionTrackerRegion",

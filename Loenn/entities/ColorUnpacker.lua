@@ -50,7 +50,7 @@ return {
   },
   {
     name = "Microlith57Misc/ColorUnpacker_Float_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     depth = -1000000,
     texture = "objects/microlith57/misc/color_unpacker",
     placements = {
@@ -86,7 +86,7 @@ return {
   },
   {
     name = "Microlith57Misc/ColorUnpacker_Int_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     depth = -1000000,
     texture = "objects/microlith57/misc/color_unpacker",
     placements = {
@@ -123,7 +123,7 @@ return {
   },
   {
     name = "Microlith57Misc/ColorUnpacker_HSL_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     depth = -1000000,
     texture = "objects/microlith57/misc/color_unpacker_hsl",
     placements = {
@@ -161,7 +161,7 @@ return {
   },
   {
     name = "Microlith57Misc/ColorUnpacker_HSV_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     depth = -1000000,
     texture = "objects/microlith57/misc/color_unpacker_hsv",
     placements = {

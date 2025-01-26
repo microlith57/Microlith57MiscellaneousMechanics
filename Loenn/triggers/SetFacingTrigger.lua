@@ -36,7 +36,7 @@ return {
   },
   {
     name = "Microlith57Misc/SetFacingTrigger_Expression",
-    associatedMods = {"Microlith57Misc", "FrostHelper"},
+    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
     placements = {
       {
         name = "setFacingTrigger",
