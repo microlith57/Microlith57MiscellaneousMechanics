@@ -89,6 +89,15 @@ entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.descri
 entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.description.focusXSlider=Expression for the focus point's screen-space X position.
 entities.Microlith57Misc/SliderCameraZoomController_Expression.attributes.description.focusYSlider=Expression for the focus point's screen-space Y position.
 
+# Camera Padding Controller
+entities.Microlith57Misc/SliderCameraPaddingController.placements.name.sliderCameraPaddingController=Camera Padding Controller (Slider)
+entities.Microlith57Misc/SliderCameraPaddingController.attributes.description.flag=If present, only affect the padding if the flag is set.
+entities.Microlith57Misc/SliderCameraPaddingController.attributes.description.amount=Slider containing the amount to pad the screen by, in [0.0, ∞). The amount in the vanilla player seeker cutscene is 32.0.
+
+entities.Microlith57Misc/SliderCameraPaddingController_Expression.placements.name.sliderCameraPaddingController=Camera Padding Controller (Expression)
+entities.Microlith57Misc/SliderCameraPaddingController_Expression.attributes.description.flag=If present, only affect the padding if the flag is set.
+entities.Microlith57Misc/SliderCameraPaddingController_Expression.attributes.description.amount=Expression for the amount to pad the screen by, in [0.0, ∞). The amount in the vanilla player seeker cutscene is 32.0.
+
 # Styleground Controller
 entities.Microlith57Misc/SliderStylegroundController.placements.name.sliderStylegroundController=Styleground Controller (Slider)
 entities.Microlith57Misc/SliderStylegroundController.attributes.description.tag=Affect stylegrounds with this tag.
