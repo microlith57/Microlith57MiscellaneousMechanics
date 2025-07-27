@@ -76,6 +76,12 @@ local abbreviations = {
     CenterLeft = "L",
     CenterRight = "R",
     Size = "S",
+    Speed = "V",
+  },
+  directionality = {
+    EntityToSliders = ">",
+    SlidersToEntity = "<",
+    AddDeltas = "+",
   },
 }
 
@@ -89,6 +95,7 @@ local fieldOrder = {
   "detection",
   "stickiness",
   "tracking",
+  "directionality",
 
   "sliderPrefix",
   "targettingFlag",
@@ -107,10 +114,11 @@ local function triggerTextFlag(room, trigger)
     "Position Tracker Region (Flag) - "
     .. trigger.sliderPrefix
     .. " ("
-    .. abbr(trigger.target, abbreviations.target)
-    .. abbr(trigger.detection, abbreviations.detection)
-    .. abbr(trigger.stickiness, abbreviations.stickiness)
-    .. abbr(trigger.tracking, abbreviations.tracking)
+    .. abbr(trigger.target or "Player", abbreviations.target)
+    .. abbr(trigger.detection or "Intersecting", abbreviations.detection)
+    .. abbr(trigger.stickiness or "Lifelink", abbreviations.stickiness)
+    .. abbr(trigger.tracking or "Position", abbreviations.tracking)
+    .. abbr(trigger.directionality or "EntityToSliders", abbreviations.directionality)
     .. ")"
   )
 end
@@ -120,10 +128,11 @@ local function triggerTextExpr(room, trigger)
     "Position Tracker Region (Expression) - "
     .. trigger.sliderPrefix
     .. " ("
-    .. abbr(trigger.target, abbreviations.target)
-    .. abbr(trigger.detection, abbreviations.detection)
-    .. abbr(trigger.stickiness, abbreviations.stickiness)
-    .. abbr(trigger.tracking, abbreviations.tracking)
+    .. abbr(trigger.target or "Player", abbreviations.target)
+    .. abbr(trigger.detection or "Intersecting", abbreviations.detection)
+    .. abbr(trigger.stickiness or "Lifelink", abbreviations.stickiness)
+    .. abbr(trigger.tracking or "Position", abbreviations.tracking)
+    .. abbr(trigger.directionality or "EntityToSliders", abbreviations.directionality)
     .. ")"
   )
 end
@@ -144,6 +153,7 @@ return {
           detection = "Within",
           stickiness = "Soulbond",
           tracking = "Position",
+          directionality = "EntityToSliders",
 
           sliderPrefix = "trackedPosition",
           targettingFlag = "",
@@ -169,6 +179,7 @@ return {
           detection = "Within",
           stickiness = "Soulbond",
           tracking = "Position",
+          directionality = "EntityToSliders",
 
           sliderPrefix = "trackedPosition",
           targettingFlag = "",
