@@ -21,17 +21,23 @@
     <li><b>Player Facing Flag:</b> detect the player's facing direction</li>
     <li><b>Player Grounded Flag:</b> detect if the player is grounded</li>
     <li><b>Player State Name to Counter:</b> convert a state name (potentially for a custom state) into its ID</li>
-    <li><b>Slider Controllers:</b> control ambience, music, camera zoom, colourgrades, sounds, stylegrounds, and the time rate via sliders</li>
+    <li><b>Slider Controllers:</b> control ambience, music, camera zoom/padding, colourgrades, sounds, stylegrounds, and the time rate via sliders</li>
   </ul>
 </p>
 <p>
   Triggers and regions:
   <ul>
-    <li><b>Holdable Bouyancy Region:</b> makes holdables (and optionally the player) float, like it's a liquid</li>
-    <li><b>Position Tracker Region:</b> detects the position/size of a chosen entity</li>
-    <li><b>Set Facing Trigger:</b> sets the player's facing direction</li>
+    <li><b>Holdable Bouyancy Region:</b> make holdables (and optionally the player) float, as if in a liquid</li>
+    <li><b>Position Tracker Region:</b> detect the position/size of a chosen entity</li>
+    <li><b>Set Facing Trigger:</b> set the player's facing direction</li>
     <li><b>Slider Camera Triggers:</b> offset/target triggers whose properties are slider-driven</li>
     <li><b>Slider Trigger:</b> set a slider based on where the player is in the trigger</li>
+  </ul>
+</p>
+<p>
+  Decal registry tags:
+  <ul>
+    <li><b>Custom Light Mask:</b> (<code>microlith57_light</code>) make a decal glow</li>
   </ul>
 </p>
 <p>
