@@ -38,13 +38,14 @@ public sealed class BlackHoleRefractionController : SliderController {
 
     private void BeforeRender() {
         if (Scene is not Level level || !Enabled || !Visible) return;
+        if (level.Tracker.GetEntity<Player>() is not Player player) return;
 
         RefractionFill ??= VirtualContent.CreateRenderTarget("microlith57misc_black_hole_refraction", 180, 180);
 
         Engine.Graphics.GraphicsDevice.SetRenderTarget(RefractionFill);
         Engine.Graphics.GraphicsDevice.Clear(Color.Transparent);
 
-        var pos = Position;
+        var pos = level.Camera.Position + new Vector2(320/2, 180/2);
 
         var mat = Matrix.Identity
             * Matrix.CreateTranslation(new((RefractionFill.Target.Width / 2) - pos.X,
@@ -61,7 +62,7 @@ public sealed class BlackHoleRefractionController : SliderController {
             mat
         );
 
-        Draw.Circle(pos, 8f, Color.Aqua, 32);
+        player.Render();
 
         Draw.SpriteBatch.End();
     }
