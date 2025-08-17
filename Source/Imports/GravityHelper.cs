@@ -93,6 +93,8 @@ public static class GravityHelper {
     public static Func<IDisposable> WithOverride;
 
     internal static void OnImport() {
+        if (GravityTypeToInt is null) return;
+
         GravityType.None = GravityTypeToInt("None");
         GravityType.Normal = GravityTypeToInt("Normal");
         GravityType.Inverted = GravityTypeToInt("Inverted");
