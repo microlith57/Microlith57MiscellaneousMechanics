@@ -37,7 +37,10 @@
 <p>
   Decal registry tags:
   <ul>
-    <li><b>Custom Light Mask:</b> (<code>microlith57_light</code>) make a decal glow</li>
+    <li>
+      <b>Custom Light Mask:</b> (<code>&lt;microlith57_light /&gt;</code>) make a decal glow<br />
+      Properties: <code>offsetX</code>/<code>Y</code>, <code>color</code>, <code>alpha</code>, <code>path</code> (use a different path for the light compared to the decal; relative to <code>Gameplay</code>), <code>frames</code>, <code>replace</code> (if true, hides the original decal, leaving only the light).
+    </li>
   </ul>
 </p>
 <p>
