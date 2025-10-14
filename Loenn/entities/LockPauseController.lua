@@ -15,7 +15,8 @@ local fieldInformation = {
 local fieldOrder = {
   "x", "y",
   "flag", "invertFlag", "expression",
-  "mode", "unlockWhenControllerRemoved"
+  "mode", "unlockWhenControllerRemoved",
+  "inhibitGBJPrevention"
 }
 
 return {
@@ -30,7 +31,8 @@ return {
           flag = "",
           invertFlag = false,
           mode = "LockRetry",
-          unlockWhenControllerRemoved = true
+          unlockWhenControllerRemoved = true,
+          inhibitGBJPrevention = true
         }
       },
       {
@@ -39,7 +41,8 @@ return {
           flag = "",
           invertFlag = false,
           mode = "LockSaveQuit",
-          unlockWhenControllerRemoved = true
+          unlockWhenControllerRemoved = true,
+          inhibitGBJPrevention = true
         }
       },
       {
@@ -48,7 +51,8 @@ return {
           flag = "",
           invertFlag = false,
           mode = "LockPauseMenu",
-          unlockWhenControllerRemoved = true
+          unlockWhenControllerRemoved = true,
+          inhibitGBJPrevention = true
         }
       }
     },
@@ -66,7 +70,8 @@ return {
         data = {
           expression = "",
           mode = "LockRetry",
-          unlockWhenControllerRemoved = true
+          unlockWhenControllerRemoved = true,
+          inhibitGBJPrevention = true
         }
       },
       {
@@ -74,7 +79,8 @@ return {
         data = {
           expression = "",
           mode = "LockSaveQuit",
-          unlockWhenControllerRemoved = true
+          unlockWhenControllerRemoved = true,
+          inhibitGBJPrevention = true
         }
       },
       {
@@ -82,7 +88,8 @@ return {
         data = {
           expression = "",
           mode = "LockPauseMenu",
-          unlockWhenControllerRemoved = true
+          unlockWhenControllerRemoved = true,
+          inhibitGBJPrevention = true
         }
       }
     },

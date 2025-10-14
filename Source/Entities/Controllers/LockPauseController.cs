@@ -4,6 +4,7 @@ using Celeste.Mod.Entities;
 using System;
 
 using Celeste.Mod.Microlith57Misc.Components;
+using MonoMod.Utils;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -29,6 +30,7 @@ public sealed class LockPauseController : Entity {
 
     public readonly LockMode Mode;
     public readonly bool UnlockWhenControllerRemoved;
+    public readonly bool InhibitGBJPrevention;
 
     #endregion State
     #region --- Init ---
@@ -37,12 +39,14 @@ public sealed class LockPauseController : Entity {
         Vector2 position,
         ConditionSource condition,
         LockMode mode,
-        bool unlockWhenControllerRemoved
+        bool unlockWhenControllerRemoved,
+        bool inhibitGBJPrevention
     ) : base(position) {
 
         Add(Condition = condition);
         Mode = mode;
         UnlockWhenControllerRemoved = unlockWhenControllerRemoved;
+        InhibitGBJPrevention = inhibitGBJPrevention;
     }
 
     private static LockPauseController Create(EntityData data, Vector2 offset, ConditionSource condition)
@@ -50,20 +54,21 @@ public sealed class LockPauseController : Entity {
             data.Position + offset,
             condition,
             data.Enum<LockMode>("mode"),
-            data.Bool("unlockWhenControllerRemoved", true)
+            data.Bool("unlockWhenControllerRemoved", true),
+            data.Bool("inhibitGBJPrevention")
         );
 
     public static LockPauseController CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
         => Create(
-                data, offset,
-                new ConditionSource.Flag(data, ifAbsent: "lockPause") { Default = true }
-            );
+            data, offset,
+            new ConditionSource.Flag(data, ifAbsent: "lockPause") { Default = true }
+        );
 
     public static LockPauseController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => Create(
-                data, offset,
-                new ConditionSource.Expr(data, ifAbsent: "lockPause") { Default = true }
-            );
+            data, offset,
+            new ConditionSource.Expr(data, ifAbsent: "lockPause") { Default = true }
+        );
 
     #endregion Init
     #region --- Behaviour ---
@@ -89,6 +94,9 @@ public sealed class LockPauseController : Entity {
 
         if ((Mode & LockMode.LockPauseMenu) != LockMode.Nothing)
             level.PauseLock = locked;
+
+        if (InhibitGBJPrevention && locked && level.Wipe == null && level.Tracker.GetEntity<Player>() is Player player)
+            DynamicData.For(player).Set("framesAlive", int.MaxValue);
     }
 
     #endregion Behaviour
