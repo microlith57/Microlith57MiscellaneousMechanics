@@ -21,16 +21,20 @@ entities.Microlith57Misc/FreezeTimeActiveController_Expression.attributes.descri
 entities.Microlith57Misc/LockPauseController.placements.name.lockRetryController=Lock Pause Controller (Disable Retry)
 entities.Microlith57Misc/LockPauseController.placements.name.lockSaveQuitController=Lock Pause Controller (Disable Save+Quit)
 entities.Microlith57Misc/LockPauseController.placements.name.lockPauseController=Lock Pause Controller (Disable Menu)
+entities.Microlith57Misc/LockPauseController.attributes.name.inhibitGBJPrevention=Inhibit GBJ Prevention
 entities.Microlith57Misc/LockPauseController.attributes.description.flag=If present, only lock if the flag is set.
-entities.Microlith57Misc/LockPauseController.attributes.description.mode=What to lock.\nLockRetry: Grey out the Retry button and prevent the retry keybind;\nLockSaveQuit: Grey out the Save and Quit button;\nLockRetryAndSaveQuit: Grey out both the Retry and Save and Quit buttons;\nLockPauseMenu: Prevent opening the pause menu entirely.
+entities.Microlith57Misc/LockPauseController.attributes.description.mode=What to lock.\nLockRetry: Grey out the Retry button and prevent the retry keybind;\nLockSaveQuit: Grey out the Save and Quit button;\nLockRetryAndSaveQuit: Grey out both the Retry and Save and Quit buttons;\nLockPauseMenu: Prevent opening the pause menu entirely;\nLockRetrySaveQuitAndPauseMenu: Prevent opening the pause menu, and also prevent using keybinds to retry or save+quit.
 entities.Microlith57Misc/LockPauseController.attributes.description.unlockWhenControllerRemoved=Whether to reenable the locked features when the controller is removed (eg. when transitioning into a different room)
+entities.Microlith57Misc/LockPauseController.attributes.description.inhibitGBJPrevention=By default, Everest prevents death-on-spawn softlocks by forcefully pausing under certain conditions (this is GBJ prevention).\nThis option inhibits GBJ prevention, ensuring the game does not forcefully pause.\nOnly relevant if you disable opening the menu entirely.\n\nWARNING: This disables a softlock prevention mechanism! Use with care!
 
 entities.Microlith57Misc/LockPauseController_Expression.placements.name.lockRetryController=Lock Pause Controller (Expression; Disable Retry)
 entities.Microlith57Misc/LockPauseController_Expression.placements.name.lockSaveQuitController=Lock Pause Controller (Expression; Disable Save+Quit)
 entities.Microlith57Misc/LockPauseController_Expression.placements.name.lockPauseController=Lock Pause Controller (Expression; Disable Menu)
+entities.Microlith57Misc/LockPauseController_Expression.attributes.name.inhibitGBJPrevention=Inhibit GBJ Prevention
 entities.Microlith57Misc/LockPauseController_Expression.attributes.description.expression=If present, only lock if the expression is truthy.
-entities.Microlith57Misc/LockPauseController_Expression.attributes.description.mode=What to lock.\nLockRetry: Grey out the Retry button and prevent the retry keybind;\nLockSaveQuit: Grey out the Save and Quit button;\nLockRetryAndSaveQuit: Grey out both the Retry and Save and Quit buttons;\nLockPauseMenu: Prevent opening the pause menu entirely.
+entities.Microlith57Misc/LockPauseController_Expression.attributes.description.mode=What to lock.\nLockRetry: Grey out the Retry button and prevent the retry keybind;\nLockSaveQuit: Grey out the Save and Quit button;\nLockRetryAndSaveQuit: Grey out both the Retry and Save and Quit buttons;\nLockPauseMenu: Prevent opening the pause menu entirely;\nLockRetrySaveQuitAndPauseMenu: Prevent opening the pause menu, and also prevent using keybinds to retry or save+quit.
 entities.Microlith57Misc/LockPauseController_Expression.attributes.description.unlockWhenControllerRemoved=Whether to reenable the locked features when the controller is removed (eg. when transitioning into a different room)
+entities.Microlith57Misc/LockPauseController_Expression.attributes.description.inhibitGBJPrevention=By default, Everest prevents death-on-spawn softlocks by forcefully pausing under certain conditions (this is GBJ prevention).\nThis option inhibits GBJ prevention, ensuring the game does not forcefully pause.\nOnly relevant if you disable opening the menu entirely.\n\nWARNING: This disables a softlock prevention mechanism! Use with care!
 
 # Ambience Volume Controller
 entities.Microlith57Misc/SliderAmbienceVolumeController.placements.name.sliderAmbienceVolumeController=Ambience Volume Controller (Slider)

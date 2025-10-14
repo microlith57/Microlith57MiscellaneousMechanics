@@ -6,7 +6,8 @@ local fieldInformation = {
       "LockRetry",
       "LockSaveQuit",
       "LockRetryAndSaveQuit",
-      "LockPauseMenu"
+      "LockPauseMenu",
+      "LockRetrySaveQuitAndPauseMenu"
     },
     editable = false
   }
@@ -32,7 +33,7 @@ return {
           invertFlag = false,
           mode = "LockRetry",
           unlockWhenControllerRemoved = true,
-          inhibitGBJPrevention = true
+          inhibitGBJPrevention = false
         }
       },
       {
@@ -42,7 +43,7 @@ return {
           invertFlag = false,
           mode = "LockSaveQuit",
           unlockWhenControllerRemoved = true,
-          inhibitGBJPrevention = true
+          inhibitGBJPrevention = false
         }
       },
       {
@@ -52,7 +53,7 @@ return {
           invertFlag = false,
           mode = "LockPauseMenu",
           unlockWhenControllerRemoved = true,
-          inhibitGBJPrevention = true
+          inhibitGBJPrevention = false
         }
       }
     },
@@ -71,7 +72,7 @@ return {
           expression = "",
           mode = "LockRetry",
           unlockWhenControllerRemoved = true,
-          inhibitGBJPrevention = true
+          inhibitGBJPrevention = false
         }
       },
       {
@@ -80,7 +81,7 @@ return {
           expression = "",
           mode = "LockSaveQuit",
           unlockWhenControllerRemoved = true,
-          inhibitGBJPrevention = true
+          inhibitGBJPrevention = false
         }
       },
       {
@@ -89,7 +90,7 @@ return {
           expression = "",
           mode = "LockPauseMenu",
           unlockWhenControllerRemoved = true,
-          inhibitGBJPrevention = true
+          inhibitGBJPrevention = false
         }
       }
     },

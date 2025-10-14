@@ -22,7 +22,8 @@ public sealed class LockPauseController : Entity {
         LockRetry = 1 << 0,
         LockSaveQuit = 1 << 1,
         LockRetryAndSaveQuit = LockRetry | LockSaveQuit,
-        LockPauseMenu = 1 << 2
+        LockPauseMenu = 1 << 2,
+        LockRetrySaveQuitAndPauseMenu = LockRetryAndSaveQuit | LockPauseMenu
     }
 
     private readonly ConditionSource Condition;
