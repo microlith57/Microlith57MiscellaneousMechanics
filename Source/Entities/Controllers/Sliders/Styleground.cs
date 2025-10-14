@@ -78,7 +78,7 @@ public sealed class SliderStylegroundController : Entity {
     public override void Update() {
         base.Update();
 
-        if (Scene is not Level level) return;
+        if (Scene is not Level level || !Enabled) return;
 
         float? position_x = PositionSource.X.RawValue;
         float? position_y = PositionSource.Y.RawValue;
