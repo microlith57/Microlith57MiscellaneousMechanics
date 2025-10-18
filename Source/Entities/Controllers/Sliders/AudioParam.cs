@@ -49,7 +49,7 @@ public sealed class SliderAudioParamController : SliderController {
     public override void Update() {
         base.Update();
 
-        if (Scene is not Level level) return;
+        if (Scene is not Level level || !Enabled) return;
 
         if (IsAmbience) {
             level.Session.Audio.Ambience.Param(Param, Value);

@@ -39,7 +39,7 @@ public sealed class SliderAmbienceVolumeController : SliderController {
     public override void Update() {
         base.Update();
 
-        if (Scene is not Level level) return;
+        if (Scene is not Level level || !Enabled) return;
 
         float val = Value;
         level.Session.Audio.AmbienceVolume = val;

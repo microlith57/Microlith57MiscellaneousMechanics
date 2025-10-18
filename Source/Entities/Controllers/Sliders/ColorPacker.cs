@@ -74,7 +74,7 @@ public sealed class ColorPackerFloat : Entity {
 
     public override void Update() {
         base.Update();
-        if (!Enabled || Scene is not Level level) return;
+        if (Scene is not Level level || !Enabled) return;
 
         level.Session.SetCounter(Counter, unchecked((int)Color.PackedValue));
     }
@@ -150,7 +150,7 @@ public sealed class ColorPackerInt : Entity {
 
     public override void Update() {
         base.Update();
-        if (!Enabled || Scene is not Level level) return;
+        if (Scene is not Level level || !Enabled) return;
 
         level.Session.SetCounter(Counter, unchecked((int)Color.PackedValue));
     }
@@ -256,7 +256,7 @@ public sealed class ColorPackerHSLV : Entity {
 
     public override void Update() {
         base.Update();
-        if (!Enabled || Scene is not Level level) return;
+        if (Scene is not Level level || !Enabled) return;
 
         level.Session.SetCounter(Counter, unchecked((int)(IsHSV ? ColorHSV : ColorHSL).PackedValue));
     }

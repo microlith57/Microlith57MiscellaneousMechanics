@@ -46,11 +46,10 @@ public sealed class SliderCameraPaddingController : SliderController {
 
         if (Scene is not Level level) return;
 
-        if (Enabled) {
+        if (Enabled)
             level.ScreenPadding = Value;
-        } else if (wasEnabled) {
+        else if (wasEnabled)
             level.ScreenPadding = 0f;
-        }
 
         wasEnabled = Enabled;
     }
