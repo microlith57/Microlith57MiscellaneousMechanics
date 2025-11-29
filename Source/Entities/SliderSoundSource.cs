@@ -53,8 +53,9 @@ public sealed class SliderSoundSource : Entity {
         FloatSource volumeSource
     ) : base(Vector2.Zero) {
 
-        Tag = Tags.TransitionUpdate;
+        Tag |= Tags.TransitionUpdate;
         Depth = -8500;
+        this.SetDepthAndTags(data);
 
         bool positionRelative = data.Bool("positionRelative", true);
         if (positionRelative)

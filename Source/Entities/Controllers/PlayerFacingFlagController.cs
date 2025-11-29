@@ -5,11 +5,20 @@ using Celeste.Mod.Entities;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/PlayerFacingFlagController")]
-public sealed class PlayerFacingFlagController(EntityData data, Vector2 offset) : Entity(data.Position + offset) {
+public sealed class PlayerFacingFlagController : Entity {
 
-    public string FlagLeft = data.Attr("flagLeft", "playerFacingLeft");
-    public string FlagRight = data.Attr("flagRight", "playerFacingRight");
-    public bool PersistOnDeath = data.Bool("persistOnDeath");
+    public string FlagLeft;
+    public string FlagRight;
+    public bool PersistOnDeath;
+
+    public PlayerFacingFlagController(
+        EntityData data, Vector2 offset
+    ) : base(data.Position + offset) {
+        this.SetDepthAndTags(data);
+        FlagLeft = data.Attr("flagLeft", "playerFacingLeft");
+        FlagRight = data.Attr("flagRight", "playerFacingRight");
+        PersistOnDeath = data.Bool("persistOnDeath");
+    }
 
     private int Facing => (int)(Scene.Tracker.GetEntity<Player>()?.Facing ?? 0);
 

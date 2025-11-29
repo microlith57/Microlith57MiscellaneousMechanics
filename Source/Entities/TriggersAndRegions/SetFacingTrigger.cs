@@ -31,6 +31,7 @@ public sealed class SetFacingTrigger : Trigger {
         bool invertIfUnset,
         bool continuous
     ) : base(data, offset) {
+        this.SetDepthAndTags(data);
 
         Add(Condition = condition);
         Facing = facing;

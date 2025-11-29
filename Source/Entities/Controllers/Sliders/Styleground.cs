@@ -39,6 +39,7 @@ public sealed class SliderStylegroundController : Entity {
         IntSource colorSource,
         FloatSource alphaSource
     ) : base(data.Position + offset) {
+        this.SetDepthAndTags(data);
 
         StyleTag = data.Attr("tag");
 

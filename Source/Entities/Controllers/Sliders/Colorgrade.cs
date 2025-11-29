@@ -23,7 +23,7 @@ public sealed class SliderColorgradeController : SliderController {
         ConditionSource enabledCondition,
         FloatSource valueSource
     ) : base(data, offset, enabledCondition, valueSource) {
-
+        this.SetDepthAndTags(data);
         ColorgradeA = data.Attr("colorgradeA", "none");
         ColorgradeB = data.Attr("colorgradeB", "none");
     }

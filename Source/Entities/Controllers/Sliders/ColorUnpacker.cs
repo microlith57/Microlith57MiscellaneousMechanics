@@ -59,7 +59,9 @@ public sealed class ColorUnpackerFloat : Entity {
         session.GetSliderObject(prefix + "G"),
         session.GetSliderObject(prefix + "B"),
         session.GetSliderObject(prefix + "A")
-    ) {}
+    ) {
+        this.SetDepthAndTags(data);
+    }
 
     public static ColorUnpackerFloat Create(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(
@@ -123,6 +125,7 @@ public sealed class ColorUnpackerInt : Entity {
         string counterB,
         string counterA
     ) : base(data.Position + offset) {
+        this.SetDepthAndTags(data);
 
         Add(EnabledCondition = enabledCondition);
         Add(ColorSource = colorSource);
@@ -210,6 +213,7 @@ public sealed class ColorUnpackerHSLV : Entity {
         Session.Slider sliderLV,
         bool isHSV
     ) : base(data.Position + offset) {
+        this.SetDepthAndTags(data);
 
         Format = data.Enum("format", AngleFormat.ZeroToOne);
         IsHSV = isHSV;

@@ -70,6 +70,7 @@ public sealed class PositionTrackerRegion : Entity {
         Session.Slider sliderX, Session.Slider sliderY,
         ConditionSource condition
     ) : base(data.Position + offset) {
+        this.SetDepthAndTags(data);
 
         Collider = new Hitbox(data.Width, data.Height);
         Collidable = false;

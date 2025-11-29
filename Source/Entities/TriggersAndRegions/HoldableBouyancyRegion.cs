@@ -32,9 +32,9 @@ public sealed class HoldableBouyancyRegion : Entity {
         ConditionSource condition,
         FloatSource minForce, FloatSource maxForce, FloatSource damping
     ) : base(data.Position + offset) {
-
         Collider = new Hitbox(data.Width, data.Height);
         Depth = Depths.Top;
+        this.SetDepthAndTags(data);
 
         Add(Condition = condition);
         Add(MinForceSource = minForce);

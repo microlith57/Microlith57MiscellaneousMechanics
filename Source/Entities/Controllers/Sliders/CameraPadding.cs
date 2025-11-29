@@ -22,7 +22,9 @@ public sealed class SliderCameraPaddingController : SliderController {
         EntityData data, Vector2 offset,
         ConditionSource enabledCondition,
         FloatSource valueSource
-    ) : base(data, offset, enabledCondition, valueSource) {}
+    ) : base(data, offset, enabledCondition, valueSource) {
+        this.SetDepthAndTags(data);
+    }
 
     public static SliderCameraPaddingController Create(Level level, LevelData __, Vector2 offset, EntityData data)
         => new(

@@ -27,6 +27,7 @@ public sealed class BlackHoleRefractionController : SliderController {
         ConditionSource enabledCondition,
         FloatSource valueSource
     ) : base(data, offset, enabledCondition, valueSource) {
+        this.SetDepthAndTags(data);
         Tag |= TagsExt.SubHUD;
 
         Add(new BeforeRenderHook(BeforeRender));

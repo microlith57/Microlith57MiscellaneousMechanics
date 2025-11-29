@@ -5,10 +5,18 @@ using Celeste.Mod.Entities;
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/PlayerGroundedFlagController")]
-public sealed class PlayerGroundedFlagController(EntityData data, Vector2 offset) : Entity(data.Position + offset) {
+public sealed class PlayerGroundedFlagController : Entity {
 
-    public string Flag = data.Attr("flag", "playerGrounded");
-    public bool InvertFlag = data.Bool("invertFlag");
+    public string Flag;
+    public bool InvertFlag;
+
+    public PlayerGroundedFlagController(
+        EntityData data, Vector2 offset
+    ) : base(data.Position + offset) {
+        this.SetDepthAndTags(data);
+        Flag = data.Attr("flag", "playerGrounded");
+        InvertFlag = data.Bool("invertFlag");
+    }
 
     private bool Grounded => Scene.Tracker.GetEntity<Player>()?.OnGround() ?? false;
 

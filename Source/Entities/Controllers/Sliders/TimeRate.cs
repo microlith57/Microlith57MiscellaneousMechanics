@@ -30,6 +30,7 @@ public sealed class SliderTimeRateController : Entity {
         ConditionSource enabledCondition,
         FloatSource multiplierSource
     ) : base(data.Position + offset) {
+        this.SetDepthAndTags(data);
 
         Add(EnabledCondition = enabledCondition);
         Add(MultiplierSource = multiplierSource);

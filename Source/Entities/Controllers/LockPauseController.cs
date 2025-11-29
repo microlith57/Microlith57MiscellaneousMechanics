@@ -43,7 +43,6 @@ public sealed class LockPauseController : Entity {
         bool unlockWhenControllerRemoved,
         bool inhibitGBJPrevention
     ) : base(position) {
-
         Add(Condition = condition);
         Mode = mode;
         UnlockWhenControllerRemoved = unlockWhenControllerRemoved;
@@ -51,13 +50,13 @@ public sealed class LockPauseController : Entity {
     }
 
     private static LockPauseController Create(EntityData data, Vector2 offset, ConditionSource condition)
-        => new(
+        => new LockPauseController(
             data.Position + offset,
             condition,
             data.Enum<LockMode>("mode"),
             data.Bool("unlockWhenControllerRemoved", true),
             data.Bool("inhibitGBJPrevention")
-        );
+        ).SetDepthAndTags(data);
 
     public static LockPauseController CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
         => Create(

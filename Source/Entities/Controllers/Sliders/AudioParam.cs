@@ -24,7 +24,7 @@ public sealed class SliderAudioParamController : SliderController {
         ConditionSource enabledCondition,
         FloatSource valueSource
     ) : base(data, offset, enabledCondition, valueSource) {
-
+        this.SetDepthAndTags(data);
         Param = data.Attr("param");
         IsAmbience = data.Bool("isAmbience");
     }

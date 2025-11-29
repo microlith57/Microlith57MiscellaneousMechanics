@@ -26,22 +26,21 @@ public sealed class FreezeTimeActiveController : Entity {
     #region --- Init ---
 
     public FreezeTimeActiveController(
-        Vector2 position,
+        EntityData data, Vector2 position,
         ConditionSource condition
     ) : base(position) {
-
         Add(Condition = condition);
     }
 
     public static FreezeTimeActiveController Create(Level _, LevelData __, Vector2 offset, EntityData data)
-        => new(
-                data.Position + offset,
+        => new FreezeTimeActiveController(
+                data, data.Position + offset,
                 new Flag(data, ifAbsent: "freezeTimeActive") { Default = true }
-            );
+            ).SetDepthAndTags(data);
 
     public static FreezeTimeActiveController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
-                data.Position + offset,
+                data, data.Position + offset,
                 new Expr(data, "expression", "freezeTimeActive") { Default = true }
             );
 

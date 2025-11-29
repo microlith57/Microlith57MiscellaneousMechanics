@@ -27,7 +27,7 @@ public sealed class SliderCameraZoomController : SliderController {
         Vector2Source focusSource,
         FloatSource valueSource
     ) : base(data, offset, enabledCondition, valueSource) {
-
+        this.SetDepthAndTags(data);
         this.Add(FocusSource = focusSource);
     }
 

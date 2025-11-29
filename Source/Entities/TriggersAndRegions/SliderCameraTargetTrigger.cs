@@ -37,6 +37,7 @@ public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
         Vector2Source targetSource,
         Vector2Source lerpStrengthSource
     ) : base(AddDummyNode(data), offset) {
+        this.SetDepthAndTags(data);
 
         Add(Condition = enabledCondition);
         this.Add(TargetSource = targetSource);
