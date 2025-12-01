@@ -14,7 +14,7 @@
 
     <PropertyGroup>
         <!-- If any feature flags were enabled, they would go here. -->
-        <DefineConstants>$(DefineConstants)</DefineConstants>
+        <DefineConstants>$(DefineConstants);FEATURE_FLAG_BOX;FEATURE_FLAG_RECORDINGS</DefineConstants>
     </PropertyGroup>
 
     <!--Disable "Copy Local" for all references-->
@@ -36,6 +36,7 @@
 
         <Reference Include="lib\MaxHelpingHand.dll" Private="false" />
         <Reference Include="lib\EeveeHelper.dll" Private="false" />
+        <Reference Include="lib\GravityHelper.dll" Private="false" />
     </ItemGroup>
 
     <Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb" Outputs="..\Code\bin\$(AssemblyName).dll;..\Code\bin\$(AssemblyName).pdb">

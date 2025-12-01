@@ -1,9 +1,9 @@
 #if FEATURE_FLAG_BOX
 
+using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
-
-using Celeste.Mod.GravityHelper.Entities;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -18,9 +18,10 @@ public class BoxSurface : Component {
     }
 
     public Collider Collider;
+    public readonly int Width, Depth;
+    public readonly int SurfaceIndex;
 
-    public JumpThru SurfaceTop;
-    public UpsideDownJumpThru SurfaceBot;
+    public JumpThru? SurfaceTop, SurfaceBot;
 
     private bool collidableTop = true;
     public bool CollidableTop {
@@ -44,18 +45,26 @@ public class BoxSurface : Component {
         : base(true, false) {
 
         Collider = collider;
-
-        SurfaceTop = makeTopSurface(collider.AbsolutePosition, width, depth, surfaceIndex);
-        SurfaceTop.Add(new BelongsToBox(this, true));
-        SurfaceTop.AddTag(Tags.Persistent);
-
-        SurfaceBot = makeBottomSurface(collider.AbsolutePosition, width, depth, surfaceIndex);
-        SurfaceBot.Add(new BelongsToBox(this, false));
-        SurfaceBot.AddTag(Tags.Persistent);
+        Width = width;
+        Depth = depth;
+        SurfaceIndex = surfaceIndex;
     }
 
     public override void EntityAdded(Scene scene) {
         base.EntityAdded(scene);
+
+        if (scene is not Level level) {
+            RemoveSelf();
+            return;
+        }
+
+        SurfaceTop = makeTopSurface(Collider.AbsolutePosition, Width, Depth, SurfaceIndex);
+        SurfaceTop.Add(new BelongsToBox(this, true));
+        SurfaceTop.AddTag(Tags.Persistent);
+
+        SurfaceBot = makeBottomSurface(level, Collider.AbsolutePosition, Width, Depth, SurfaceIndex);
+        SurfaceBot.Add(new BelongsToBox(this, false));
+        SurfaceBot.AddTag(Tags.Persistent);
 
         SurfaceTop.Position = Collider.AbsolutePosition;
         SurfaceTop.Collider.Width = Collider.Width;
@@ -66,6 +75,14 @@ public class BoxSurface : Component {
 
         scene.Add(SurfaceTop);
         scene.Add(SurfaceBot);
+        updateCollision();
+    }
+
+    public override void EntityAwake() {
+        base.EntityAwake();
+
+        if (Scene is not Level level || level.Tracker.GetEntity<Player>() is not Player player || player.Get<PlayerUpdateHook>() is not null) return;
+        player.Add(new PlayerUpdateHook());
     }
 
     public override void EntityRemoved(Scene scene) {
@@ -76,27 +93,42 @@ public class BoxSurface : Component {
     }
 
     private void updateCollision() {
-        SurfaceTop.Collidable = collidable && collidableTop;
-        SurfaceBot.Collidable = collidable && collidableBot;
+        if (SurfaceTop is not null) {
+            // if (SurfaceTop.Collidable != (collidable && collidableTop))
+            //     Logger.Info(Module.MOD_NAME, $"SurfaceTop: was {SurfaceTop.Collidable}, will be {collidable} && {collidableTop}");
+            SurfaceTop.Collidable = collidable && collidableTop;
+        }
+
+        if (SurfaceBot is not null) {
+            // if (SurfaceBot.Collidable != (collidable && collidableBot))
+            //     Logger.Info(Module.MOD_NAME, $"SurfaceBot: was {SurfaceBot.Collidable}, will be {collidable} && {collidableBot}");
+            SurfaceBot.Collidable = collidable && collidableBot;
+        }
     }
 
     public void Move() {
-        SurfaceTop.MoveTo(Collider.AbsolutePosition);
-        SurfaceBot.MoveTo(Collider.AbsolutePosition
-                          + new Vector2(0f, Collider.Height - SurfaceBot.Collider.Height - 3f));
+        if (SurfaceTop is not null)
+            SurfaceTop.MoveTo(Collider.AbsolutePosition);
+
+        if (SurfaceBot is not null)
+            SurfaceBot.MoveTo(Collider.AbsolutePosition
+                            + new Vector2(0f, Collider.Height - SurfaceBot.Collider.Height - 3f));
     }
 
     private static JumpThru makeTopSurface(Vector2 position, int width, int depth, int surfaceIndex) {
         return new(position, width, safe: false) {
             Depth = depth,
             SurfaceSoundIndex = surfaceIndex,
+            Visible = false,
             Collidable = false
         };
     }
 
-    private static UpsideDownJumpThru makeBottomSurface(Vector2 position, int width, int depth, int surfaceIndex) {
+    private static JumpThru makeBottomSurface(Level level, Vector2 position, int width, int depth, int surfaceIndex) {
+        var name = "GravityHelper/UpsideDownJumpThru";
+
         var bottomSurfaceData = new EntityData() {
-            Name = "GravityHelper/UpsideDownJumpThru",
+            Name = name,
             Position = position,
             Width = width,
             Values = []
@@ -105,11 +137,60 @@ public class BoxSurface : Component {
         bottomSurfaceData.Values.Add("pluginVersion", "1");
         bottomSurfaceData.Values.Add("surfaceIndex", surfaceIndex);
 
-        return new(bottomSurfaceData, Vector2.Zero) {
-            Depth = depth,
-            Visible = false,
-            Collidable = false
-        };
+        var upsideDownJumpthruLoader = Level.EntityLoaders[name];
+        var bottomSurface = upsideDownJumpthruLoader(level, level.Session.LevelData, Vector2.Zero, bottomSurfaceData) as JumpThru
+            ?? throw new Exception("failed to load GravityHelper/UpsideDownJumpThru entity; this is probably my fault for getting it with this cursed approach");
+
+        bottomSurface.Depth = depth;
+        bottomSurface.Visible = false;
+        bottomSurface.Collidable = false;
+
+        return bottomSurface;
+    }
+
+    public class PlayerUpdateHook() : Component(false, false) {
+
+        public Player Player => Entity as Player ?? throw new Exception("the PlayerUpdateHook component should only be added to the Player!");
+
+        private Dictionary<BoxSurface, (bool, bool, bool)> BoxesWithOrigCollidableStates = [];
+
+        public override void Added(Entity entity) {
+            base.Added(entity);
+            Player.PreUpdate += (_) => BeforePlayerUpdate();
+            Player.PostUpdate += (_) => AfterPlayerUpdate();
+        }
+
+        private void BeforePlayerUpdate() {
+            BoxesWithOrigCollidableStates.Clear();
+
+            bool invert = Player.ShouldInvert();
+
+            foreach (BoxSurface boxSurface in Scene.Tracker.GetComponents<BoxSurface>()) {
+                BoxesWithOrigCollidableStates.Add(boxSurface, (boxSurface.Collidable,
+                                                               boxSurface.CollidableTop,
+                                                               boxSurface.CollidableBot));
+
+                if (Player.Holding?.Entity == boxSurface.Entity)
+                    boxSurface.Collidable = false;
+                else if (!invert)
+                    boxSurface.CollidableBot = false;
+                else
+                    boxSurface.CollidableTop = false;
+            }
+        }
+
+        private void AfterPlayerUpdate() {
+            if (BoxesWithOrigCollidableStates is null) return;
+
+            foreach ((var surface, (var wasCollidable, var wasCollidableTop, var wasCollidableBot)) in BoxesWithOrigCollidableStates) {
+                surface.Collidable = wasCollidable;
+                surface.CollidableTop = wasCollidableTop;
+                surface.CollidableBot = wasCollidableBot;
+            }
+
+            BoxesWithOrigCollidableStates.Clear();
+        }
+
     }
 
 }

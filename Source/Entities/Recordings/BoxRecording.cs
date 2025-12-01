@@ -72,8 +72,13 @@ public class BoxRecording : Recording {
             depth: 1001,
             surfaceIndex: SurfaceIndex.Glitch
         ));
-        Module.OverrideDust(Surface.SurfaceTop, Dust);
-        Module.OverrideDust(Surface.SurfaceBot, Dust);
+    }
+
+    public override void Added(Scene scene) {
+        base.Added(scene);
+
+        Module.OverrideDust(Surface.SurfaceTop!, Dust);
+        Module.OverrideDust(Surface.SurfaceBot!, Dust);
     }
 
     public override void Observe(int currentFrame, Color baseColor) {

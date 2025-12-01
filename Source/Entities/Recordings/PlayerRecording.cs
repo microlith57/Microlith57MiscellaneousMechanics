@@ -104,7 +104,7 @@ public class PlayerRecording : Recording {
         if (anim != null && anim != Sprite.CurrentAnimationID && Sprite.Has(anim))
             Sprite.Play(anim, restart: true);
 
-        this.SetInverted(state.Inverted, "Player Recording Inversion");
+        // this.SetInverted(state.Inverted, "Player Recording Inversion");
 
         Sprite.Scale = state.Underlying.Scale;
         if (state.Inverted)

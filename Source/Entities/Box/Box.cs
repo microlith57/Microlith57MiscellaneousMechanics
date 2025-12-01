@@ -65,6 +65,7 @@ public partial class Box : Actor {
     internal static bool updatedThisFrame = false;
 
     public readonly string RemoveIfFlag = "";
+    public readonly string GravityFlag = "";
     public readonly bool GravityLocked = true;
     public readonly bool IsTutorial = false;
 
@@ -99,12 +100,14 @@ public partial class Box : Actor {
 
     public Box(Vector2 position,
                string removeIfFlag = "",
+               string gravityFlag = "",
                bool gravityLocked = false,
                bool isTutorial = false)
             : base(position) {
 
         Depth = -2;
         RemoveIfFlag = removeIfFlag;
+        GravityFlag = gravityFlag;
         GravityLocked = gravityLocked;
         IsTutorial = isTutorial;
 
@@ -175,6 +178,7 @@ public partial class Box : Actor {
     public Box(EntityData data, Vector2 offset)
         : this(data.Position + offset,
               data.Attr("removeIfFlag"),
+              data.Attr("gravityFlag"),
               data.Bool("gravityLocked"),
               data.Bool("tutorial")) {
         Speed = new(data.Float("speedX"), data.Float("speedY"));
@@ -205,12 +209,19 @@ public partial class Box : Actor {
         Gravity.UpdateColliders = OnGravityChange_Colliders;
         Gravity.UpdateVisuals = OnGravityChange_Visuals;
 
+        if (!string.IsNullOrWhiteSpace(GravityFlag))
+            Gravity.Flag = GravityFlag;
+
         if (GravityLocked)
             Gravity.Lock();
     }
 
     #endregion Init
     #region --- Behaviour ---
+
+    internal static void BeforeLevelUpdate(Level level) {
+        updatedThisFrame = false;
+    }
 
     public override void Update() {
         base.Update();
@@ -576,6 +587,9 @@ public partial class Box : Actor {
     #region > Shattering
 
     public void BeginShatter() {
+        if (Hold.Holder is not null)
+			Hold.Holder.Swat(0);
+            
         Shattering = true;
 
         Get<GravityComponent>()?.Lock();

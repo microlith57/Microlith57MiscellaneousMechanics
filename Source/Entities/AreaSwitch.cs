@@ -270,7 +270,7 @@ public sealed class AreaSwitch : Entity {
     public bool Accepts(Activator activator) {
 #if FEATURE_FLAG_BOX
         if (Mode == ActivationMode.DestroysBox)
-            return activator.Entity is Box box && !box.Hold.IsHeld;
+            return activator.Entity is Box box;
 #endif
 
         return Senses(activator);

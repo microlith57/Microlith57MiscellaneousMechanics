@@ -1,50 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Celeste.Mod.EeveeHelper.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.Microlith57Misc;
 
-public static class Utils {
-
-    private static bool checkedHelpingHand;
-    internal static bool HelpingHandLoaded {
-        get {
-            if (checkedHelpingHand || Everest.Loader.DependencyLoaded(new EverestModuleMetadata { Name = "MaxHelpingHand", Version = new Version(1, 0, 0) })) {
-                checkedHelpingHand = true;
-                return true;
-            }
-            return false;
-        }
-    }
-    internal static bool CheckHelpingHand(string erroringEntity) {
-        if (HelpingHandLoaded)
-            return true;
-
-        Audio.SetMusic(null);
-        LevelEnter.ErrorMessage = "{big}Oops!{/big}{n}To use {# F94A4A}" + erroringEntity + "{#}, you need to have {# d678db}Maddie's Helping Hand{#} installed!";
-        var session = Engine.Scene is Level level ? new Session(level.Session.Area) : new Session();
-        LevelEnter.Go(session, fromSaveData: false);
-
-        return false;
-    }
-
-    private static bool checkedEeveeHelper;
-    internal static bool EeveeHelperLoaded {
-        get {
-            if (checkedEeveeHelper || Everest.Loader.DependencyLoaded(new EverestModuleMetadata { Name = "EeveeHelper", Version = new Version(1, 0, 0) })) {
-                checkedEeveeHelper = true;
-                return true;
-            }
-            return false;
-        }
-    }
-
-    internal static IEnumerable<(Entity container, Holdable hold, Action<Vector2> speedSetter)> GetEeveeHelperHoldableContainers(this Tracker tracker) => EeveeHelperLoaded ? EeveeHelperContainmentChamber.getHoldableContainers(tracker) : [];
-
-    // public static bool IsHoldableContainer(this Holdable hold) => EeveeHelperLoaded && EeveeHelperContainmentChamber.isHoldableContainer(hold);
+public static partial class Utils {
 
     public static float SoftCap(this float num, float magnitude, float softness) {
         var excess = Math.Max(Math.Abs(num) - magnitude, 0f);
@@ -200,16 +161,21 @@ public static class Utils {
         }
     }
 
-}
+    public static T SetDepthAndTags<T>(this T self, EntityData data) where T : Entity {
+        var depth = data.Int("depth");
 
-internal static class EeveeHelperContainmentChamber {
+        if (data.Attr("tags", null) is string tags && !string.IsNullOrWhiteSpace(tags)) {
+            foreach (string tag in tags.Split(',')) {
+                string trimmed = tag.Trim();
+                try {
+                    self.AddTag(BitTag.Get(trimmed));
+                } catch (KeyNotFoundException e) {
+                    throw new KeyNotFoundException($"Invalid tag '{trimmed}'", e);
+                }
+            }
+        }
 
-    internal static IEnumerable<(Entity container, Holdable hold, Action<Vector2> speedSetter)> getHoldableContainers(Tracker tracker)
-        => (
-            from e in tracker.GetEntities<HoldableContainer>()
-            let c = e as HoldableContainer
-            where c != null
-            select ((Entity)c, c.Hold, (Action<Vector2>)((speed) => c.Speed = speed))
-        );
+        return self;
+    }
 
 }

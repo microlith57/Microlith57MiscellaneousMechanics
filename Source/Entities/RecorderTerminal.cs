@@ -1,5 +1,3 @@
-#if false
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -359,5 +357,3 @@ public sealed class RecorderTerminal : Entity {
     #endregion
 
 }
-
-#endif
