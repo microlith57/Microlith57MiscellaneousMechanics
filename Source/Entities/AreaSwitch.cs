@@ -8,9 +8,7 @@ using System.Linq;
 
 using FlagSwitchGate = Celeste.Mod.MaxHelpingHand.Entities.FlagSwitchGate;
 
-#if FEATURE_FLAG_RECORDINGS
 using Celeste.Mod.Microlith57Misc.Entities.Recordings;
-#endif
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -69,10 +67,16 @@ public sealed class AreaSwitch : Entity {
         }
     }
 
-    public enum ActivationMode {
-        Anything,
-        BoxOnly,
-        DestroysBox
+    public enum AcceptableEntities {
+        Player = 1 << 0,
+        Box = 1 << 1,
+        Any = Player | Box,
+    }
+
+    public enum AcceptableStates {
+        Physical = 1 << 0,
+        Recording = 1 << 1,
+        Any = Physical | Recording,
     }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
@@ -89,7 +93,9 @@ public sealed class AreaSwitch : Entity {
     public readonly bool Persistent;
     private readonly List<AreaSwitch> Siblings = [];
 
-    public readonly ActivationMode Mode;
+    public readonly AcceptableEntities AcceptEntities;
+    public readonly AcceptableStates AcceptStates;
+    public readonly bool IsBoxDestroyer;
 
     public readonly float Radius;
     public readonly float AwarenessRange;
@@ -145,7 +151,9 @@ public sealed class AreaSwitch : Entity {
         Label = data.Attr("label");
         Persistent = data.Bool("persistent");
 
-        Mode = data.Enum("activationMode", ActivationMode.Anything);
+        AcceptEntities = data.Enum("acceptEntities", AcceptableEntities.Any);
+        AcceptStates = data.Enum("acceptStates", AcceptableStates.Any);
+        IsBoxDestroyer = data.Bool("destroyBoxes", false);
 
         Radius = data.Float("radius", 32f);
         AwarenessRange = data.Float("awareness", 32f);
@@ -251,30 +259,29 @@ public sealed class AreaSwitch : Entity {
     }
 
     public bool Senses(Activator activator) {
-        switch (Mode) {
-            case ActivationMode.Anything:
+        var state = (activator.Entity is Recording) ? AcceptableStates.Recording : AcceptableStates.Physical;
+        if ((AcceptStates & state) == 0)
+            return false;
+
+        switch (AcceptEntities) {
+            case AcceptableEntities.Any:
                 return true;
 
-#if FEATURE_FLAG_BOX
-            case ActivationMode.BoxOnly:
+            case AcceptableEntities.Player:
+                return activator.Entity is Player or PlayerRecording;
+
+            case AcceptableEntities.Box:
+                if (IsBoxDestroyer)
+                    return activator.Entity is Box;
                 return activator.Entity is Box or BoxRecording;
-            case ActivationMode.DestroysBox:
-                return activator.Entity is Box;
-#endif
 
             default:
                 return false;
         }
     }
 
-    public bool Accepts(Activator activator) {
-#if FEATURE_FLAG_BOX
-        if (Mode == ActivationMode.DestroysBox)
-            return activator.Entity is Box box;
-#endif
-
-        return Senses(activator);
-    }
+    public bool Accepts(Activator activator)
+        => Senses(activator);
 
     #region > Inactive
 
@@ -292,12 +299,12 @@ public sealed class AreaSwitch : Entity {
     private void OnDeactivated() {
         Icon.Rate = 1f;
 
-        if (Scene is not Level)
+        if (Scene is not Level level)
             return;
 
         for (var i = 0; i < 24; i++) {
             var dir = Calc.Random.NextFloat((float)Math.PI * 2f);
-            (Scene as Level)!.Particles.Emit(P_FireInactive, Position + Calc.AngleToVector(dir, 6f), InactiveColor, dir);
+            level.Particles.Emit(P_FireInactive, Position + Calc.AngleToVector(dir, 6f), InactiveColor, dir);
         }
 
         TouchSfx.Play("event:/game/04_cliffside/arrowblock_side_release");
@@ -372,12 +379,10 @@ public sealed class AreaSwitch : Entity {
     private IEnumerator FinishedRoutine() {
         if (Scene is not Level level || Icon.Rate <= 0.1f) yield break;
 
-#if FEATURE_FLAG_BOX
-        var box = Mode == ActivationMode.DestroysBox
+        var box = IsBoxDestroyer
                 ? Activators.FirstOrDefault(a => a.Entity is Box)?.Entity as Box
                 : null;
         box?.BeginShatter();
-#endif
 
         Activators.Clear();
 
@@ -386,26 +391,17 @@ public sealed class AreaSwitch : Entity {
         for (; fac < 0.4f; fac += Engine.DeltaTime / 1.95f) {
             Icon.Rate = Calc.ClampedMap(fac, 0f, 1f, 4f, 0.1f);
 
-#if FEATURE_FLAG_BOX
-            if (box != null)
-                AttractBox(box, fac);
-#endif
+            if (box != null) AttractBox(box, fac);
 
             yield return null;
         }
 
-#if FEATURE_FLAG_BOX
-        if (box != null)
-            box.Shaking = true;
-#endif
+        if (box != null) box.Shaking = true;
 
         for (; fac < 1f; fac += Engine.DeltaTime / 1.95f) {
             Icon.Rate = Calc.ClampedMap(fac, 0f, 1f, 4f, 0.1f);
 
-#if FEATURE_FLAG_BOX
-            if (box != null)
-                AttractBox(box, fac);
-#endif
+            if (box != null) AttractBox(box, fac);
 
             yield return null;
         }
@@ -413,16 +409,13 @@ public sealed class AreaSwitch : Entity {
         Icon.Play("idle");
         Icon.Rate = 0.1f;
 
-#if FEATURE_FLAG_BOX
         box?.Shatter();
-#endif
 
         Wiggler.Start();
         level.Displacement.AddBurst(Position, 0.6f, 4f, 28f, 0.2f);
         LineParticles(level, FinishLineColor);
     }
 
-#if FEATURE_FLAG_BOX
     private void AttractBox(Box box, float fac) {
         {
             var force = Calc.ClampedMap(fac, 0f, 0.5f, 60f, 0f);
@@ -441,7 +434,6 @@ public sealed class AreaSwitch : Entity {
             box.Position += delta * guide;
         }
     }
-#endif
 
     #endregion
     #endregion

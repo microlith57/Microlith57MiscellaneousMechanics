@@ -1,5 +1,3 @@
-#if FEATURE_FLAG_BOX
-
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -93,17 +91,11 @@ public class BoxSurface : Component {
     }
 
     private void updateCollision() {
-        if (SurfaceTop is not null) {
-            // if (SurfaceTop.Collidable != (collidable && collidableTop))
-            //     Logger.Info(Module.MOD_NAME, $"SurfaceTop: was {SurfaceTop.Collidable}, will be {collidable} && {collidableTop}");
+        if (SurfaceTop is not null)
             SurfaceTop.Collidable = collidable && collidableTop;
-        }
 
-        if (SurfaceBot is not null) {
-            // if (SurfaceBot.Collidable != (collidable && collidableBot))
-            //     Logger.Info(Module.MOD_NAME, $"SurfaceBot: was {SurfaceBot.Collidable}, will be {collidable} && {collidableBot}");
+        if (SurfaceBot is not null)
             SurfaceBot.Collidable = collidable && collidableBot;
-        }
     }
 
     public void Move() {
@@ -194,5 +186,3 @@ public class BoxSurface : Component {
     }
 
 }
-
-#endif

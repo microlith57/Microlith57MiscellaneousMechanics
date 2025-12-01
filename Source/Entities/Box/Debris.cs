@@ -1,5 +1,3 @@
-#if FEATURE_FLAG_BOX
-
 using System;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -100,5 +98,3 @@ public partial class Box {
         }
     }
 }
-
-#endif

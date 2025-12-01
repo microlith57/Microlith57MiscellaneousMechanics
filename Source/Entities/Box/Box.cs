@@ -321,11 +321,28 @@ public partial class Box : Actor {
         var wallLeft = CollideCheck<Solid>(Position - 4f * Vector2.UnitX);
         var wallRight = CollideCheck<Solid>(Position + 4f * Vector2.UnitX);
 
+        List<BoxSurface.BelongsToBox> boxPlatformsUnderneath = CollideAllByComponent<BoxSurface.BelongsToBox>(Position + Vector2.UnitY);
+
         var target = 0f;
         if ((pitRight && !pitLeft) || (wallLeft && !wallRight))
             target = 20f;
         else if ((pitLeft && !pitRight) || (wallRight && !wallLeft))
             target = -20f;
+        else if (boxPlatformsUnderneath.Count > 0) {
+            // TODO make sure this works with gravityhelper
+
+            var nearest = (
+                from plat in boxPlatformsUnderneath
+                where plat.IsTop && plat.Entity is Platform platform && platform.Top <= Bottom
+                let box = plat.Surface.Entity as Box
+                where box is not null
+                let dist = box.CenterX - CenterX
+                orderby dist ascending
+                select dist
+            ).FirstOrDefault();
+
+            target = Math.Sign(nearest) * 20f;
+        }
 
         Speed.X = Calc.Approach(Speed.X, target, 800f * Engine.DeltaTime);
     }
@@ -589,7 +606,7 @@ public partial class Box : Actor {
     public void BeginShatter() {
         if (Hold.Holder is not null)
 			Hold.Holder.Swat(0);
-            
+
         Shattering = true;
 
         Get<GravityComponent>()?.Lock();

@@ -489,7 +489,11 @@ triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.descrip
 
 # Area Switch
 entities.Microlith57Misc/AreaSwitch.placements.name.area_switch=Area Switch (Anything)
+entities.Microlith57Misc/AreaSwitch.placements.name.player_switch=Area Switch (Player)
 entities.Microlith57Misc/AreaSwitch.placements.name.box_switch=Area Switch (Box)
+entities.Microlith57Misc/AreaSwitch.placements.name.recording_switch=Area Switch (Recording)
+entities.Microlith57Misc/AreaSwitch.placements.name.player_recording_switch=Area Switch (Player Recording)
+entities.Microlith57Misc/AreaSwitch.placements.name.box_recording_switch=Area Switch (Box Recording)
 entities.Microlith57Misc/AreaSwitch.placements.name.box_destroyer=Area Switch (Destroys Box)
 
 # Box
