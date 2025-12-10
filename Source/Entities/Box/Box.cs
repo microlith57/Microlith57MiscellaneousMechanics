@@ -507,7 +507,8 @@ public partial class Box : Actor {
 
     private void OnPickup() {
         var holder = Hold.Holder;
-        holder.Speed = holder.Speed.SoftCap(80f, 0.4f);
+        Vector2 asymmetry = new(1f, 1.2f);
+        holder.Speed = (holder.Speed * asymmetry).SoftCap(80f, 0.4f) / asymmetry;
 
         Speed = Vector2.Zero;
         AddTag(Tags.Persistent);

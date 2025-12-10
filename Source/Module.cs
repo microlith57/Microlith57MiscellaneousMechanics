@@ -67,7 +67,6 @@ public class Module : EverestModule {
     public override void LoadContent(bool firstLoad) {
         base.LoadContent(firstLoad);
 
-#if FEATURE_FLAG_RECORDINGS
         Recording.P_Appear ??= new ParticleType {
             FadeMode = ParticleType.FadeModes.Late,
             Size = 1f,
@@ -79,7 +78,6 @@ public class Module : EverestModule {
             LifeMax = 1.2f,
             SpeedMultiplier = 0.3f
         };
-#endif
 
         AreaSwitch.P_FireInactive ??= new ParticleType(TouchSwitch.P_FireWhite) {
             Size = 0.25f
@@ -100,11 +98,9 @@ public class Module : EverestModule {
             Acceleration = new Vector2(0f, 10f)
         };
 
-#if FEATURE_FLAG_BOX
         Box.P_Impact ??= new ParticleType(TheoCrystal.P_Impact) {
             Color = Color.White
         };
-#endif
     }
 
     private static bool hookPlayerIsRiding(On.Celeste.Player.orig_IsRiding_JumpThru orig, Player self, JumpThru jumpthru) {

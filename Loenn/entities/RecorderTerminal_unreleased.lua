@@ -14,7 +14,8 @@ return {
   placements = {
     name = "normal",
     data = {
-      color = "ac3232"
+      color = "ac3232",
+      maxDuration = 60
     }
   },
   fieldInformation = fieldInformation

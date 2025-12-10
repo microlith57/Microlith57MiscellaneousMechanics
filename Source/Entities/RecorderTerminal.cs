@@ -37,7 +37,6 @@ public sealed class RecorderTerminal : Entity {
 
     }
 
-    public static readonly float MAX_DURATION = 60f;
     public static readonly float PROMPT_RANGE = 72f;
 
     public static readonly Color COLOR_IDLE = Color.White * 0.7f;
@@ -48,8 +47,10 @@ public sealed class RecorderTerminal : Entity {
     #endregion Util
     #region --- State ---
 
-    public Color BaseColor;
-    public ParticleType BaseDust;
+    public readonly float MaxDuration;
+
+    public readonly Color BaseColor;
+    public readonly ParticleType BaseDust;
 
     public readonly Sprite ButtonAndStripe;
     public readonly Sprite Screen;
@@ -81,6 +82,8 @@ public sealed class RecorderTerminal : Entity {
         : base(data.Position + offset) {
 
         Depth = 2000;
+
+        MaxDuration = data.Float("maxDuration", 60f);
 
         BaseColor = data.HexColor("color", Calc.HexToColor("ac3232"));
         BaseDust = new ParticleType(ParticleTypes.SparkyDust) {
@@ -238,7 +241,7 @@ public sealed class RecorderTerminal : Entity {
         Progress.Color = Light.Color = COLOR_RECORDING;
     }
     private int RecordingUpdate() {
-        if (Duration >= MAX_DURATION && !gracePeriod)
+        if (Duration >= MaxDuration && !gracePeriod)
             return StIdle;
 
         var entities = new List<Entity>();
@@ -289,7 +292,7 @@ public sealed class RecorderTerminal : Entity {
         Time += Engine.DeltaTime;
         TimeStamps.Add(Time);
 
-        Progress.Progress = Duration / MAX_DURATION;
+        Progress.Progress = Duration / MaxDuration;
 
         return StRecording;
     }
