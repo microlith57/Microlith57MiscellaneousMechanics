@@ -34,6 +34,14 @@ public sealed class SliderCameraPositionGetter : Entity {
         EnabledSource = enabledSource;
     }
 
+    public static SliderCameraPositionGetter Create(Level level, LevelData __, Vector2 offset, EntityData data)
+        => new(
+            data, offset,
+            level.Session.GetSliderObject(data.Attr("sliderPrefix", "cameraPosition") + 'X'),
+            level.Session.GetSliderObject(data.Attr("sliderPrefix", "cameraPosition") + 'Y'),
+            new ConditionSource.Flag(data) { Default = true }
+        );
+
     #endregion
     #region --- Behaviour ---
 

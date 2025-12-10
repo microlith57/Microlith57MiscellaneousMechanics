@@ -101,7 +101,8 @@ public sealed class SliderSoundSource : Entity {
     private static IEnumerable<(string, FloatSource)> UnpackParamAttr(string attr, Func<string, FloatSource> unpacker)
         => attr
             .Split(',', StringSplitOptions.TrimEntries)
-            .Select(s => s.Split(':', 2, StringSplitOptions.TrimEntries))
+            .Select(s => s.Split(':', count: 2, StringSplitOptions.TrimEntries))
+            .Where(a => a.Length >= 2)
             .Select(a => (a[0], unpacker(a[1])));
 
     #endregion Init
