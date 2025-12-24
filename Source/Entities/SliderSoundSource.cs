@@ -157,7 +157,7 @@ public sealed class SliderSoundSource : Entity {
         foreach (var (param, value) in Params)
             Source.Param(param, value);
 
-        Source.instance.setVolume(Volume);
+        Source.instance?.setVolume(Volume);
     }
 
     #endregion Behaviour

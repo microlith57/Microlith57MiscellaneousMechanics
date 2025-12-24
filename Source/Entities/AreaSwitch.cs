@@ -107,13 +107,8 @@ public sealed class AreaSwitch : Entity {
     public readonly Sprite Icon;
     public readonly int[] Frames;
 
-    public Color InactiveColor;
-    public Color ActiveColor;
-    public Color FinishColor;
-
-    public Color InactiveLineColor;
-    public Color ActiveLineColor;
-    public Color FinishLineColor;
+    public Color InactiveColor, ActiveColor, FinishColor;
+    public Color InactiveLineColor, ActiveLineColor, FinishLineColor;
 
     public float Ease = 0f;
     public float FinishedEase = 0f;

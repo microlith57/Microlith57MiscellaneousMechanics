@@ -161,7 +161,7 @@ public static partial class Utils {
         }
     }
 
-    public static T SetDepthAndTags<T>(this T self, EntityData data) where T : Entity {
+    public static T ProcessCommonFields<T>(this T self, EntityData data) where T : Entity {
         var depth = data.Int("depth");
 
         if (data.Attr("tags", null) is string tags && !string.IsNullOrWhiteSpace(tags)) {
