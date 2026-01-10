@@ -23,7 +23,7 @@ public sealed class SliderCameraPaddingController : SliderController {
         ConditionSource enabledCondition,
         FloatSource valueSource
     ) : base(data, offset, enabledCondition, valueSource) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
     }
 
     public static SliderCameraPaddingController Create(Level level, LevelData __, Vector2 offset, EntityData data)

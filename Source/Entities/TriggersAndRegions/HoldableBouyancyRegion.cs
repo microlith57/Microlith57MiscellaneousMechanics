@@ -34,7 +34,7 @@ public sealed class HoldableBouyancyRegion : Entity {
     ) : base(data.Position + offset) {
         Collider = new Hitbox(data.Width, data.Height);
         Depth = Depths.Top;
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         Add(Condition = condition);
         Add(MinForceSource = minForce);

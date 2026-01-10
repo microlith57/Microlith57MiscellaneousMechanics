@@ -31,7 +31,7 @@ public sealed class SliderCameraOffsetTrigger : CameraOffsetTrigger {
         Vector2Source offsetSourceFrom,
         Vector2Source offsetSourceTo
     ) : base(data, offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         Mode = data.Enum("direction", PositionModes.NoEffect);
         Coarse = data.Bool("coarse");

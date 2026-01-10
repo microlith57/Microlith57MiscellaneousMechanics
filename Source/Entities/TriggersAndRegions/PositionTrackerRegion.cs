@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Celeste.Mod.Entities;
 using Celeste.Mod.Microlith57Misc.Components;
@@ -70,7 +70,7 @@ public sealed class PositionTrackerRegion : Entity {
         Session.Slider sliderX, Session.Slider sliderY,
         ConditionSource condition
     ) : base(data.Position + offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         Collider = new Hitbox(data.Width, data.Height);
         Collidable = false;
@@ -141,7 +141,7 @@ public sealed class PositionTrackerRegion : Entity {
                 case TrackingType.CenterRight: return Target.CenterRight;
                 case TrackingType.Size:
                     return new(Target.Collider?.Width ?? 0f, Target.Collider?.Height ?? 0f);
-                default: throw new Exception("unreachable");
+                default: throw new UnreachableException();
             }
         }
     }
@@ -187,7 +187,7 @@ public sealed class PositionTrackerRegion : Entity {
                     RemoveSelf();
                 break;
 
-            default: throw new Exception("unreachable");
+            default: throw new UnreachableException();
         }
         Collidable = false;
 
@@ -204,7 +204,7 @@ public sealed class PositionTrackerRegion : Entity {
                 case TargetType.Actor: return Scene.Tracker.GetEntities<Actor>();
                 case TargetType.NonPlayerActor: return Scene.Tracker.GetEntities<Actor>().Where(c => c is not Player);
                 case TargetType.Solid: return Scene.Tracker.GetEntities<Solid>();
-                default: throw new Exception("unreachable");
+                default: throw new UnreachableException();
             }
         }
     }
@@ -219,7 +219,7 @@ public sealed class PositionTrackerRegion : Entity {
             case DetectionType.Nearest:
                 return candidates.MinBy(c => (Center - c.Center).LengthSquared());
 
-            default: throw new Exception("unreachable");
+            default: throw new UnreachableException();
         }
     }
 

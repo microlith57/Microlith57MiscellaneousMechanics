@@ -21,7 +21,7 @@ public sealed class PlayerStateNameToCounterController : Entity {
     public PlayerStateNameToCounterController(
         EntityData data, Vector2 offset
     ) : base(data.Position + offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
         StateName = Format(data.Attr("stateName", "StNormal").Trim());
         Counter = data.Attr("counter", "stNormal");
         Flag = data.Attr("inStateFlag", "stNormal");

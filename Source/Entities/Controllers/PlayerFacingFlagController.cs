@@ -14,7 +14,7 @@ public sealed class PlayerFacingFlagController : Entity {
     public PlayerFacingFlagController(
         EntityData data, Vector2 offset
     ) : base(data.Position + offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
         FlagLeft = data.Attr("flagLeft", "playerFacingLeft");
         FlagRight = data.Attr("flagRight", "playerFacingRight");
         PersistOnDeath = data.Bool("persistOnDeath");

@@ -53,7 +53,7 @@ public sealed class FocusController : Entity {
         ConditionSource targetCondition,
         Session.Slider slider
     ) : base(data.Position + offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         Add(EnabledCondition = enabledCondition);
         Add(TargetCondition = targetCondition);

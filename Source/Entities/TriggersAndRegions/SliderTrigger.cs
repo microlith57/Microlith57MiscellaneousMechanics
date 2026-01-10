@@ -32,7 +32,7 @@ public sealed class SliderTrigger : Trigger {
         float from, float to,
         PositionModes mode
     ) : base(data, offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         Add(EnabledCondition = enabledCondition);
         Slider = slider;

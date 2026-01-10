@@ -13,7 +13,7 @@ public sealed class PlayerGroundedFlagController : Entity {
     public PlayerGroundedFlagController(
         EntityData data, Vector2 offset
     ) : base(data.Position + offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
         Flag = data.Attr("flag", "playerGrounded");
         InvertFlag = data.Bool("invertFlag");
     }

@@ -37,7 +37,7 @@ public sealed class ColorPackerFloat : Entity {
         FloatSource aSource,
         FloatSource alphaSource
     ) : base(data.Position + offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         Add(EnabledCondition = enabledCondition);
         Add(RSource = rSource);
@@ -114,7 +114,7 @@ public sealed class ColorPackerInt : Entity {
         IntSource aSource,
         FloatSource alphaSource
     ) : base(data.Position + offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         Add(EnabledCondition = enabledCondition);
         Add(RSource = rSource);
@@ -196,7 +196,7 @@ public sealed class ColorPackerHSLV : Entity {
         FloatSource alphaSource,
         bool isHSV
     ) : base(data.Position + offset) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         Format = data.Enum("format", AngleFormat.ZeroToOne);
 

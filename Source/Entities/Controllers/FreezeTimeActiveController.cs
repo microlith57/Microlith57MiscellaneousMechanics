@@ -36,7 +36,7 @@ public sealed class FreezeTimeActiveController : Entity {
         => new FreezeTimeActiveController(
                 data, data.Position + offset,
                 new Flag(data, ifAbsent: "freezeTimeActive") { Default = true }
-            ).SetDepthAndTags(data);
+            ).ProcessCommonFields(data);
 
     public static FreezeTimeActiveController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(

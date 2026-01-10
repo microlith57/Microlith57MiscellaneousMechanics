@@ -56,7 +56,7 @@ public sealed class LockPauseController : Entity {
             data.Enum<LockMode>("mode"),
             data.Bool("unlockWhenControllerRemoved", true),
             data.Bool("inhibitGBJPrevention")
-        ).SetDepthAndTags(data);
+        ).ProcessCommonFields(data);
 
     public static LockPauseController CreateFlag(Level _, LevelData __, Vector2 offset, EntityData data)
         => Create(
