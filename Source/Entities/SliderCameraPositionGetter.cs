@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Celeste.Mod.Entities;
@@ -12,7 +13,19 @@ namespace Celeste.Mod.Microlith57Misc.Entities;
 [Tracked]
 public sealed class SliderCameraPositionGetter : Entity {
 
+    public enum TrackingType {
+        Position,
+        Origin,
+        BottomLeft,
+        BottomRight,
+        TopLeft,
+        TopRight,
+        Center,
+    }
+
     #region --- State ---
+
+    private TrackingType Tracking;
 
     private ConditionSource EnabledSource;
     private bool Enabled => EnabledSource.Value;
@@ -27,7 +40,7 @@ public sealed class SliderCameraPositionGetter : Entity {
         Session.Slider sliderX, Session.Slider sliderY,
         ConditionSource enabledSource
     ) : base(Vector2.Zero) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         SliderX = sliderX;
         SliderY = sliderY;
@@ -50,10 +63,21 @@ public sealed class SliderCameraPositionGetter : Entity {
 
         if (Scene is not Level level || !Enabled) return;
 
-        var pos = level.Camera.Position;
+        var pos = GetPosition(level.Camera);
         SliderX.Value = pos.X;
         SliderY.Value = pos.Y;
     }
+
+    private Vector2 GetPosition(Camera camera) => Tracking switch {
+        TrackingType.Position => camera.Position,
+        TrackingType.Origin => camera.Origin,
+        TrackingType.BottomLeft => new(camera.Left, camera.Bottom),
+        TrackingType.BottomRight => new(camera.Right, camera.Bottom),
+        TrackingType.TopLeft => new(camera.Left, camera.Top),
+        TrackingType.TopRight => new(camera.Right, camera.Top),
+        TrackingType.Center => new((camera.Left + camera.Right) / 2, (camera.Top + camera.Bottom) / 2),
+        _ => throw new UnreachableException()
+    };
 
     #endregion
 
