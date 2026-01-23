@@ -41,9 +41,11 @@ public class Module : EverestModule {
 
         Everest.Events.Level.OnBeforeUpdate += Box.BeforeLevelUpdate;
 
+        DecalRegistryExt.CustomLight.Handler.Load();
+
         CappedStamina.Load();
         LightRenderHook.Load();
-        DecalRegistryExt.CustomLight.Handler.Load();
+        SliderAccumulator.Load();
 
         typeof(Imports.GravityHelper).ModInterop();
         Imports.GravityHelper.OnImport();
@@ -62,6 +64,7 @@ public class Module : EverestModule {
 
         CappedStamina.Unload();
         LightRenderHook.Unload();
+        SliderAccumulator.Unload();
     }
 
     public override void LoadContent(bool firstLoad) {
