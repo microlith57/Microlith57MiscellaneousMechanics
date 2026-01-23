@@ -6,6 +6,7 @@ using Celeste.Mod.Microlith57Misc.Components;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using FMOD.Studio;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
@@ -15,6 +16,13 @@ namespace Celeste.Mod.Microlith57Misc.Entities;
 )]
 [Tracked]
 public sealed class SliderSoundSource : Entity {
+
+    public enum ListenerMode {
+        Origin,
+        VanillaCamera,
+        TrueCamera,
+        Player,
+    }
 
     #region --- State ---
 
@@ -31,6 +39,10 @@ public sealed class SliderSoundSource : Entity {
 
     private Vector2Source PositionSource;
     private Vector2 SoundPosition => PositionSource.Value;
+
+    private bool RelativeToSource;
+    private ListenerMode Listener;
+    private Vector2 LastKnownListenerPos;
 
     private List<(string param, FloatSource valueSource)> ParamSources;
     private IEnumerable<(string param, float value)> Params
@@ -51,17 +63,13 @@ public sealed class SliderSoundSource : Entity {
         Vector2Source positionSource,
         IEnumerable<(string param, FloatSource valueSource)> paramSources,
         FloatSource volumeSource
-    ) : base(Vector2.Zero) {
+    ) : base(data.Position + offset) {
 
         Tag |= Tags.TransitionUpdate;
         Depth = -8500;
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
-        bool positionRelative = data.Bool("positionRelative", true);
-        if (positionRelative)
-            Position = data.Position + offset;
-        else
-            positionSource.Default = data.Position + offset;
+        RelativeToSource = data.Bool("positionRelative", true);
 
         Add(EnabledSource = enabledSource);
         Add(PlayingSource = playingSource);
@@ -135,8 +143,25 @@ public sealed class SliderSoundSource : Entity {
     }
 
     public override void Update() {
+        if (Scene is not Level level) return;
+
+        switch (Listener) {
+            case ListenerMode.VanillaCamera:
+                LastKnownListenerPos = level.Camera.Position + new Vector2(320f, 180f) / 2f;
+                break;
+            case ListenerMode.TrueCamera:
+                if (level.Camera is Camera camera)
+                    LastKnownListenerPos = new Vector2((camera.Left + camera.Right) / 2f, (camera.Top + camera.Bottom) / 2f);
+                break;
+            case ListenerMode.Player:
+                if (level.Tracker.GetEntity<Player>() is Player player)
+                    LastKnownListenerPos = player.Position;
+                break;
+        }
+
         Apply();
         base.Update();
+        SetPosition();
     }
 
     private void Apply() {
@@ -158,6 +183,24 @@ public sealed class SliderSoundSource : Entity {
             Source.Param(param, value);
 
         Source.instance?.setVolume(Volume);
+    }
+
+    private void SetPosition() {
+        if (Scene is not Level level || level.Camera is not Camera camera || Source?.instance is not EventInstance instance) return;
+
+        if (Source?.instance is not null && Source.Is3D) {
+            var pos = SoundPosition - LastKnownListenerPos;
+            if (RelativeToSource)
+                pos += Position;
+
+            var cam = Audio.currentCamera;
+            Audio.currentCamera = null;
+            try {
+                Audio.Position(instance, pos);
+            } finally {
+                Audio.currentCamera = cam;
+            }
+        }
     }
 
     #endregion Behaviour
