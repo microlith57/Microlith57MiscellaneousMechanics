@@ -1,19 +1,25 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Monocle;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 public sealed class ForcefieldDoor : Solid {
-    public sealed class BounceInProgress : Component {
+    private sealed class BounceHook : Component {
+
+        private List<ForcefieldDoor> preUpdatedThisFrame = [];
 
         public static void Add(Actor actor) {
-            if (actor.Get<BounceInProgress>() is null)
-                actor.Add(new BounceInProgress());
+            if (actor.Get<BounceHook>() is null)
+                actor.Add(new BounceHook());
         }
 
-        private BounceInProgress() : base(false, false) {}
+        private BounceHook() : base(false, false) {}
 
         public override void Added(Entity entity) {
+            if (entity is not Actor) throw new Exception("ForcefieldDoor.BounceHook can only be added to Actors");
             base.Added(entity);
             entity.PreUpdate += PreUpdate;
             entity.PostUpdate += PostUpdate;
@@ -26,11 +32,19 @@ public sealed class ForcefieldDoor : Solid {
         }
 
         private static void PreUpdate(Entity entity) {
-            if (entity.Scene is not Level level) return;
+            if (entity.Scene is not Level level || entity.Get<BounceHook>() is not {} hook) return;
+            hook.preUpdatedThisFrame.Clear();
+            foreach (ForcefieldDoor door in entity.CollideAll<ForcefieldDoor>()) {
+                door.PreUpdateFor((Actor)entity);
+                hook.preUpdatedThisFrame.Add(door);
+            }
         }
 
         private static void PostUpdate(Entity entity) {
-            if (entity.Scene is not Level level) return;
+            if (entity.Scene is not Level level || entity.Get<BounceHook>() is not {} hook) return;
+            foreach (ForcefieldDoor door in hook.preUpdatedThisFrame)
+                door.PostUpdateFor((Actor)entity);
+            hook.preUpdatedThisFrame.Clear();
         }
 
     }
@@ -38,9 +52,15 @@ public sealed class ForcefieldDoor : Solid {
 	// private Sprite sprite;
 	// private Wiggler wiggler;
 
+    private bool wasCollidable;
+
+    public float BounceSpeed;
+
 	public ForcefieldDoor(
         EntityData data, Vector2 offset
-    ) : base(data.Position + offset, 32f, 32f, safe: false) {
+    ) : base(data.Position + offset, data.Width, data.Height, safe: false) {
+        this.ProcessCommonFields(data);
+
 		// Add(sprite = GFX.SpriteBank.Create("ghost_door"));
 		// sprite.Position = new Vector2(base.Width, base.Height) / 2f;
 		// sprite.Play("idle");
@@ -56,22 +76,78 @@ public sealed class ForcefieldDoor : Solid {
 		base.Added(scene);
 	}
 
-	public void Open() {
+    public override void Update() {
+        base.Update();
+        Collidable = wasCollidable;
+    }
+
+    public void Open() {
 		if (Collidable) {
-			Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
 			Audio.Play("event:/game/03_resort/forcefield_vanish", Position);
 			// sprite.Play("open");
-			Collidable = false;
+            InstantOpen();
 		}
 	}
 
 	public void InstantOpen() {
-		Collidable = (Visible = false);
+		Collidable = false;
 	}
+
+    public void Close() {
+		if (!Collidable) {
+			Audio.Play("event:/game/03_resort/forcefield_bump", Position);
+			// sprite.Play("close");
+            InstantClose();
+		}
+    }
+
+    public void InstantClose() {
+        Collidable = true;
+        foreach (Actor actor in CollideAll<Actor>())
+            if (actor is Player || actor.Get<Holdable>() is not null)
+                BounceHook.Add(actor);
+    }
 
 	private DashCollisionResults OnDashed(Player player, Vector2 direction) {
 		Audio.Play("event:/game/03_resort/forcefield_bump", Position);
 		// wiggler.Start();
 		return DashCollisionResults.Bounce;
 	}
+
+    private void PreUpdateFor(Actor actor) {
+        wasCollidable = Collidable;
+
+        var delta = actor.ExactPosition - Center;
+
+        // TODO wide as well as tall
+
+        var sign = Calc.Sign(delta);
+        var speed = GetSpeed(actor);
+        if ((sign.X > 0) ^ (speed.X > 0f))
+            speed.X = 0f;
+
+        var absSpeed = (sign.X > 0) ? speed.X : -speed.X;
+
+        SetSpeed(actor, speed);
+
+        Collidable = false;
+    }
+
+    private void PostUpdateFor(Actor actor) => Collidable = wasCollidable;
+
+    private Vector2 GetSpeed(Actor actor) {
+        if (actor is Player player)
+            return player.Speed;
+        else if (actor.Get<Holdable>() is Holdable hold)
+            return hold.GetSpeed();
+        throw new UnreachableException();
+    }
+
+    private void SetSpeed(Actor actor, Vector2 speed) {
+        if (actor is Player player)
+            player.Speed = speed;
+        else if (actor.Get<Holdable>() is Holdable hold)
+            hold.SetSpeed(speed);
+        throw new UnreachableException();
+    }
 }

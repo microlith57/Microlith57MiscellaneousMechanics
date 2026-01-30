@@ -1,141 +1,52 @@
-using System;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Celeste.Mod.Entities;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [Tracked]
 [CustomEntity("Microlith57Misc/PressureSensor")]
-public class PressureSensor : Solid {
-
-    #region --- Util ---
-
-    [Tracked]
-    public sealed class Activator() : Component(false, false) {
-    }
-
-    [Tracked]
-    private sealed class Group : Entity {
-
-        public bool Activated = false;
-        public readonly string Label;
-        public List<PressureSensor> Sensors = [];
-
-        public Group(string label) {
-            Label = label;
-            Depth = Depths.FakeWalls - 1;
-        }
-    }
-
-    [Flags]
-    public enum ButtonCombination : byte {
-        None = 0,
-
-        Top = 1 << 0,
-        Left = 1 << 1,
-        Right = 1 << 2,
-        Bottom = 1 << 3,
-
-        Horizontal = Left | Right,
-        Vertical = Top | Bottom,
-
-        All = Top | Left | Right | Bottom,
-    }
-
-    #endregion Util
-    #region --- State ---
-
-    public readonly ButtonCombination Combination;
-    public readonly string Label;
-    private readonly List<PressureSensor> Siblings = [];
+public sealed class PressureSensor : Entity {
 
     public Color InactiveColor;
     public Color ActiveColor;
+    public float EaseSpeed = 5f;
     public float Ease { get; internal set; } = 0f;
 
-    public ButtonCombination Pressed { get; private set; } = ButtonCombination.None;
+    public bool Pressed;
 
-    #endregion State
-    #region --- Init ---
+    public string Flag;
 
-    public PressureSensor(EntityData data, Vector2 offset)
-        : base(data.Position, data.Width, data.Height, true) {
-
-        Depth = Depths.FakeWalls;
-        SurfaceSoundIndex = 0;
-
-        Combination = data.Enum("buttons", ButtonCombination.Top);
-        Label = data.Attr("label");
-
-        InactiveColor = Calc.HexToColor(data.Attr("inactiveColor", "5FCDE4"));
-        ActiveColor = Calc.HexToColor(data.Attr("activeColor", "F141DF"));
-
+    public PressureSensor(EntityData data, Vector2 offset) : base(data.Position + offset) {
+        Collider = new Hitbox(data.Width, 1f, 0f, -1f);
+        Flag = data.Attr("flag");
     }
-
-    public override void Awake(Scene scene) {
-        base.Awake(scene);
-
-        if (Scene.Tracker.GetEntity<Player>() is Player player &&
-            !player.Components.Any(c => c is Activator))
-
-            player.Add(new Activator());
-
-        foreach (PressureSensor sensor in Scene.Tracker.GetEntities<PressureSensor>())
-            if (Label == sensor.Label)
-                Siblings.Add(sensor);
-    }
-
-    #endregion Init
-    #region --- Behaviour ---
 
     public override void Update() {
         base.Update();
 
-        var pressed = ButtonCombination.None;
+        if (Scene is not Level level) return;
 
-        if ((Combination & ButtonCombination.Top) != ButtonCombination.None && CollideCheckByComponent<Activator>(Position - Vector2.UnitY))
-            pressed |= ButtonCombination.Top;
-        if ((Combination & ButtonCombination.Left) != ButtonCombination.None && CollideCheckByComponent<Activator>(Position - Vector2.UnitX))
-            pressed |= ButtonCombination.Left;
-        if ((Combination & ButtonCombination.Right) != ButtonCombination.None && CollideCheckByComponent<Activator>(Position + Vector2.UnitX))
-            pressed |= ButtonCombination.Right;
-        if ((Combination & ButtonCombination.Bottom) != ButtonCombination.None && CollideCheckByComponent<Activator>(Position + Vector2.UnitY))
-            pressed |= ButtonCombination.Bottom;
+        bool wasPressed = Pressed;
+        Pressed = CollideCheck<Actor>();
+        Ease = Calc.Approach(Ease, Pressed ? 0f : 1f, EaseSpeed * Engine.DeltaTime);
 
-        var click = (pressed & ~Pressed) != ButtonCombination.None;
-        var clack = (Pressed & ~pressed) != ButtonCombination.None;
+        level.Session.SetFlag(Flag, Pressed);
 
-        Pressed = pressed;
-
-        if (click)
+        if (wasPressed && !Pressed)
             Audio.Play("event:/game/04_cliffside/arrowblock_side_depress", Center);
-        if (clack)
+        if (!wasPressed && Pressed)
             Audio.Play("event:/game/04_cliffside/arrowblock_side_release", Center);
     }
 
-    #endregion Behaviour
-    #region Rendering
-
-    public override void Render() {
+    public override void Render()
+    {
         base.Render();
 
-        Draw.Rect(Collider, Color.Black);
+        Vector2 offset = Pressed ? Vector2.Zero : new(0, -1);
+        Color col = Color.Lerp(InactiveColor, ActiveColor, Ease);
 
-        var col = Color.Lerp(InactiveColor, ActiveColor, Ease);
-
-        if ((Combination & ButtonCombination.Top) != ButtonCombination.None)
-            Draw.Line(Position + Collider.TopLeft, Position + Collider.TopRight, col);
-        if ((Combination & ButtonCombination.Left) != ButtonCombination.None)
-            Draw.Line(Position + Collider.TopLeft + Vector2.UnitX, Position + Collider.BottomLeft + Vector2.UnitX, col);
-        if ((Combination & ButtonCombination.Right) != ButtonCombination.None)
-            Draw.Line(Position + Collider.TopRight, Position + Collider.BottomRight, col);
-        if ((Combination & ButtonCombination.Bottom) != ButtonCombination.None)
-            Draw.Line(Position + Collider.BottomLeft - Vector2.UnitY, Position + Collider.BottomRight - Vector2.UnitY, col);
+        Draw.Line(Position + offset, Position + offset + new Vector2(Width, 0), col);
     }
-
-    #endregion Rendering
 
 }
