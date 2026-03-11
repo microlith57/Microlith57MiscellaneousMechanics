@@ -1,0 +1,3 @@
+[submodule "preprocess/selene"]
+	path = preprocess/selene
+	url = git@github.com:Vexatos/Selene.git
