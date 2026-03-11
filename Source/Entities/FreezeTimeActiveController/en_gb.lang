@@ -1,0 +1,7 @@
+entities.Microlith57Misc/FreezeTimeActiveController.placements.name.freezeTimeActiveController=Freeze TimeActive Controller
+entities.Microlith57Misc/FreezeTimeActiveController.placements.description.freezeTimeActiveController=Freezes the Scene.TimeActive field; has some wacky effects.
+entities.Microlith57Misc/FreezeTimeActiveController.attributes.description.flag=If present, freeze only when the flag is set.
+
+entities.Microlith57Misc/FreezeTimeActiveController_Expression.placements.name.freezeTimeActiveController=Freeze TimeActive Controller (Expression)
+entities.Microlith57Misc/FreezeTimeActiveController_Expression.placements.description.freezeTimeActiveController=Freezes the Scene.TimeActive field; has some wacky effects.
+entities.Microlith57Misc/FreezeTimeActiveController_Expression.attributes.description.expression=If present, freeze only when the expression is truthy.

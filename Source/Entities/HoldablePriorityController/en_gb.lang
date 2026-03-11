@@ -1,0 +1,4 @@
+entities.Microlith57Misc/HoldablePriorityController.placements.name.holdablePriorityController=Holdable Priority Controller
+entities.Microlith57Misc/HoldablePriorityController.placements.description.holdablePriorityController=When the player could pick up multiple holdables, this prefers the closest one to the player's hand position.
+entities.Microlith57Misc/HoldablePriorityController.attributes.description.checkOffsetX=Position to most prefer holdables at, relative to the player's center, in the current facing direction
+entities.Microlith57Misc/HoldablePriorityController.attributes.description.checkOffsetY=Position to most prefer holdables at, relative to the player's center, in the current facing direction
