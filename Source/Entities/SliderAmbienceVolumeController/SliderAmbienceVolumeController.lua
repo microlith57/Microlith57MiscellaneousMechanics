@@ -3,58 +3,41 @@ if not mu then
   local mu = mods.requireFromPlugin("libraries.utils")
 end
 
----
-
-local name = "SliderAmbienceVolumeController"
-local placement = "sliderAmbienceVolumeController"
 local variants = mu.variants(
-  name,
-  {{"", "Expression"}, --[[typ]] {"Slider", "Expression"}, --[[noun]] {"flag", "expression"}, --[[adj]] {"set", "truthy"}}
+  "SliderAmbienceVolumeController",
+  {
+    {"", "Expression"},
+    typ  = {"Slider", "Expression"},
+    noun = {"flag", "expression"},
+    adj  = {"set", "truthy"}
+  }
 )
-
-if mu.preprocess then
-  for _, v in ipairs(variants) do
-    local typ  = v[1][2]
-    local noun = v[1][3]
-    local adj  = v[1][4]
-
-    local ent = mu.preprocess.lang.entities[v.name]
-    ent.placements.name[placement] = ("Ambience Volume Controller (%s)"):format(typ)
-    ent.attributes.description = {
-      [noun] = ("If present, only set the volume if the %s is %s."):format(noun, adj),
-      volume = ("%s to set the volume to."):format(typ)
-    }
-  end
-  return
-end
-
----
 
 local result = {}
 for i, v in ipairs(variants) do
-  local typ = v[1][2]
+  local self = mu.entity {
+    v.name,
+    name = v"Ambience Volume Controller ({typ})"
+  }
 
-  local b = mu.builder():xy()
+  self.volume = "1.0"
+  self.volume:nonempty()
+  self.volume.desc = v"{typ} to set the volume to."
 
-  b.volume = "1.0"
-  b.nonempty("volume")
+  self[v.noun] = ""
+  self[v.noun].desc = v"If present, only set the volume if the {noun} is {adj}."
 
-  if typ == "Slider" then
-    b.flag = ""
-    b.invertFlag = false
-  else
-    b.expression = ""
+  if v.typ == "Slider" then
+    self.invertFlag = false
   end
 
   result[i] = {
-    name = v.name,
+    name = self.name,
     depth = -1000000,
     texture = "objects/microlith57/misc/slider_ambience_volume_controller",
-    placements = {
-      b.placement(placement)
-    },
-    fieldOrder = b.fieldOrder,
-    fieldInformation = b.fieldInformation,
+    placements = {self()},
+    fieldOrder = self.fieldOrder,
+    fieldInformation = self.fieldInformation,
   }
 end
 return result

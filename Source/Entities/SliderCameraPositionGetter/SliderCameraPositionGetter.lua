@@ -1,34 +1,43 @@
-local utils = require("utils")
-
-local nonEmptyValidator = function(s)
-  return s ~= ""
+if not mu then
+  local mods = require("mods")
+  local mu = mods.requireFromPlugin("libraries.utils")
 end
 
-local fieldInformation = {
-  sliderPrefix = {validator = nonEmptyValidator}
+local self = mu.entity {
+  v.name,
+  name = "Slider Camera Position Getter",
+  desc = "Sets sliders based on the camera's position."
 }
 
-local fieldOrder = {
-  "x", "y",
-  "flag", "invertFlag",
-  "sliderPrefix",
+self.flag = ""
+self.flag.desc = "If present, only update the slider values if the flag is set."
+self.invertFlag = false
+
+self.sliderPrefix = "cameraPosition"
+self.sliderPrefix.desc = "X and Y will be appended to this value to get the slider names for the position."
+
+self.tracking = "Position"
+self.tracking.info = {
+  options = {
+    "Position",
+    "Origin",
+    "BottomLeft",
+    "BottomRight",
+    "TopLeft",
+    "TopRight",
+    "Center",
+  },
+  editable = false
 }
+self.tracking.desc = "What position to track."
 
 return {
   {
-    name = "Microlith57Misc/SliderCameraPositionGetter",
+    name = self.name,
     depth = -1000000,
     texture = "objects/microlith57/misc/slider_camera_position_getter",
-    placements = {
-      {
-        name = "sliderCameraPositionGetter",
-        data = {
-          flag = "",
-          invertFlag = false,
-          sliderPrefix = "cameraPosition"
-        }
-      }
-    },
-    fieldOrder = fieldOrder
+    placements = {self()},
+    fieldInformation = self.fieldInformation,
+    fieldOrder = self.fieldOrder
   }
 }

@@ -41,7 +41,7 @@ public sealed class FreezeTimeActiveController : Entity {
     public static FreezeTimeActiveController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
         => new(
                 data, data.Position + offset,
-                new Expr(data, "expression", "freezeTimeActive") { Default = true }
+                new Expr(data, ifAbsent: "freezeTimeActive") { Default = true }
             );
 
     #endregion Init

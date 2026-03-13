@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Celeste.Mod.Entities;
+using Celeste.Mod.Microlith57Misc.Components;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -19,15 +20,28 @@ public sealed class SliderAccumulator : Entity {
         Average,
     }
 
+    public enum Aggregation {
+        PerSet,
+        PerFrame,
+    }
+
     private static ConditionalWeakTable<Session.Slider, List<SliderAccumulator>> Accumulators = [];
     private static bool Recursing = false;
 
-    private Operation Op;
-    private Session.Slider Input, Output;
-    private float? ResetInput, ResetOutput;
-    private bool Relative;
-    private float AvgSum;
-    private int AvgCount;
+    private readonly Operation Op;
+    private readonly Aggregation Ag;
+    private readonly bool Relative;
+
+    private readonly Session.Slider Input, Output;
+
+    private readonly ConditionSource ResetSource;
+    private bool ShouldReset => ResetSource.Value;
+    private readonly float? ResetInput, ResetOutput;
+
+    private float? InitialThisFrame;
+    private float Delta = 0f;
+    private float AvgSum = 0f;
+    private int AvgCount = 0;
 
     public SliderAccumulator(
         EntityData data, Vector2 offset,
@@ -37,6 +51,7 @@ public sealed class SliderAccumulator : Entity {
         Output = output;
 
         Op = data.Enum("operation", Operation.Sum);
+        Ag = data.Enum("aggregation", Aggregation.PerFrame);
 
         if (!string.IsNullOrWhiteSpace(data.Attr("resetInput", "")))
             ResetInput = data.Float("resetInput");
@@ -72,6 +87,7 @@ public sealed class SliderAccumulator : Entity {
             Input.Value = ResetInput.Value;
         if (ResetOutput.HasValue)
             Output.Value = ResetOutput.Value;
+        InitialThisFrame = Input.Value;
         AvgSum = AvgCount = 0;
     }
 

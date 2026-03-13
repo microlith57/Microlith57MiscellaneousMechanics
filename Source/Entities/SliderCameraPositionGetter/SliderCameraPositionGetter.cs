@@ -25,12 +25,12 @@ public sealed class SliderCameraPositionGetter : Entity {
 
     #region --- State ---
 
-    private TrackingType Tracking;
+    private readonly TrackingType Tracking;
 
-    private ConditionSource EnabledSource;
+    private readonly ConditionSource EnabledSource;
     private bool Enabled => EnabledSource.Value;
 
-    private Session.Slider SliderX, SliderY;
+    private readonly Session.Slider SliderX, SliderY;
 
     #endregion
     #region --- Init ---
@@ -41,6 +41,8 @@ public sealed class SliderCameraPositionGetter : Entity {
         ConditionSource enabledSource
     ) : base(Vector2.Zero) {
         this.ProcessCommonFields(data);
+
+        Tracking = data.Enum("tracking", TrackingType.Position);
 
         SliderX = sliderX;
         SliderY = sliderY;
