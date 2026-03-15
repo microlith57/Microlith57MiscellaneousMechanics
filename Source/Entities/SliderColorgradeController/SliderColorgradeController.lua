@@ -13,7 +13,6 @@ local variants = mu.variants(
   }
 )
 
-
 local result = {}
 for i, v in ipairs(variants) do
   local self = mu.entity {
@@ -39,6 +38,7 @@ for i, v in ipairs(variants) do
 
   result[i] = {
     name = self.name,
+    associatedMods = mu.assoc {expr = v.Noun == "Expression"},
     depth = -1000000,
     texture = "objects/microlith57/misc/slider_colorgrade_controller",
     placements = {self()},

@@ -31,6 +31,7 @@ for i, v in ipairs(variants) do
 
   result[i] = {
     name = self.name,
+    associatedMods = mu.assoc {expr = v.Noun == "Expression"},
     depth = -1000000,
     texture = "objects/microlith57/misc/slider_camera_padding_controller",
     placements = {self()},

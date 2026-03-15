@@ -24,6 +24,76 @@ function mu.validate_nonempty(s) return s ~= "" end
 ---
 
 --[[
+  string formatter.
+
+  usage:
+  > local f = mu.fmt { example = "a", another = "b" }
+  > f"{example}, {another}" --> "a, b"
+
+  a more complicated example, using mu.vary:
+  > local channels = mu.vary {
+  >   col = {"r", "g", "b", "a"},
+  >   name = {"red", "green", "blue", "premultiplied alpha"},
+  > }
+  >
+  > local res = {}
+  > local f = mu.fmt {Noun = "Expression"}
+  > for _, c in ipairs(channels) do
+  >   c(f) -- merge the contents of f into c
+  >   res[c.col] = c"{Noun} for the {name} component."
+  > end
+
+  yields:
+  > {
+  >   r = "Expression for the red component."
+  >   g = "Expression for the green component."
+  >   b = "Expression for the blue component."
+  >   a = "Expression for the premultiplied alpha component."
+  > }
+]]
+
+local fmt_mt = {}
+function fmt_mt:__call(o)
+  if type(o) == "string" then
+    return self:_format(o)
+  elseif type(o) == "table" then
+    return self:_merge(o)
+  end
+  return o
+end
+function fmt_mt:_format(s)
+  -- todo: "{{a}}" -> "{a}"
+  -- todo: error messages
+  return s:gsub("{[%a%d]+}", function(match) return tostring(self[match:sub(2, -2)]) end)
+end
+function fmt_mt:_merge(t)
+  for k, v in pairs(t) do
+    self[k] = v
+  end
+  return self
+end
+
+function fmt(t)
+  setmetatable(t, formatter_mt)
+  return t
+end
+
+function mu.vary(tbl)
+  local result = {}
+  local _, ref = next(tbl)
+  for i, _ in ipairs(ref) do
+    local r = mu.fmt {}
+    for k, v in pairs(tbl) do
+      r[k] = v[i]
+    end
+    table.insert(result, r)
+  end
+  return result
+end
+
+---
+
+--[[
   associatedMods builder.
 
   usage:
@@ -164,7 +234,7 @@ end
   >   {name="Microlith57Misc/Example_B",            [0] = {"B"}, [1] = {nil, "slider"}},
   >   {name="Microlith57Misc/Example_B_Expression", [0] = {"B"}, [1] = {"Expression", "expression"}},
   > }
-  
+
   you can name properties:
   > local variants = mu.variants(
   >   "Example2",
@@ -177,13 +247,6 @@ end
   > v.named    --> "a"
   > v"something including {a}" --> "something including a"
 ]]
-
-local var_mt = {}
-function var_mt:__call(s)
-  -- todo: "{{a}}" -> "{a}"
-  -- todo: error messages
-  return s:gsub("{[%a%d]+}", function(match) return tostring(self[match:sub(2, -2)]) end)
-end
 
 function mu.variants(name, ...)
   local vars = {...}
@@ -228,7 +291,7 @@ function mu.variants(name, ...)
       end
     end
     variant.name = n
-    setmetatable(variant, var_mt)
+    mu.fmt(variant)
   end
 
   return variants
