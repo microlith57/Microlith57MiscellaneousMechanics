@@ -9,6 +9,21 @@ public abstract class Recording : Entity {
     public static ParticleType P_Appear;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
+    [OnLoadContent]
+    internal static void OnLoadContent(bool _) {
+        P_Appear ??= new() {
+            FadeMode = ParticleType.FadeModes.Late,
+            Size = 1f,
+            Direction = 0f,
+            DirectionRange = (float)Math.PI * 2f,
+            SpeedMin = 5f,
+            SpeedMax = 10f,
+            LifeMin = 0.6f,
+            LifeMax = 1.2f,
+            SpeedMultiplier = 0.3f
+        };
+    }
+
     public Entity? RecordingOf;
 
     public abstract int? FirstFrame { get; }

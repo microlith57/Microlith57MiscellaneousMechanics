@@ -52,6 +52,11 @@ public partial class Box : Actor {
     public static ParticleType P_Impact;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
+    [OnLoadContent]
+    internal static void LoadContent(bool _) {
+        P_Impact ??= new(TheoCrystal.P_Impact) { Color = Color.White };
+    }
+
     #endregion Util
     #region --- State ---
 
@@ -148,7 +153,7 @@ public partial class Box : Actor {
         ActivatorCollider.Added(this);
         Add(new AreaSwitch.Activator() { Collider = ActivatorCollider });
 
-        Add(new PressureSensor.Activator());
+        // Add(new PressureSensor.Activator());
 
         Add(Surface = new BoxSurface(
             FullSizeCollider,
@@ -212,7 +217,10 @@ public partial class Box : Actor {
     #endregion Init
     #region --- Behaviour ---
 
-    internal static void BeforeLevelUpdate(Level level) {
+    [OnLoad] internal static void Load() => Everest.Events.Level.OnBeforeUpdate += BeforeLevelUpdate;
+    [OnUnload] internal static void Unload() => Everest.Events.Level.OnBeforeUpdate -= BeforeLevelUpdate;
+
+    private static void BeforeLevelUpdate(Level level) {
         updatedThisFrame = false;
     }
 

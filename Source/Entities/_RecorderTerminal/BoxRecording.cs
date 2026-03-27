@@ -1,5 +1,6 @@
 #if FEATURE_FLAG_RECORDINGS && FEATURE_FLAG_BOX
 
+using System.Runtime.CompilerServices;
 
 namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
@@ -46,7 +47,7 @@ public class BoxRecording : Recording {
         Collider = new Hitbox(20f, 20f, -10f, -10f);
         Add(Light = new(Vector2.Zero, Color.White, 1f, 24, 48));
         Add(new AreaSwitch.Activator());
-        Add(new PressureSensor.Activator());
+        // Add(new PressureSensor.Activator());
 
         var spritePath = "objects/microlith57/misc/box/playback";
         if (gravityLocked)
@@ -73,8 +74,8 @@ public class BoxRecording : Recording {
     public override void Added(Scene scene) {
         base.Added(scene);
 
-        Module.OverrideDust(Surface.SurfaceTop!, Dust);
-        Module.OverrideDust(Surface.SurfaceBot!, Dust);
+        OverrideDust(Surface.SurfaceTop!, Dust);
+        OverrideDust(Surface.SurfaceBot!, Dust);
     }
 
     public override void Observe(int currentFrame, Color baseColor) {
@@ -146,6 +147,24 @@ public class BoxRecording : Recording {
         Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset + new Vector2(1f, -1f), Sprite.Origin, Color.Black, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
         Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset + new Vector2(-1f, 1f), Sprite.Origin, Color.Black, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
         Sprite.Texture.Draw(Sprite.RenderPosition + ShakeOffset + new Vector2(-1f, -1f), Sprite.Origin, Color.Black, Sprite.Scale, Sprite.Rotation, Sprite.Effects);
+    }
+
+    [OnLoad] internal static void Load() => On.Celeste.Player.DustParticleFromSurfaceIndex += hookDustParticle;
+    [OnUnload] internal static void Unload() => On.Celeste.Player.DustParticleFromSurfaceIndex -= hookDustParticle;
+
+    private static ConditionalWeakTable<Platform, ParticleType> platformDustOverrides = [];
+    private static void OverrideDust(Platform platform, ParticleType particle) => platformDustOverrides.AddOrUpdate(platform, particle);
+
+    private static ParticleType hookDustParticle(On.Celeste.Player.orig_DustParticleFromSurfaceIndex orig, Player self, int index) {
+        if (index == SurfaceIndex.Glitch) {
+            bool invert = self.ShouldInvert();
+            var pos = self.Position + (invert ? -Vector2.UnitY : Vector2.UnitY);
+            var platform = SurfaceIndex.GetPlatformByPriority(self.CollideAll<Platform>(pos));
+
+            if (platform != null && platformDustOverrides.TryGetValue(platform, out var particle))
+                return particle;
+        }
+        return orig(self, index);
     }
 
 }

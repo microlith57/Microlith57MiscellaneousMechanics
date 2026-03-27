@@ -132,11 +132,13 @@ public sealed class SliderAccumulator : Entity {
         }
     }
 
+    [OnLoad]
     internal static void Load() {
         Everest.Events.Level.OnBeforeUpdate += OnBeforeUpdate;
         Everest.Events.Session.OnSliderChanged += OnSliderChanged;
     }
 
+    [OnUnload]
     internal static void Unload() {
         Everest.Events.Level.OnBeforeUpdate -= OnBeforeUpdate;
         Everest.Events.Session.OnSliderChanged -= OnSliderChanged;

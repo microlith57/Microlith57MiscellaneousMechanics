@@ -180,4 +180,19 @@ public class BoxSurface : Component {
 
     }
 
+    [OnLoad] internal static void Load() => On.Celeste.Player.IsRiding_JumpThru += hookPlayerIsRiding;
+    [OnUnload] internal static void Unload() => On.Celeste.Player.IsRiding_JumpThru -= hookPlayerIsRiding;
+
+    private static bool hookPlayerIsRiding(On.Celeste.Player.orig_IsRiding_JumpThru orig, Player self, JumpThru jumpthru) {
+        bool invert = self.ShouldInvert();
+
+        if (self.Holding?.Entity is Box box && (jumpthru == box.Surface.SurfaceTop || jumpthru == box.Surface.SurfaceBot))
+            return false;
+        else if (jumpthru.Get<BoxSurface.BelongsToBox>() is { } belongsToBox &&
+                 ((belongsToBox.IsTop && invert) || (belongsToBox.IsBot && !invert)))
+            return false;
+        else
+            return orig(self, jumpthru);
+    }
+
 }

@@ -1,3 +1,4 @@
+#if false
 
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -116,3 +117,5 @@ public sealed class SliderFadeTriggerTrigger : Trigger {
     }
     
 }
+
+#endif

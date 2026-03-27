@@ -78,6 +78,28 @@ public sealed class AreaSwitch : Entity {
     internal static ParticleType P_Spark;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
+    [OnLoadContent]
+    internal static void LoadContent(bool _) {
+        P_FireInactive ??= new(TouchSwitch.P_FireWhite) {
+            Size = 0.25f
+        };
+
+        P_Spark ??= new() {
+            Color = Color.White,
+            Color2 = Color.White,
+            ColorMode = ParticleType.ColorModes.Blink,
+            FadeMode = ParticleType.FadeModes.Late,
+            Size = 1f,
+            LifeMin = 0.4f,
+            LifeMax = 0.8f,
+            SpeedMin = 10f,
+            SpeedMax = 20f,
+            DirectionRange = Calc.Circle,
+            SpeedMultiplier = 0.1f,
+            Acceleration = new Vector2(0f, 10f)
+        };
+    }
+
     #endregion
     #region --- State ---
 

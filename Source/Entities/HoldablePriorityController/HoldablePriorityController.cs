@@ -46,7 +46,10 @@ public sealed class HoldablePriorityController(EntityData data, Vector2 offset) 
     #endregion Init, State, Behaviour
     #region --- Hook ---
 
-    internal static void manipPlayerNormalUpdate(ILContext il) {
+    [OnLoad] internal static void Load() => IL.Celeste.Player.NormalUpdate += manipPlayerNormalUpdate;
+    [OnUnload] internal static void Unload() => IL.Celeste.Player.NormalUpdate -= manipPlayerNormalUpdate; 
+
+    private static void manipPlayerNormalUpdate(ILContext il) {
         ILCursor cursor = new(il);
 
         cursor.GotoNext(instr => instr.MatchCallOrCallvirt<Player>("get_Holding"));

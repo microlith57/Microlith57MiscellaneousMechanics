@@ -24,105 +24,19 @@ public class Module : EverestModule {
 #endif
     }
 
-    public override void Load() {
-        IL.Celeste.Player.NormalUpdate += HoldablePriorityController.manipPlayerNormalUpdate;
-        IL.Monocle.Scene.BeforeUpdate += FreezeTimeActiveController.manipSceneBeforeUpdate;
+    public override void Load() => LifecycleMethods.OnLoad();
+    public override void Unload() => LifecycleMethods.OnUnload();
+    public override void LoadContent(bool firstLoad) {
+        base.LoadContent(firstLoad);
+        LifecycleMethods.OnLoadContent(firstLoad);
+    }
 
-        On.Celeste.Player.IsRiding_JumpThru += hookPlayerIsRiding;
-        On.Celeste.Player.DustParticleFromSurfaceIndex += hookDustParticle;
-
-        Everest.Events.Level.OnBeforeUpdate += Box.BeforeLevelUpdate;
-
-        DecalRegistryExt.CustomLight.Handler.Load();
-
-        CappedStamina.Load();
-        LightRenderHook.Load();
-        SliderAccumulator.Load();
-
+    [OnLoad]
+    internal static void ModInterop() {
         typeof(Imports.GravityHelper).ModInterop();
         Imports.GravityHelper.OnImport();
 
         typeof(Imports.FrostHelper).ModInterop();
-    }
-
-    public override void Unload() {
-        IL.Celeste.Player.NormalUpdate -= HoldablePriorityController.manipPlayerNormalUpdate;
-        IL.Monocle.Scene.BeforeUpdate -= FreezeTimeActiveController.manipSceneBeforeUpdate;
-
-        On.Celeste.Player.IsRiding_JumpThru -= hookPlayerIsRiding;
-        On.Celeste.Player.DustParticleFromSurfaceIndex -= hookDustParticle;
-
-        Everest.Events.Level.OnBeforeUpdate -= Box.BeforeLevelUpdate;
-
-        CappedStamina.Unload();
-        LightRenderHook.Unload();
-        SliderAccumulator.Unload();
-    }
-
-    public override void LoadContent(bool firstLoad) {
-        base.LoadContent(firstLoad);
-
-        Recording.P_Appear ??= new ParticleType {
-            FadeMode = ParticleType.FadeModes.Late,
-            Size = 1f,
-            Direction = 0f,
-            DirectionRange = (float)Math.PI * 2f,
-            SpeedMin = 5f,
-            SpeedMax = 10f,
-            LifeMin = 0.6f,
-            LifeMax = 1.2f,
-            SpeedMultiplier = 0.3f
-        };
-
-        AreaSwitch.P_FireInactive ??= new ParticleType(TouchSwitch.P_FireWhite) {
-            Size = 0.25f
-        };
-
-        AreaSwitch.P_Spark ??= new ParticleType {
-            Color = Color.White,
-            Color2 = Color.White,
-            ColorMode = ParticleType.ColorModes.Blink,
-            FadeMode = ParticleType.FadeModes.Late,
-            Size = 1f,
-            LifeMin = 0.4f,
-            LifeMax = 0.8f,
-            SpeedMin = 10f,
-            SpeedMax = 20f,
-            DirectionRange = Calc.Circle,
-            SpeedMultiplier = 0.1f,
-            Acceleration = new Vector2(0f, 10f)
-        };
-
-        Box.P_Impact ??= new ParticleType(TheoCrystal.P_Impact) {
-            Color = Color.White
-        };
-    }
-
-    private static bool hookPlayerIsRiding(On.Celeste.Player.orig_IsRiding_JumpThru orig, Player self, JumpThru jumpthru) {
-        bool invert = self.ShouldInvert();
-
-        if (self.Holding?.Entity is Box box && (jumpthru == box.Surface.SurfaceTop || jumpthru == box.Surface.SurfaceBot))
-            return false;
-        else if (jumpthru.Get<BoxSurface.BelongsToBox>() is { } belongsToBox &&
-                 ((belongsToBox.IsTop && invert) || (belongsToBox.IsBot && !invert)))
-            return false;
-        else
-            return orig(self, jumpthru);
-    }
-
-    private static ConditionalWeakTable<Platform, ParticleType> platformDustOverrides = [];
-    public static void OverrideDust(Platform platform, ParticleType particle) => platformDustOverrides.AddOrUpdate(platform, particle);
-
-    private static ParticleType hookDustParticle(On.Celeste.Player.orig_DustParticleFromSurfaceIndex orig, Player self, int index) {
-        if (index == SurfaceIndex.Glitch) {
-            bool invert = self.ShouldInvert();
-            var pos = self.Position + (invert ? -Vector2.UnitY : Vector2.UnitY);
-            var platform = SurfaceIndex.GetPlatformByPriority(self.CollideAll<Platform>(pos));
-
-            if (platform != null && platformDustOverrides.TryGetValue(platform, out var particle))
-                return particle;
-        }
-        return orig(self, index);
     }
 
 }

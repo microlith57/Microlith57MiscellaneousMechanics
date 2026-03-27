@@ -50,7 +50,10 @@ public sealed class FreezeTimeActiveController : Entity {
     #endregion Behaviour
     #region --- Hook ---
 
-    internal static void manipSceneBeforeUpdate(ILContext il) {
+    [OnLoad] internal static void Load() => IL.Monocle.Scene.BeforeUpdate += manipSceneBeforeUpdate;
+    [OnUnload] internal static void Unload() => IL.Monocle.Scene.BeforeUpdate -= manipSceneBeforeUpdate;
+
+    private static void manipSceneBeforeUpdate(ILContext il) {
         ILCursor cursor = new(il);
 
         cursor.GotoNext(MoveType.After, instr => instr.MatchLdfld<Scene>("Paused"));

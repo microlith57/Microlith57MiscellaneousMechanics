@@ -41,6 +41,7 @@ public class CappedStamina() : Component(active: false, visible: false) {
 
     private static ILHook? hookPlayerUpdate;
 
+    [OnLoad]
     internal static void Load() {
         hookPlayerUpdate = new(
             typeof(Player).GetMethod("orig_Update")!,
@@ -54,6 +55,7 @@ public class CappedStamina() : Component(active: false, visible: false) {
         // IL.Celeste.SummitGem.SmashRoutine += HookPlayerMethods;
     }
 
+    [OnUnload]
     internal static void Unload() {
         hookPlayerUpdate?.Dispose();
         hookPlayerUpdate = null;

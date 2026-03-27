@@ -7,6 +7,9 @@ public class LightRenderHook() : Component(false, false) {
 
     public Action? OnRenderLight;
 
+    [OnLoad] internal static void Load() => On.Celeste.LightingRenderer.BeforeRender += hook_LightingRenderer_BeforeRender;
+    [OnUnload] internal static void Unload() => On.Celeste.LightingRenderer.BeforeRender -= hook_LightingRenderer_BeforeRender;
+
     private static void hook_LightingRenderer_BeforeRender(On.Celeste.LightingRenderer.orig_BeforeRender orig, LightingRenderer self, Scene scene) {
         orig(self, scene);
 
@@ -50,10 +53,5 @@ public class LightRenderHook() : Component(false, false) {
         Draw.SpriteBatch.End();
         usingSpritebatch = false;
     }
-
-    internal static void Load()
-        => On.Celeste.LightingRenderer.BeforeRender += hook_LightingRenderer_BeforeRender;
-    internal static void Unload()
-        => On.Celeste.LightingRenderer.BeforeRender -= hook_LightingRenderer_BeforeRender;
 
 }

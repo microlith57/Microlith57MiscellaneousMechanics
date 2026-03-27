@@ -82,8 +82,7 @@ public class CustomLight : LightRenderHook {
             if (_replace) decal.Color = Color.Transparent;
         }
 
-        internal static void Load()
-            => DecalRegistry.AddPropertyHandler<Handler>();
+        [OnLoad] internal static void Load() => DecalRegistry.AddPropertyHandler<Handler>();
 
     }
 }
