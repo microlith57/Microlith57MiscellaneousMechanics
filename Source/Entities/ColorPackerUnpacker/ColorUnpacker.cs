@@ -1,10 +1,3 @@
-using Microsoft.Xna.Framework;
-using Celeste.Mod.Entities;
-using Monocle;
-
-using Celeste.Mod.Microlith57Misc.Components;
-using static Celeste.Mod.Microlith57Misc.Utils;
-
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 #region --- Float ---
