@@ -1,10 +1,4 @@
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Monocle;
-
-using Celeste.Mod.Microlith57Misc.Components;
 using System.Xml;
-using System.Linq;
 using Celeste.Mod.Registry.DecalRegistryHandlers;
 
 namespace Celeste.Mod.Microlith57Misc.DecalRegistryExt;

@@ -1,8 +1,5 @@
 #if FEATURE_FLAG_BOX
 
-using Microsoft.Xna.Framework;
-using Monocle;
-
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 public partial class Box {

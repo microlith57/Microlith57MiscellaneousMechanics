@@ -1,6 +1,3 @@
-using System;
-using Monocle;
-
 namespace Celeste.Mod.Microlith57Misc.Components;
 
 public class ConditionSource(bool invert = false) : Component(active: false, visible: false) {

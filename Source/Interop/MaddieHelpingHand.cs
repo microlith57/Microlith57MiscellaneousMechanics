@@ -1,6 +1,3 @@
-using System;
-using Monocle;
-
 namespace Celeste.Mod.Microlith57Misc;
 
 public static partial class Utils {

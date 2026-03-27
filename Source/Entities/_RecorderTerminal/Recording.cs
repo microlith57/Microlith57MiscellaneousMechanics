@@ -1,8 +1,5 @@
 #if FEATURE_FLAG_RECORDINGS
 
-using Microsoft.Xna.Framework;
-using Monocle;
-
 namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
 [Tracked(inherited: true)]

@@ -1,8 +1,3 @@
-using Microsoft.Xna.Framework;
-using Monocle;
-using Celeste.Mod.Entities;
-using System;
-
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/PlayerStateNameToCounterController")]

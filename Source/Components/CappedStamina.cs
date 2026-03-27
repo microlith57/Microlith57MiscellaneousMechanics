@@ -1,7 +1,5 @@
-using Monocle;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
-using System;
 
 namespace Celeste.Mod.Microlith57Misc.Components;
 

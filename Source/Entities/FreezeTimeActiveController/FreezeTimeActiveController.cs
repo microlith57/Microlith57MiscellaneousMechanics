@@ -1,11 +1,6 @@
-using Microsoft.Xna.Framework;
-using Monocle;
-using Celeste.Mod.Entities;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
-using System.Linq;
 
-using Celeste.Mod.Microlith57Misc.Components;
 using static Celeste.Mod.Microlith57Misc.Components.ConditionSource;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;

@@ -1,9 +1,3 @@
-using Microsoft.Xna.Framework;
-using Monocle;
-using Celeste.Mod.Entities;
-using System;
-
-using Celeste.Mod.Microlith57Misc.Components;
 using MonoMod.Utils;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;

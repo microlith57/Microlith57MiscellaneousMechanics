@@ -1,11 +1,3 @@
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Celeste.Mod.Entities;
-using Celeste.Mod.Microlith57Misc.Components;
-using Microsoft.Xna.Framework;
-using Monocle;
-
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(

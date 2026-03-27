@@ -1,7 +1,3 @@
-using System;
-using Microsoft.Xna.Framework;
-using Monocle;
-
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 public partial class Box {

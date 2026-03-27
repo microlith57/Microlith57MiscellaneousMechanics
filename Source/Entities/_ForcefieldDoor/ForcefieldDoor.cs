@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using Microsoft.Xna.Framework;
-using Monocle;
-
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 public sealed class ForcefieldDoor : Solid {

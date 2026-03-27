@@ -1,7 +1,3 @@
-using System;
-using Microsoft.Xna.Framework;
-using Monocle;
-
 namespace Celeste.Mod.Microlith57Misc.Components;
 
 public class FloatSource() : Component(active: false, visible: false) {

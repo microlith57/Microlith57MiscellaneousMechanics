@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Celeste.Mod.EeveeHelper.Entities;
-using Microsoft.Xna.Framework;
-using Monocle;
 
 namespace Celeste.Mod.Microlith57Misc;
 

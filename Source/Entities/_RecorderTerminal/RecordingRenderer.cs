@@ -1,12 +1,5 @@
 #if FEATURE_FLAG_RECORDINGS
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Monocle;
-
 namespace Celeste.Mod.Microlith57Misc.Entities.Recordings;
 
 [Tracked]
