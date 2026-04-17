@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <AssemblyName>Microlith57MiscellaneousMechanics</AssemblyName>
         <RootNamespace>Celeste.Mod.Microlith57Misc</RootNamespace>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
         <NuGetAuditLevel>critical</NuGetAuditLevel>
         <CelestePrefix Condition="'$(CelestePrefix)' == '' And Exists('..\..\..\Celeste.dll')">..\..\..</CelestePrefix>
