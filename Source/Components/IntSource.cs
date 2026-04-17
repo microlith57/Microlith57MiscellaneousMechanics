@@ -49,10 +49,6 @@ public class IntSource() : Component(active: false, visible: false) {
 
         public Expr(string raw) {
             if (raw == "") return;
-
-            if (Imports.FrostHelper.TryCreateSessionExpression == null)
-                throw new Exception("tried to use a frosthelper session expression, but frosthelper is not loaded");
-
             Imports.FrostHelper.TryCreateSessionExpression(raw, out _Expr);
         }
 
@@ -67,7 +63,7 @@ public class IntSource() : Component(active: false, visible: false) {
         public override int? RawValue =>
             (_Expr == null || Scene is not Level level)
                 ? null
-                : Imports.FrostHelper.GetIntSessionExpressionValue!(_Expr, level.Session);
+                : Imports.FrostHelper.GetIntSessionExpressionValue(_Expr, level.Session);
 
     }
 

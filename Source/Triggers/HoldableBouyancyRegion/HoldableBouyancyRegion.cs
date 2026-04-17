@@ -81,7 +81,8 @@ public sealed class HoldableBouyancyRegion : Entity {
     private Vector2 Affect(Entity e, Vector2 speed) {
         float force;
 
-        if (Imports.GravityHelper.IsActorInverted == null || e is not Actor a || !Imports.GravityHelper.IsActorInverted(a)) {
+        bool isInverted = e is Actor a && a.IsInverted();
+        if (!isInverted) {
             var bottom = e.Bottom + (e is Actor a2 ? a2.ExactPosition.Y - a2.Position.Y : 0f);
             force = Calc.ClampedMap(bottom, Top, Top + e.Height, MinForce, MaxForce);
         } else {

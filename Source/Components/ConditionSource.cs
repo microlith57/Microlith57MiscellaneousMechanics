@@ -44,12 +44,7 @@ public class ConditionSource(bool invert = false) : Component(active: false, vis
             string raw,
             bool invert = false
         ) : base(invert) {
-
             if (raw == "") return;
-
-            if (Imports.FrostHelper.TryCreateSessionExpression == null)
-                throw new Exception("tried to use a frosthelper session expression, but frosthelper is not loaded");
-
             Imports.FrostHelper.TryCreateSessionExpression(raw, out _Expr);
         }
 
@@ -66,7 +61,7 @@ public class ConditionSource(bool invert = false) : Component(active: false, vis
         public override bool? RawValue =>
             (_Expr == null || Scene is not Level level)
                 ? null
-                : Imports.FrostHelper.GetBoolSessionExpressionValue!(_Expr, level.Session);
+                : Imports.FrostHelper.GetBoolSessionExpressionValue(_Expr, level.Session);
 
     }
 

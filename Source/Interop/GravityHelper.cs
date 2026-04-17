@@ -32,7 +32,7 @@ public static partial class Utils {
 
     public static void SetInverted(this Actor self, bool invert, string erroringEntity) {
         CheckGravityHelper(erroringEntity);
-        Imports.GravityHelper.SetActorGravity(self, invert ? Imports.GravityHelper.GravityType.Inverted : Imports.GravityHelper.GravityType.Normal, 1f);
+        Imports.GravityHelper.SetActorGravity(self, invert ? GravityType.Inverted : GravityType.Normal, 1f);
     }
 
     public static Component? GravityComponentIfExists() {

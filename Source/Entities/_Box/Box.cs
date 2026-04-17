@@ -3,6 +3,8 @@
 using Celeste.Mod.GravityHelper;
 using Celeste.Mod.GravityHelper.Components;
 
+using _GravityType = Celeste.Mod.GravityHelper.GravityType;
+
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity("Microlith57Misc/Box")]
@@ -546,26 +548,26 @@ public partial class Box : Actor {
         if (!args.Changed || Hold.Holder != player)
             return;
 
-        bool playerInvert = args.NewValue == GravityType.Inverted;
+        bool playerInvert = args.NewValue == _GravityType.Inverted;
         if (GravityLocked && playerInvert != PositionInverted)
             GravUpdate(playerInvert);
     }
 
     private void OnGravityChange_Position(GravityChangeArgs args) {
         if (args.Changed) {
-            Inverted = args.NewValue == GravityType.Inverted;
-            GravUpdatePosition(args.NewValue == GravityType.Inverted);
+            Inverted = args.NewValue == _GravityType.Inverted;
+            GravUpdatePosition(args.NewValue == _GravityType.Inverted);
         }
     }
 
     private void OnGravityChange_Colliders(GravityChangeArgs args) {
         if (args.Changed)
-            GravUpdateColliders(args.NewValue == GravityType.Inverted);
+            GravUpdateColliders(args.NewValue == _GravityType.Inverted);
     }
 
     private void OnGravityChange_Visuals(GravityChangeArgs args) {
         if (args.Changed)
-            GravUpdateVisuals(args.NewValue == GravityType.Inverted);
+            GravUpdateVisuals(args.NewValue == _GravityType.Inverted);
     }
 
     private void GravUpdate(bool inverted) {
