@@ -4,7 +4,6 @@ using Celeste.Mod.Registry.DecalRegistryHandlers;
 namespace Celeste.Mod.Microlith57Misc.DecalRegistryExt;
 
 public class CustomLight : LightRenderHook {
-
     public Vector2 Offset;
     public Color Color;
     private List<MTexture> Textures;
@@ -36,7 +35,6 @@ public class CustomLight : LightRenderHook {
     }
 
     internal sealed class Handler : DecalRegistryHandler {
-
         private float _offX, _offY;
         private Color? _color;
         private float _alpha;
@@ -52,22 +50,17 @@ public class CustomLight : LightRenderHook {
 
             if (xml["color"] is not null)
                 _color = GetHexColor(xml, "color", Color.White);
-
-            _alpha =  Get(xml, "alpha", 1f);
+            _alpha = Get(xml, "alpha", 1f);
 
             _path = Get(xml, "path", "");
-
             if (xml["frames"] is not null)
                 _frames = GetCSVIntWithTricks(xml, "frames", "0");
-
             _replace = Get(xml, "replace", false);
         }
 
         public override void ApplyTo(Decal decal) {
             var offset = decal.GetScaledOffset(_offX, _offY);
-
             var color = (_color ?? decal.Color) * _alpha;
-
             var textures = decal.textures;
 
             if (!string.IsNullOrEmpty(_path))
@@ -83,6 +76,5 @@ public class CustomLight : LightRenderHook {
         }
 
         [OnLoad] internal static void Load() => DecalRegistry.AddPropertyHandler<Handler>();
-
     }
 }
