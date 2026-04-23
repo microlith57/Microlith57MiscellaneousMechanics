@@ -1,8 +1,3 @@
-if not mu then
-  local mods = require("mods")
-  local mu = mods.requireFromPlugin("libraries.utils")
-end
-
 local variants = mu.variants(
   "SliderAudioParamController",
   {
@@ -15,34 +10,34 @@ local variants = mu.variants(
 
 local result = {}
 for i, v in ipairs(variants) do
-  local self = mu.entity {
+  local self = mu.controller {
     v.name,
     name = v"Audio Param Controller ({Noun})",
     desc = "Sets an audio (music or ambience) param based on a slider value."
   }
+  self:_flag_or_expr {v.noun, imperative = "set the param"}
 
-  self[v.noun] = ""
-  self[v.noun].desc = v"If present, set the param only when the {noun} is {adj}."
-  if v.noun == "flag" then self.invertFlag = false end
+  self.isAmbience(false)
+    :desc "If checked, set an ambience param; otherwise, set a music param."
+  self.param("")
+    :desc "Name of the param to set."
+  self.value "0.0"
+    :nonempty()
+    :desc(v"{Noun} to set the param to.")
 
-  self.param = ""
-  self.param.desc = "Name of the param to set."
-
-  self.isAmbience = false
-  self.isAmbience.desc = "If checked, set an ambience param; otherwise, set a music param."
-
-  self.value = "0.0"
-  self.value:nonempty()
-  self.value.desc = v"{Noun} to set the param to."
-
-  result[i] = {
-    name = self.name,
-    associatedMods = mu.assoc {expr = v.Noun == "Expression"},
-    depth = -1000000,
-    texture = "objects/microlith57/misc/slider_audio_param_controller",
-    placements = {self()},
-    fieldInformation = self.fieldInformation,
-    fieldOrder = self.fieldOrder
+  result[i] = self {
+    {
+      "music",
+      name = v"Music Param Controller ({Noun})",
+      desc = "Sets a music param based on a slider value.",
+      data = {isAmbience = false},
+    },
+    {
+      "ambience",
+      name = v"Ambience Param Controller ({Noun})",
+      desc = "Sets an ambience param based on a slider value.",
+      data = {isAmbience = true},
+    }
   }
 end
 return result

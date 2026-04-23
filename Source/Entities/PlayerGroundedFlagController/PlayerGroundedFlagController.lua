@@ -1,7 +1,7 @@
-if not mu then
-  local mods = require("mods")
-  local mu = mods.requireFromPlugin("libraries.utils")
-end
+local tex = mu.texture {
+  "player_grounded_flag_controller",
+  only_editor = true
+}
 
 local self = mu.entity {
   "PlayerGroundedFlagController",
@@ -17,7 +17,7 @@ self.invertFlag = false
 return {
   name = self.name,
   depth = -1000000,
-  texture = "objects/microlith57/misc/player_grounded_flag_controller",
+  texture = tex,
   placements = {self()},
   fieldOrder = self.fieldOrder,
   fieldInformation = self.fieldInformation

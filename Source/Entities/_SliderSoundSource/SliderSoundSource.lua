@@ -1,4 +1,49 @@
-local utils = require("utils")
+if not mu then
+  local mods = require("mods")
+  local mu = mods.requireFromPlugin("libraries.utils")
+end
+
+local variants = mu.variants(
+  "SliderColorgradeController",
+  {
+    {"", "Expression"},
+    noun = {"flag", "expression"},
+    Noun = {"Flag", "Expression"},
+    adj = {"set", "truthy"},
+    nadj = {"unset", "falsy"},
+  }
+)
+
+local result = {}
+for i, v in ipairs(variants) do
+  local self = mu.entity {
+    v.name,
+    name = v"Slider Sound Source ({Noun})",
+    desc = "Plays a sound, with position / volume / parameters controlled by sliders."
+  }
+
+  self["enable" .. v.Noun] = ""
+  self["enable" .. v.Noun].desc = v"If present, stop the sound when the {noun} is {nadj}."
+  if v.noun == "flag" then self.invertEnable = false end
+
+  self["playing" .. v.Noun] = ""
+  self["playing" .. v.Noun].desc = v"If present, pause the sound when the {noun} is {nadj}."
+  if v.noun == "flag" then self.invertPlaying = false end
+
+  self.positionX = ""
+  self.positionX.desc = ""
+  self.positionY = ""
+  self.positionY.desc = ""
+
+  self.positionRelative = true
+  self.listener = "VanillaCamera"
+  self.listener.desc = [[
+    idk i don't know 
+  ]]
+end
+return result
+
+
 
 local listInformation = {
   fieldType = "list",

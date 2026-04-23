@@ -1,93 +1,55 @@
 local enums = require("consts.celeste_enums")
 
-local nonEmptyValidator = function(s)
-  return s ~= ""
-end
-
-local fieldInformation = {
-  direction = {
-    options = enums.trigger_position_modes,
-    editable = false
-  },
-  offsetFromX = {validator = nonEmptyValidator},
-  offsetFromY = {validator = nonEmptyValidator},
-  offsetToX = {validator = nonEmptyValidator},
-  offsetToY = {validator = nonEmptyValidator},
-}
-
-local fieldOrder = {
-  "x", "y", "width", "height",
-  "cameraX", "cameraY",
-
-  "offsetFromX", "offsetFromY",
-  "offsetToX", "offsetToY",
-
-  "direction", "coarse",
-
-  "enableFlag", "invertFlag",
-  "enableExpression"
-}
-
-local ignoredFields = {
-  "_name", "_id", "originX", "originY",
-  "cameraX", "cameraY"
-}
-
-return {
+local variants = mu.variants(
+  "SliderCameraOffsetTrigger",
   {
-    name = "Microlith57Misc/SliderCameraOffsetTrigger",
-    category = "camera",
-    placements = {
-      {
-        name = "sliderCameraOffsetTrigger",
-        data = {
-          cameraX = 0.0,
-          cameraY = 0.0,
-
-          offsetFromX = "0.0",
-          offsetFromY = "0.0",
-          offsetToX = "0.0",
-          offsetToY = "0.0",
-
-          direction = "LeftToRight",
-          coarse = false,
-
-          enableFlag = "",
-          invertFlag = false,
-        }
-      }
-    },
-    fieldInformation = fieldInformation,
-    fieldOrder = fieldOrder,
-    ignoredFields = ignoredFields,
-    triggerText = "Slider Camera Offset"
-  },
-  {
-    name = "Microlith57Misc/SliderCameraOffsetTrigger_Expression",
-    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
-    category = "camera",
-    placements = {
-      {
-        name = "sliderCameraOffsetTrigger",
-        data = {
-          cameraX = 0.0,
-          cameraY = 0.0,
-
-          offsetFromX = "0.0",
-          offsetFromY = "0.0",
-          offsetToX = "0.0",
-          offsetToY = "0.0",
-
-          direction = "LeftToRight",
-          coarse = false,
-
-          enableExpression = ""
-        }
-      }
-    },
-    fieldInformation = fieldInformation,
-    fieldOrder = fieldOrder,
-    ignoredFields = ignoredFields,
-    triggerText = "Slider Camera Offset (Expression)"
+    {"", "Expression"},
+    noun = {"flag", "expression"},
+    adj = {"set", "truthy"},
   }
-}
+)
+
+local result = {}
+for i, v in ipairs(variants) do
+  local name = v"Camera Offset ({Noun})"
+  local self = mu.trigger {
+    v.name,
+    name = name,
+    desc = "Sets the camera offset based on a slider value."
+  }
+  self:_flag_or_expr {v.noun, imperative = "apply the camera offset"}
+
+  self.offsetFromX "0.0"
+    :nonempty()
+    :desc "Slider for the first X position of the camera offset."
+  self.offsetFromY "0.0"
+    :nonempty()
+    :desc "Slider for the first Y position of the camera offset."
+
+  self.offsetToX "0.0"
+    :nonempty()
+    :desc "Slider for the second X position of the camera offset."
+  self.offsetToY "0.0"
+    :nonempty()
+    :desc "Slider for the second Y position of the camera offset."
+
+  self.direction "LeftToRight"
+    :info {
+      options = enums.trigger_position_modes,
+      editable = false
+    }
+    :desc "Determines which direction the player position will affect the offset in."
+
+  self.coarse(true)
+    :desc [[
+      If checked, units are in the usual camera offset units. Otherwise they are in pixels.
+
+      Camera offset units are 48px in the X direction and 32px in the Y direction.
+    ]]
+
+  result[i] = self {
+    category = "camera",
+    triggerText = name,
+  }
+end
+return result

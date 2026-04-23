@@ -1,8 +1,3 @@
-if not mu then
-  local mods = require("mods")
-  local mu = mods.requireFromPlugin("libraries.utils")
-end
-
 local variants = mu.variants(
   "SliderAmbienceVolumeController",
   {
@@ -15,30 +10,16 @@ local variants = mu.variants(
 
 local result = {}
 for i, v in ipairs(variants) do
-  local self = mu.entity {
+  local self = mu.controller {
     v.name,
     name = v"Ambience Volume Controller ({typ})"
   }
+  self:_flag_or_expr {v.noun, imperative = "set the volume"}
 
-  self.volume = "1.0"
-  self.volume:nonempty()
-  self.volume.desc = v"{typ} to set the volume to."
+  self.volume "1.0"
+    :nonempty()
+    :desc(v"{typ} to set the volume to.")
 
-  self[v.noun] = ""
-  self[v.noun].desc = v"If present, only set the volume if the {noun} is {adj}."
-
-  if v.typ == "Slider" then
-    self.invertFlag = false
-  end
-
-  result[i] = {
-    name = self.name,
-    associatedMods = mu.assoc {expr = v.Noun == "Expression"},
-    depth = -1000000,
-    texture = "objects/microlith57/misc/slider_ambience_volume_controller",
-    placements = {self()},
-    fieldOrder = self.fieldOrder,
-    fieldInformation = self.fieldInformation,
-  }
+  result[i] = self()
 end
 return result

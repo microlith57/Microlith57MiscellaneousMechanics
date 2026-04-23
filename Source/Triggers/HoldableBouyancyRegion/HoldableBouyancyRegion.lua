@@ -1,59 +1,42 @@
-local utils = require("utils")
-
-local nonEmptyValidator = function(s)
-  return s ~= ""
-end
-
-local fieldInformation = {
-  slider = {validator = nonEmptyValidator},
-  minForce = {validator = nonEmptyValidator},
-  maxForce = {validator = nonEmptyValidator},
-  damping = {validator = nonEmptyValidator}
-}
-
-local fieldOrder = {
-  "x", "y", "width", "height",
-  "flag", "invertFlag", "expression",
-  "minForce", "maxForce", "damping",
-  "alsoAffectPlayer"
-}
-
-return {
+local variants = mu.variants(
+  "HoldableBouyancyRegion",
   {
-    name = "Microlith57Misc/HoldableBouyancyRegion",
-    placements = {
-      {
-        name = "holdableBouyancyRegion",
-        data = {
-          width = 16,
-          height = 16,
-          flag = "",
-          invertFlag = false,
-          minForce = "0.0",
-          maxForce = "600.0",
-          damping = "0.5",
-          alsoAffectPlayer = false
-        }
-      }
-    }
-  },
-  {
-    name = "Microlith57Misc/HoldableBouyancyRegion_Expression",
-    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
-    placements = {
-      {
-        name = "holdableBouyancyRegion",
-        data = {
-          width = 16,
-          height = 16,
-          expression = "",
-          minForce = "0.0",
-          maxForce = "600.0",
-          damping = "0.5",
-          alsoAffectPlayer = false
-        }
-      }
-    },
-    triggerText = "Holdable Bouyancy Region (Expression)"
+    {"", "Expression"},
+    noun = {"flag", "expression"},
+    Noun = {"Flag", "Expression"},
+    adj = {"set", "truthy"},
+    par = {"", " (Expression)"},
   }
-}
+)
+
+-- todo spelling mistake
+
+local result = {}
+for i, v in ipairs(variants) do
+  local self = mu.trigger {
+    v.name,
+    name = v"Holdable Bouyancy Region ({Noun})",
+    desc = "Causes holdables (and maybe the player) to experience a bouyancy force."
+  }
+  self:_flag_or_expr {v.noun, imperative = "apply bouyancy"}
+
+  self.minForce "0.0"
+    :nonempty()
+    :desc(v"{Noun} for how much force to exert (px/sec^2) when the holdable is just touching the surface.")
+
+  self.maxForce "600.0"
+    :nonempty()
+    :desc(v"{Noun} for how much force to exert (px/sec^2) when the holdable is fully submerged.")
+
+  self.damping "0.5"
+    :nonempty()
+    :desc(v"{Noun} for the coefficient controlling how much motion is slowed in the region; acts like viscosity.")
+
+  self.alsoAffectPlayer(false)
+    :desc "If set, the player will float as well as holdables."
+
+  result[i] = self {
+    triggerText = v"Holdable Bouyancy Region{par}"
+  }
+end
+return result

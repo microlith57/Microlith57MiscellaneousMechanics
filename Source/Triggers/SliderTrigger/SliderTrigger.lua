@@ -1,4 +1,3 @@
-local utils = require("utils")
 local celesteEnums = require("consts.celeste_enums")
 
 local fieldInformation = {

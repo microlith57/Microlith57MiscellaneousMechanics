@@ -1,52 +1,13 @@
-local utils = require("utils")
-
-local nonEmptyValidator = function(s)
-  return s ~= ""
-end
-
-local fieldInformation = {
-  target = {
-    options = {
-      "Player",
-      "Actor",
-      "NonPlayerActor",
-      "Solid"
-    },
-    editable = false
-  },
-  detection = {
-    options = {
-      "Within",
-      "Intersecting",
-      "Nearest"
-    },
-    editable = false
-  },
-  stickiness = {
-    options = {
-      "Free",
-      "Transient",
-      "UntilNewMatch",
-      "UntilDeath",
-      "Lifelink",
-      "Soulbond"
-    },
-    editable = false
-  },
-  tracking = {
-    options = {
-      "Position",
-      "Center",
-      "TopCenter",
-      "BottomCenter",
-      "CenterLeft",
-      "CenterRight",
-      "Size"
-    },
-    editable = false
-  },
-  sliderPrefix = {validator = nonEmptyValidator}
-}
+local variants = mu.variants(
+  "PositionTrackerRegion",
+  {
+    {"", "Expression"},
+    noun = {"flag", "expression"},
+    Noun = {"Flag", "Expression"},
+    adj = {"set", "truthy"},
+    par = {"", " (Expression)"},
+  }
+)
 
 local abbreviations = {
   target = {
@@ -79,104 +40,118 @@ local abbreviations = {
   },
 }
 
-local fieldOrder = {
-  "x",
-  "y",
-  "width",
-  "height",
-
-  "target",
-  "detection",
-  "stickiness",
-  "tracking",
-
-  "sliderPrefix",
-  "targettingFlag",
-
-  "retargetIfFlag",
-  "invertRetargetIfFlag",
-  "retargetIfExpression",
-}
-
 local function abbr(str, options)
   return options[str] or "?"
 end
 
-local function triggerTextFlag(room, trigger)
-  return (
-    "Position Tracker Region (Flag) - "
-    .. trigger.sliderPrefix
-    .. " ("
-    .. abbr(trigger.target, abbreviations.target)
-    .. abbr(trigger.detection, abbreviations.detection)
-    .. abbr(trigger.stickiness, abbreviations.stickiness)
-    .. abbr(trigger.tracking, abbreviations.tracking)
-    .. ")"
-  )
-end
-
-local function triggerTextExpr(room, trigger)
-  return (
-    "Position Tracker Region (Expression) - "
-    .. trigger.sliderPrefix
-    .. " ("
-    .. abbr(trigger.target, abbreviations.target)
-    .. abbr(trigger.detection, abbreviations.detection)
-    .. abbr(trigger.stickiness, abbreviations.stickiness)
-    .. abbr(trigger.tracking, abbreviations.tracking)
-    .. ")"
-  )
-end
-
-return {
-  {
-    name = "Microlith57Misc/PositionTrackerRegion",
-    placements = {
-      {
-        name = "positionTrackerRegion",
-        data = {
-          width = 16,
-          height = 16,
-          retargetIfFlag = "",
-          invertRetargetIfFlag = false,
-
-          target = "Actor",
-          detection = "Within",
-          stickiness = "Soulbond",
-          tracking = "Position",
-
-          sliderPrefix = "trackedPosition",
-          targettingFlag = "",
-        }
-      }
-    },
-    fieldInformation = fieldInformation,
-    fieldOrder = fieldOrder,
-    triggerText = triggerTextFlag,
-  },
-  {
-    name = "Microlith57Misc/PositionTrackerRegion_Expression",
-    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
-    placements = {
-      {
-        name = "positionTrackerRegion",
-        data = {
-          width = 16,
-          height = 16,
-          retargetIfExpression = "",
-
-          target = "Actor",
-          detection = "Within",
-          stickiness = "Soulbond",
-          tracking = "Position",
-
-          sliderPrefix = "trackedPosition",
-          targettingFlag = "",
-        }
-      }
-    },
-    fieldInformation = fieldInformation,
-    fieldOrder = fieldOrder,
-    triggerText = triggerTextExpr,
+local result = {}
+for i, v in ipairs(variants) do
+  local name = v"Position Tracker Region ({Noun})"
+  local self = mu.trigger {
+    v.name,
+    name = name,
+    desc = "Keep track of an entity, and put its position or size into sliders."
   }
-}
+
+  local function triggerText(room, trigger)
+    return (
+      name .. " - "
+      .. trigger.sliderPrefix
+      .. " ("
+      .. abbr(trigger.target, abbreviations.target)
+      .. abbr(trigger.detection, abbreviations.detection)
+      .. abbr(trigger.stickiness, abbreviations.stickiness)
+      .. abbr(trigger.tracking, abbreviations.tracking)
+      .. ")"
+    )
+  end
+
+  self:_flag_or_expr {
+    v.noun,
+    imperative = "allow changing targets",
+    name = "retargetIf{Noun}",
+    invert = "invertRetargetIf{Noun}"
+  }
+
+  self.target "Actor"
+    :info {
+      options = {
+        "Player",
+        "Actor",
+        "NonPlayerActor",
+        "Solid"
+      },
+      editable = false
+    }
+    :desc [[
+      What type of entity to track.
+
+      \b
+      Player: Just the player.
+      Actor: Players, holdables, and similar entities.
+      NonPlayerActor: Holdables and similar entities.
+      Solid: Solid entities of any kind.
+    ]]
+
+  self.detection "Within"
+    :info {
+      options = {
+        "Within",
+        "Intersecting",
+        "Nearest"
+      },
+      editable = false
+    }
+    :desc [[
+      Whether an entity must be entirely within the region; just intersecting the region; or anywhere.
+    ]]
+
+  self.stickiness "Soulbond"
+    :info {
+      options = {
+        "Free",
+        "Transient",
+        "UntilNewMatch",
+        "UntilDeath",
+        "Lifelink",
+        "Soulbond"
+      },
+      editable = false
+    }
+    :desc [[
+      What to do once an entity is targetted.
+
+      \b
+      Free: Can retarget at any time; stop tracking when entity is no longer detected.
+      Transient: Stop tracking when entity is no longer detected, and then perhaps retarget.
+      UntilNewMatch: Keep tracking even after entity is no longer detected, but after this retarget if possible.
+      UntilDeath: Only retarget once entity is removed.
+      Lifelink: Keep entity targeted until it is removed, at which point also remove the region.
+      Soulbond: Ensure entity exists when region is created, and remove region when entity is removed.
+    ]]
+
+  self.tracking "Position"
+    :info {
+      options = {
+        "Position",
+        "Center",
+        "TopCenter",
+        "BottomCenter",
+        "CenterLeft",
+        "CenterRight",
+        "Size"
+      },
+      editable = false
+    }
+    :desc 'What position to track; or "Size" for width/height.'
+
+  self.sliderPrefix "trackedPosition"
+    :nonempty()
+    :desc "Set sliders whose names start with this and end in X and Y."
+
+  self.targettingFlag ""
+    :desc "If present, set flag with this name when a target is found."
+
+  result[i] = self()
+end
+return result

@@ -1,5 +1,7 @@
 local mu = (mu and mu.preprocess and mu) or {}
 
+local serialize = require("utils.serialize").serialize
+
 --[[
   miscellaneous utilities.
 
@@ -18,8 +20,92 @@ local mu = (mu and mu.preprocess and mu) or {}
 ]]
 
 mu.modname = "Microlith57Misc"
+mu.modpathsegment = "microlith57/misc"
 
 function mu.validate_nonempty(s) return s ~= "" end
+
+function mu.pp(o)
+  local success, val = serialize(o)
+  print(val)
+end
+
+---
+
+--[[
+  preprocessing stuff.
+
+  most of this only makes sense when run through the preprocess entrypoint, but
+  sometimes there is still a return value when run from loenn.
+
+  note that there are other preprocessing-related features in other sections.
+]]
+
+function mu.defer(f)
+  if mu.preprocess then table.insert(mu.preprocess.feature.defer, f) end
+end
+
+local function abs_path_for(rel)
+  return mu.preprocess.self.feat_path .. "/" .. rel:gsub("^/", '')
+end
+
+function mu.plan_move(tbl)
+  if not mu.preprocess then return end
+
+  local rel = tbl[1]
+  local src = abs_path_for(rel)
+
+  if not mu.preprocess.planned_moves[src] then mu.preprocess.planned_moves[src] = {} end
+  local move = mu.preprocess.planned_moves[src]
+
+  local dst = tbl[2]
+  if dst == false then
+    move.to = nil
+  elseif dst ~= nil then
+    move.to = dst
+  end
+
+  if tbl.header == true then
+    move.header = nil
+  elseif tbl.header == false then
+    move.header = false
+  end
+
+  local feature = mu.preprocess.self.feature
+  if move.feature and move.feature ~= feature then
+    error("feature " .. feature .. " tried to overwrite file " .. dst .. " which is already set by " .. move.feature)
+  end
+  move.feature = feature
+
+  return dst
+end
+function mu.plan_move_self(a)
+  if not mu.preprocess then return end
+
+  local tbl = type(a) == "table" and a or {a}
+  tbl[2] = tbl[1]
+  tbl[1] = mu.preprocess.self.rel_path
+  return mu.plan_move(tbl)
+end
+
+function mu.plan_only_editor(dst)
+  if not mu.preprocess then return end
+
+  mu.preprocess.everestignore[dst] = true
+end
+
+function mu.texture(tbl)
+  local src = tbl[1]
+  local dst = tbl[2]
+  if not dst then dst = "objects/" .. mu.modpathsegment .. "/" .. src end
+
+  local atlas = tbl.atlas or "Gameplay"
+  local abs_dst = "Graphics/Atlases/" .. atlas .. "/" .. dst .. ".png"
+
+  mu.plan_move {src .. ".png", abs_dst}
+  if tbl.only_editor then mu.plan_only_editor(abs_dst) end
+
+  return dst
+end
 
 ---
 
@@ -52,29 +138,53 @@ function mu.validate_nonempty(s) return s ~= "" end
   > }
 ]]
 
-local fmt_mt = {}
-function fmt_mt:__call(o)
+local Fmt = {}
+Fmt.__index = Fmt
+function Fmt:__call(o)
   if type(o) == "string" then
-    return self:_format(o)
+    return Fmt._format(self, o)
   elseif type(o) == "table" then
-    return self:_merge(o)
+    return Fmt._merge(self, o)
   end
   return o
 end
-function fmt_mt:_format(s)
+function Fmt:__index(key)
+  local val = rawget(self, key)
+  if val then return val end
+
+  if type(key) ~= "string" then return end
+
+  local Key = key:gsub("%u", string.lower, 1)
+  if Key == key then return end
+
+  local Val = rawget(self, Key)
+  if Val then return tostring(Val):gsub("%l", string.upper, 1) end
+end
+function Fmt:_format(s)
   -- todo: "{{a}}" -> "{a}"
   -- todo: error messages
-  return s:gsub("{[%a%d]+}", function(match) return tostring(self[match:sub(2, -2)]) end)
+
+  local function replace(match)
+    local key = match:sub(2, -2)
+    local val = self[key]
+    if val then
+      return tostring(val)
+    else
+      return match
+    end
+  end
+
+  return s:gsub("{[%a%d]+}", replace)
 end
-function fmt_mt:_merge(t)
+function Fmt:_merge(t)
   for k, v in pairs(t) do
     self[k] = v
   end
   return self
 end
 
-function fmt(t)
-  setmetatable(t, formatter_mt)
+function mu.fmt(t)
+  setmetatable(t, Fmt)
   return t
 end
 
@@ -152,27 +262,98 @@ end
   > }
 ]]
 
+-- todo: deal with case where same entry is set twice
+
+local indent_ruler = 80
+
 local function prepare_lang_entry(val)
-  -- todo: rip off click's docstring reformatting
-  return tostring(val)
-    :gsub("^[ ]*", "")
-    :gsub("[ \n]+$", "")
-    :gsub("\n[ ]*", "\\n")
+  local lines = tostring(val):split("\n")()
+  if #lines == 0 then return "" end
+  local indent = #(lines[1]:match("^%s*"))
+
+  local res = {}
+  local paragraph = {}
+  local reindent = true
+
+  local function push_paragraph()
+    if #paragraph == 0 then return end
+
+    if #res > 0 then table.insert(res, "") end
+
+    if reindent then
+      local words = {}
+      for _, line in ipairs(paragraph) do
+        local words_in_line = line:split(" ")()
+        for _, word in ipairs(words_in_line) do
+          table.insert(words, word)
+        end
+      end
+
+      local line = {}
+      local len = 0
+      local function push_line()
+        table.insert(res, table.concat(line, " "))
+        line = {}
+        len = 0
+      end
+
+      for _, word in ipairs(words) do
+        local next_len = len + #word + 1
+        if next_len <= indent_ruler then
+          table.insert(line, word)
+          len = next_len
+        else
+          push_line()
+
+          table.insert(line, word)
+          len = #word
+
+          if len > indent_ruler then push_line() end
+        end
+      end
+      push_line()
+    else
+      for _, line in ipairs(paragraph) do
+        table.insert(res, line)
+      end
+    end
+    paragraph = {}
+    reindent = true
+  end
+
+  for _, line in ipairs(lines) do
+    local this_indent = #(line:match("^%s*")) - indent
+    if this_indent < 0 then this_indent = 0 end
+
+    line = line:gsub("^%s*", ""):gsub("%s*$", "")
+    if line == "\b" or line == "\\b" then
+      reindent = false
+    elseif line == "" then
+      push_paragraph()
+    else
+      table.insert(paragraph, line)
+    end
+  end
+  push_paragraph()
+
+  return table.concat(res, "\\n")
 end
 
-local lang_mt = {}
-function lang_mt:__index(key)
+local Lang = {}
+function Lang:__index(key)
   local val = {}
-  setmetatable(val, lang_mt)
+  setmetatable(val, Lang)
   rawset(self, key, val)
   return val
 end
-function lang_mt:__newindex(key, val)
+function Lang:__newindex(key, val)
   if type(val) == "table" then
     local current_val = self[key]
     for k, v in pairs(val) do
       current_val[k] = v
     end
+  elseif val == nil then
+    rawset(self, key, nil)
   else
     rawset(self, key, prepare_lang_entry(val))
   end
@@ -180,7 +361,7 @@ end
 
 function mu.lang(l)
   l = l or {}
-  setmetatable(l, lang_mt)
+  setmetatable(l, Lang)
   return l
 end
 
@@ -198,7 +379,7 @@ function mu.print_lang(l)
 
       if type(v) == "table" then
         walk(v, pfx)
-      else
+      elseif type(v) == "string" then
         print(pfx .. "=" .. v)
       end
     end
@@ -245,7 +426,7 @@ end
   > local v = variants[1]
   > v[1].named --> "a"
   > v.named    --> "a"
-  > v"something including {a}" --> "something including a"
+  > v"something including {named}" --> "something including a"
 ]]
 
 function mu.variants(name, ...)
@@ -319,65 +500,60 @@ end
   > self.another.desc = "Does something else."
   > self.another:nonempty()
   >
-  > return {
-  >   name = self.name,
-  >   placements = {
-  >     self(),
-  >     self {
-  >       "differentPlacement",
-  >       name = "Example (Different)",
-  >       data = { another = "different" }
-  >     }
+  > return self {
+  >   {}, -- default placement (inherits name, desc, data)
+  >   {
+  >     "differentPlacement",
+  >     name = "Example (Different)",
+  >     data = { another = "different" }
   >   },
-  >   fieldOrder = self.fieldOrder,
-  >   fieldInformation = self.fieldInformation
   > }
 ]]
 
-local builder_mt = {}
-local field_mt = {}
+local Builder = {}
+local Field = {}
 
-function builder_mt:__index(key)
-  if builder_mt[key] then return builder_mt[key] end
+function Builder:__index(key)
+  if Builder[key] then return Builder[key] end
   local field = {
     _builder = self,
     _field = key
   }
-  setmetatable(field, field_mt)
+  setmetatable(field, Field)
   return field
 end
-function builder_mt:__newindex(key, val)
-  if builder_mt[key] then
-    builder_mt[key](val)
+function Builder:__newindex(key, val)
+  if Builder[key] then
+    Builder[key](val)
     return self
   end
   if not self._order_set[key] then
     self._order_set[key] = true
-    table.insert(self.fieldOrder, key)
+    table.insert(self._order, key)
   end
   self._fields[key] = val
 end
-function builder_mt:_lang(key)
+function Builder:_lang(key)
   if mu.preprocess then
     rawset(self, "_lang", mu.preprocess.lang[key][self.name])
   end
   return self
 end
-function builder_mt:_xy()
+function Builder:_xy()
   self.x = nil self.y = nil
   return self
 end
-function builder_mt:_rect()
+function Builder:_rect()
   self.x = nil self.y = nil self.width = nil self.height = nil
   return self
 end
-function builder_mt:_depth(depth)
+function Builder:_depth(depth)
   if depth == false then return self end
   self.depth = depth
   self.depth:optional():int()
   return self
 end
-function builder_mt:_tags(tags)
+function Builder:_tags(tags)
   if tags == false then return self end
   tags = tags or {"PauseUpdate", "FrozenUpdate", "TransitionUpdate"}
   self.tags = ""
@@ -391,6 +567,7 @@ function builder_mt:_tags(tags)
         for _, t in ipairs(tags) do
           if v == t then return true end
         end
+        return false
       end
     },
     valueTransformer = function(vs)
@@ -408,42 +585,111 @@ function builder_mt:_tags(tags)
     end
   }
   self.tags.desc = "Additional tags for this entity."
+  return self
+end
+function Builder:_assoc(tbl)
+  for k, v in pairs(tbl) do
+    self._assoc_mods[k] = v
+  end
+  return self
+end
+function Builder:_extra(tbl)
+  for k, v in pairs(tbl) do
+    self._data[k] = v
+  end
+  return self
+end
+function Builder:_texture(tex)
+  local dst
+  if type(tex) == "table" then
+    tex[1] = tex[1] or self._base_name
+    dst = mu.texture(tex)
+  elseif type(tex) == "string" then
+    dst = mu.texture {tex}
+  elseif tex == nil then
+    dst = mu.texture {self._base_name}
+  else
+    error("invalid texture type " .. type(tex))
+  end
+  self._data.texture = dst:gsub("^Graphics/Atlases/%a+/", "")
+  return self
+end
+function Builder:_flag_or_expr(tbl)
+  tbl.noun = tbl.noun or tbl[1] or "flag"
+  local expr = tbl.noun == "expression"
+  tbl.adj = tbl.adj or (expr and "truthy" or "set")
+  tbl.format = tbl.format or "If present, only {imperative} when this {noun} is {adj}."
+  mu.fmt(tbl)
+
+  local name = tbl.name and tbl(tbl.name) or tbl.noun
+  local invert = tbl.invert and tbl(tbl.invert) or "invertFlag"
+  local defaultInvert = false
+  if tbl.defaultInvert ~= nil then defaultInvert = tbl.defaultInvert end
+
+  self[name] = tbl.default or ""
+  self[name].desc = tbl.desc or tbl(tbl.format)
+  if not expr and (tbl.invertFlag ~= false) then self[invert] = defaultInvert end
+
+  self:_assoc {expr = expr}
+
+  return self
+end
+function Builder:_raw_delta_time(tbl)
+  tbl = tbl or {}
+  tbl.name = tbl.name or "useRawDeltaTime"
+  tbl.desc = tbl.desc or "If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time."
+
+  tbl.default = tbl.default
+  if tbl.default == nil then tbl.default = tbl[1] end
+  if tbl.default == nil then tbl.default = false end
+
+  self[tbl.name](tbl.default):desc(tbl.desc)
+  return self
 end
 
-field_mt.__index = field_mt
-function field_mt:__newindex(k, v)
-  self[k](self, v)
+Field.__index = Field
+function Field:__call(default)
+  return self:default(default)
 end
-function field_mt:name(name)
+function Field:__newindex(k, v)
+  local f = Field[k]
+  if not f then error(("attempt to set %s on field %s"):format(k, self._field)) end
+  f(self, v)
+end
+function Field:default(default)
+  self._builder[self._field] = default
+  return self
+end
+function Field:name(name)
   if mu.preprocess then
     self._builder._lang.attributes.name[self._field] = name
   end
   return self
 end
-function field_mt:desc(desc)
+function Field:desc(desc)
   if mu.preprocess then
     self._builder._lang.attributes.description[self._field] = desc
   end
   return self
 end
-function field_mt:info(info)
-  local i = self._builder.fieldInformation[self._field] or {}
+function Field:info(info)
+  local i = self._builder._info[self._field] or {}
   for k, v in pairs(info) do
     i[k] = v
   end
-  self._builder.fieldInformation[self._field] = i
+  self._builder._info[self._field] = i
   return self
 end
-function field_mt:validator(val)
+function Field:validator(val)
   return self:info{validator = val}
 end
-function field_mt:nonempty()
+function Field:nonempty()
   return self:validator(mu.validate_nonempty)
 end
-function field_mt:optional()
-  self:info {allowEmpty = true}
+function Field:optional()
+  return self:info {allowEmpty = true}
 end
-function field_mt:int()
+function Field:int()
   return self:info {fieldType = "integer"}
 end
 
@@ -459,7 +705,13 @@ local function group_name(name)
     :gsub("_.*", "")
 end
 
-function builder_mt:__call(tbl)
+local allowed_undoc = {
+  x = true, y = true,
+  width = true, height = true,
+  depth = true,
+}
+
+function Builder:_placement(tbl)
   tbl = tbl or {}
   local name = tbl[1] or default_placement_name(self.name)
   if mu.preprocess then
@@ -476,6 +728,42 @@ function builder_mt:__call(tbl)
     ext_group = group_name(self.name)
   }
 end
+function Builder:__call(tbl)
+  tbl = tbl or {}
+  local result = {
+    name = self.name,
+    placements = {},
+    fieldInformation = self._info,
+    fieldOrder = self._order,
+    associatedMods = mu.assoc(self._assoc_mods)
+  }
+
+  if mu.preprocess then
+    for _, f in ipairs(self._order) do
+      local doc = type(self._lang.attributes.description[f]) == "string"
+      if not doc and not allowed_undoc[f] and not (f:match("^invert")) then
+        print(("plugin %s: undocumented field %s"):format(self.name, f))
+      end
+    end
+  end
+
+  if tbl[1] then
+    for _, p in ipairs(tbl) do
+      table.insert(result.placements, self:_placement(p))
+    end
+  else
+    table.insert(result.placements, self:_placement())
+  end
+
+  for k, v in pairs(self._data) do result[k] = v end
+  for k, v in pairs(tbl) do
+    if type(k) ~= "number" then
+      result[k] = v
+    end
+  end
+
+  return result
+end
 
 local function prepare_name(name)
   if not name:match("^" .. mu.modname .. "/")  then
@@ -484,18 +772,27 @@ local function prepare_name(name)
   return name
 end
 
+local function unprepare_name(name)
+  return name:gsub("^" .. mu.modname .. "/", ""):gsub("_.*", "")
+end
+
 function mu.builder(tbl)
   local name = prepare_name(tbl[1])
+  local base_name = unprepare_name(name)
   local builder = {
     name = name,
+    _base_name = base_name,
     _name = tbl.name,
     _desc = tbl.desc,
+
     _fields = {},
+    _order = {},
     _order_set = {},
-    fieldOrder = {},
-    fieldInformation = {}
+    _info = {},
+    _assoc_mods = {},
+    _data = {},
   }
-  setmetatable(builder, builder_mt)
+  setmetatable(builder, Builder)
   return builder
 end
 function mu.entity(tbl)
@@ -505,7 +802,19 @@ function mu.entity(tbl)
     :_depth(tbl.depth)
     :_tags(tbl.tags)
 end
-function mu.trigger(name)
+function mu.controller(tbl)
+  local self = mu.entity(tbl)
+  self:_extra {depth = -1000000}
+
+  tbl.texture = (tbl.texture ~= nil) and tbl.texture or {only_editor = true}
+  if type(tbl.texture) == "string" then tbl.texture = {tbl.texture, only_editor = true} end
+  if tbl.texture then
+    self:_texture(tbl.texture)
+  end
+
+  return self
+end
+function mu.trigger(tbl)
   return mu.builder(tbl)
     :_lang("triggers")
     :_rect()

@@ -1,8 +1,3 @@
-if not mu then
-  local mods = require("mods")
-  local mu = mods.requireFromPlugin("libraries.utils")
-end
-
 local variants = mu.variants(
   "FreezeTimeActiveController",
   {
@@ -16,24 +11,13 @@ local variants = mu.variants(
 
 local result = {}
 for i, v in ipairs(variants) do
-  local self = mu.entity {
+  local self = mu.controller {
     v.name,
     name = v"Freeze TimeActive Controller {par}",
     desc = "Freezes the Scene.TimeActive field; has some wacky effects."
   }
+  self:_flag_or_expr {v.noun, imperative = "freeze", default = "freezeTimeActive"}
 
-  self[v.noun] = "freezeTimeActive"
-  self[v.noun].desc = v"If present, freeze only when the {noun} is {adj}."
-  if v.noun == "flag" then self.invertFlag = false end
-
-  result[i] = {
-    name = self.name,
-    associatedMods = mu.assoc {expr = v.Noun == "Expression"},
-    depth = -1000000,
-    texture = "objects/microlith57/misc/freeze_time_active_controller",
-    placements = {self()},
-    fieldOrder = self.fieldOrder,
-    fieldInformation = self.fieldInformation
-  }
+  result[i] = self()
 end
 return result

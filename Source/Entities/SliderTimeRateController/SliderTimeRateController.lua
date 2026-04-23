@@ -1,48 +1,26 @@
-local utils = require("utils")
-
-local nonEmptyValidator = function(s)
-  return s ~= ""
-end
-
-local fieldInformation = {
-  multiplier = {validator = nonEmptyValidator}
-}
-
-local fieldOrder = {
-  "x", "y",
-  "flag", "invertFlag", "expression",
-  "multiplier"
-}
-
-return {
+local variants = mu.variants(
+  "SliderTimeRateController",
   {
-    name = "Microlith57Misc/SliderTimeRateController",
-    depth = -1000000,
-    texture = "objects/microlith57/misc/slider_time_rate_controller",
-    placements = {
-      {
-        name = "sliderTimeRateController",
-        data = {
-          flag = "",
-          invertFlag = false,
-          multiplier = "1.0"
-        }
-      }
-    }
-  },
-  {
-    name = "Microlith57Misc/SliderTimeRateController_Expression",
-    associatedMods = {"Microlith57MiscellaneousMechanics", "FrostHelper"},
-    depth = -1000000,
-    texture = "objects/microlith57/misc/slider_time_rate_controller",
-    placements = {
-      {
-        name = "sliderTimeRateController",
-        data = {
-          expression = "",
-          multiplier = "1.0"
-        }
-      }
-    }
+    {"", "Expression"},
+    noun = {"flag", "expression"},
+    Noun = {"Flag", "Expression"},
+    adj = {"set", "truthy"},
   }
-}
+)
+
+local result = {}
+for i, v in ipairs(variants) do
+  local self = mu.controller {
+    v.name,
+    name = v"Time Rate Controller ({Noun})",
+    desc = "Modifies how fast time progresses based on a slider value."
+  }
+  self:_flag_or_expr {v.noun, imperative = "affect the time rate"}
+
+  self.multiplier "1.0"
+    :nonempty()
+    :desc(v"{Noun} containing the amount to multiply the time rate by, in [0.0, ∞).")
+
+  result[i] = self()
+end
+return result
