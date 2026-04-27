@@ -1,0 +1,11 @@
+{
+    "ignoreDir": [
+        "!/Source"
+    ],
+    "diagnostics.globals": [
+        "mu",
+        "configuration"
+    ],
+    "runtime.nonstandardSymbol": ["+=", "-=", "*=", "/=", "%=", "^=", "&=", "|=", "<<=", ">>="],
+    "runtime.version": "LuaJIT"
+}

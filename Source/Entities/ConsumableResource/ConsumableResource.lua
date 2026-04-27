@@ -1,4 +1,4 @@
-local variants = mu.variants(
+local variants = mu.variants( ---@type table<string, string>[]
   "ConsumableResource",
   {
     {"Custom", "Stamina", "MaxStamina"},
@@ -19,7 +19,8 @@ for i, v in ipairs(variants) do
   -- todo desc
   self:_assoc {expr = v.typ == "Expression"}
 
-  self.resource(v.defaultRes)
+  self.resource
+    :default(v.defaultRes)
     :nonempty()
     :desc "Name of this Consumable Resource entity; and also of the slider it uses."
 
@@ -29,7 +30,7 @@ for i, v in ipairs(variants) do
   if v.res == "Custom" then
     self.lowThreshold(20)
       :desc "Amount of the resource that's considered low."
-    self.maximum(110)
+    self.maximum:_(110)
       :desc "Maximum possible amount of the resource."
   elseif v.res == "MaxStamina" then
     self.lowThreshold(20)
@@ -39,21 +40,23 @@ for i, v in ipairs(variants) do
       ]]
   end
 
-  self["instantRefill" .. v.Bool]("")
+  self["instantRefill" .. v.Bool]
+    :default ""
     :desc(v[[
       When {set}, instantly refill {thing} to its maximum.
 
       May have unintended effects if {set} for more than a frame.
     ]])
-  self["instantDrain" .. v.Bool]("")
+  self["instantDrain" .. v.Bool]
+    :default ""
     :desc(v[[
       When {set}, instantly set {thing} to 0.
 
       May have unintended effects if {set} for more than a frame.
     ]])
   if v.typ == "Flag" then
-    self.invertInstantRefillFlag = false
-    self.invertInstantDrainFlag = false
+    self.invertInstantRefillFlag(false)
+    self.invertInstantDrainFlag(false)
   end
 
   if v.res ~= "Stamina" then
@@ -74,8 +77,7 @@ for i, v in ipairs(variants) do
       ]]
   end
   if v.res ~= "Stamina" then
-    self.useRawDeltaTime(false)
-      :desc "If true, use real time (unaffected by slowed/sped up time); otherwise use normal game time."
+    self:_raw_delta_time()
     self.dieWhenConsumed(false)
       :desc(v"If true, kill the player if {thing} reaches 0.")
   end

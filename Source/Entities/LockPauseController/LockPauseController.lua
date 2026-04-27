@@ -14,19 +14,10 @@ for i, v in ipairs(variants) do
     v.name,
   }
   -- todo: desc
-  self:_flag_or_expr {v.noun, imperative = "lock", default = "lockPause"}
+  self:_flag_or_expr {v.bool, imperative = "lock", default = "lockPause"}
 
-  self.mode(nil)
-    :info {
-      options = {
-        "LockRetry",
-        "LockSaveQuit",
-        "LockRetryAndSaveQuit",
-        "LockPauseMenu",
-        "LockRetrySaveQuitAndPauseMenu"
-      },
-      editable = false
-    }
+  self.mode
+    :list {"LockRetry", "LockSaveQuit", "LockRetryAndSaveQuit", "LockPauseMenu", "LockRetrySaveQuitAndPauseMenu"}
     :desc [[
       What to lock.
 

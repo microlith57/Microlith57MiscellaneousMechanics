@@ -24,7 +24,8 @@ for i, v in ipairs(variants) do
   }
   self:_flag_or_expr {v.bool, imperative = v"update the {output}"}
 
-  self.packedColor(v.packedColor)
+  self.packedColor
+    :default(v.packedColor)
     :nonempty()
     :name "Packed Colour"
     :desc(v[[
@@ -42,10 +43,7 @@ for i, v in ipairs(variants) do
 
   if v.format then
     self.format "ZeroToOne"
-      :info {
-        options = {"ZeroToOne", "Radians", "Degrees"},
-        editable = false
-      }
+      :list {"ZeroToOne", "Radians", "Degrees"}
       :name "Angle Format"
       :desc "Format to use for the hue component."
   end

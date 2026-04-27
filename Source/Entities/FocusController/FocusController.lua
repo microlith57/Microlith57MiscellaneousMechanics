@@ -14,13 +14,13 @@ for i, v in ipairs(variants) do
     v.name,
     name = v"Focus Controller ({typ})"
   }
-  self:_flag_or_expr {v.bool, imperative = "allow focusing", name = "enabled{Bool}", invert = "invertEnabled{Bool}"}
+  self:_flag_or_expr {v.bool, imperative = "allow focusing", name = v"enabled{Bool}", invert = v"invertEnabled{Bool}"}
 
   if v.typ == "Flag" then
     self.activeFlag "tryingToFocus"
       :nonempty()
       :desc "If possible, focus whenever this flag is set."
-    self.invertActiveFlag = false
+    self.invertActiveFlag(false)
   elseif v.typ == "Expression" then
     self.activeExpression "$input.grab"
       :nonempty()

@@ -33,12 +33,7 @@ for i, v in ipairs(variants) do
     :nonempty()
     :desc "Slider for the second Y position of the camera offset."
 
-  self.direction "LeftToRight"
-    :info {
-      options = enums.trigger_position_modes,
-      editable = false
-    }
-    :desc "Determines which direction the player position will affect the offset in."
+  self:_position_mode {desc = "Determines which direction the player position will affect the offset in."}
 
   self.coarse(true)
     :desc [[

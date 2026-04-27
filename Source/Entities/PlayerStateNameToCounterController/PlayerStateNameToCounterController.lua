@@ -14,6 +14,6 @@ self.counter "stNormal"
 
 self.inStateFlag "stNormal"
   :desc "Flag to set when the player is alive and in the chosen state."
-self.invertFlag = false
+self.invertFlag(false)
 
 return self()

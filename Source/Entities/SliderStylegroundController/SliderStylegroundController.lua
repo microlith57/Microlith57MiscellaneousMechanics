@@ -4,7 +4,7 @@ local variants = mu.variants(
 )
 
 local things = {"position", "scroll", "speed"}
-local coords = mu.vary {a = {"x", "y"}}
+local coords = mu.vary {a = {"x", "y"}} ---@type table<string, string>[]
 
 local result = {}
 for i, v in ipairs(variants) do
@@ -23,7 +23,8 @@ for i, v in ipairs(variants) do
     for _, c in ipairs(coords) do
       c(v); c.thing = t
 
-      self[t .. c.A]("")
+      self[t .. c.A]
+        :default ""
         :desc(c"{Float} to set the {A} {thing} to, or empty to leave it unchanged.")
     end
   end

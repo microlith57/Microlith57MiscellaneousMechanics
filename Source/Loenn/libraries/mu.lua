@@ -1,6 +1,13 @@
+---@class mu
+---@field preprocess mu.preprocess?
+---
+---@field configuration "debug"|"release"
+---@field ["debug"|"release"] true?
 local mu = (mu and mu.preprocess and mu) or {}
+if configuration then mu.configuration = configuration end
 
---local serialize = require("utils.serialize").serialize
+local serialize = require("utils.serialize").serialize
+local celeste_enums = require("consts.celeste_enums") -- see we're countercultural here. snake_case instead of camelCase
 
 --[[
   miscellaneous utilities.
@@ -24,8 +31,9 @@ mu.modpathsegment = "microlith57/misc"
 
 function mu.validate_nonempty(s) return s ~= "" end
 
+---@param o table
 function mu.pp(o)
-  local success, val = serialize(o)
+  local _, val = serialize(o)
   print(val)
 end
 
@@ -40,26 +48,40 @@ end
   note that there are other preprocessing-related features in other sections.
 ]]
 
+---@param f fun(): nil Function to be called once this feature is finished preprocessing.
 function mu.defer(f)
   if mu.preprocess then table.insert(mu.preprocess.feature.defer, f) end
 end
 
+---@param rel string
 local function abs_path_for(rel)
   return mu.preprocess.self.feat_path .. "/" .. rel:gsub("^/", '')
 end
 
+---@class _PlanMove
+---@field [1] string
+---@field [2] string|false?
+---@field header boolean?
+---@field absolute boolean?
+---@field allow_collision boolean?
+
+---@param tbl _PlanMove
+---@return string?
 function mu.plan_move(tbl)
   if not mu.preprocess then return end
 
-  local rel = tbl[1]
-  local src = abs_path_for(rel)
+  local src = tbl.absolute and tbl[1] or abs_path_for(tbl[1])
 
-  if not mu.preprocess.planned_moves[src] then mu.preprocess.planned_moves[src] = {} end
-  local move = mu.preprocess.planned_moves[src]
+  ---@class PlannedMove
+  ---@field to string?
+  ---@field header boolean?
+  ---@field feature string
+  local move = mu.preprocess.planned_moves[src] or {}
 
   local dst = tbl[2]
   if dst == false then
     move.to = nil
+    dst = nil
   elseif dst ~= nil then
     move.to = dst
   end
@@ -71,13 +93,18 @@ function mu.plan_move(tbl)
   end
 
   local feature = mu.preprocess.self.feature
-  if move.feature and move.feature ~= feature then
+  if not tbl.allow_collision and move.feature and move.feature ~= feature then
     error("feature " .. feature .. " tried to overwrite file " .. dst .. " which is already set by " .. move.feature)
   end
   move.feature = feature
 
+  mu.preprocess.planned_moves[src] = move
+
   return dst
 end
+
+---@overload fun(a: string): string?
+---@overload fun(a: {[1]: string, [2]: string?, header: boolean?}): string
 function mu.plan_move_self(a)
   if not mu.preprocess then return end
 
@@ -87,12 +114,14 @@ function mu.plan_move_self(a)
   return mu.plan_move(tbl)
 end
 
+---@param dst string
 function mu.plan_only_editor(dst)
   if not mu.preprocess then return end
 
   mu.preprocess.everestignore[dst] = true
 end
 
+---@param tbl {[1]: string, [2]: string, atlas: string?, only_editor: boolean?}
 function mu.texture(tbl)
   local src = tbl[1]
   local dst = tbl[2]
@@ -138,7 +167,13 @@ end
   > }
 ]]
 
+---@class Fmt
+---@field [any] any
+---@operator call(string): string
 local Fmt = {}
+
+---@overload fun(self, o: string): string
+---@overload fun(self, o: table): table
 function Fmt:__call(o)
   if type(o) == "string" then
     return self:_format(o)
@@ -150,8 +185,6 @@ end
 function Fmt:__index(key)
   local meta = rawget(Fmt, key)
   if meta then return meta end
-  local val = rawget(self, key)
-  if val then return val end
 
   if type(key) ~= "string" then return end
 
@@ -183,12 +216,14 @@ function Fmt:__index(key)
   return val
 end
 local punct_precedence = {[","] = 1, [";"] = 2, ["-"] = 3}
+---@private
+---@param s string
 function Fmt:_format_one(s)
-  local open = s:match("^%s*[%(%)%[%]]*") or ""
-  local close = s:match("[%(%)%[%]]*%s*$") or ""
+  local open = s:match("^%s*[%(%)%[%]]*") or "" ---@type string
+  local close = s:match("[%(%)%[%]]*%s*$") or "" ---@type string
   local c = s:sub(#open + 1, -1 - #close)
-  
-  local res = {}
+
+  local res = {} ---@type string[]
   local i = 1
   local punct = ""
   while true do
@@ -223,8 +258,10 @@ function Fmt:_format_one(s)
     return ""
   end
 end
+---@private
+---@param s string
 function Fmt:_format(s)
-  local res = {}
+  local res = {} ---@type string[]
   local i = 1
   while true do
     local open = s:find("{", i)
@@ -234,6 +271,7 @@ function Fmt:_format(s)
       break
     elseif s[open + 1] == "{" then
       local t = s:sub(i, open - 1)
+      table.insert(res, t)
       table.insert(res, "{")
       i = open + 2
     else
@@ -251,21 +289,25 @@ function Fmt:_format(s)
   end
   return table.concat(res)
 end
+---@private
+---@param t table
 function Fmt:_merge(t)
-  for k, v in pairs(t) do
-    self[k] = v
-  end
+  for k, v in pairs(t) do self[k] = v end
   return self
 end
 
+---@param t table
+---@return Fmt
 function mu.fmt(t)
   setmetatable(t, Fmt)
   return t
 end
 
+---@param tbl {[string]: any[]}
 function mu.vary(tbl)
-  local result = {}
+  local result = {} ---@type Fmt[]
   local _, ref = next(tbl)
+  if not ref then error("must have at least one variant!") end
   for i, _ in ipairs(ref) do
     local r = mu.fmt {}
     for k, v in pairs(tbl) do
@@ -292,9 +334,10 @@ local associations = {
   {"FrostHelper", expr = true},
 }
 
+---@param tbl {[string]: boolean?}
 function mu.assoc(tbl)
   if tbl.self == nil then tbl.self = true end
-  local result = {}
+  local result = {} ---@type string[]
   for _, a in ipairs(associations) do
     local found = false
     for k, _ in pairs(a) do
@@ -303,9 +346,7 @@ function mu.assoc(tbl)
         break
       end
     end
-    if found then
-      table.insert(result, a[1])
-    end
+    if found then table.insert(result, a[1]) end
   end
   return result
 end
@@ -341,13 +382,14 @@ end
 
 local indent_ruler = 80
 
+---@param val string
 local function prepare_lang_entry(val)
-  local lines = tostring(val):split("\n")()
+  local lines = tostring(val):split("\n")() ---@type string[]
   if #lines == 0 then return "" end
   local indent = #(lines[1]:match("^%s*"))
 
-  local res = {}
-  local paragraph = {}
+  local res = {} ---@type string[]
+  local paragraph = {} ---@type string[]
   local reindent = true
 
   local function push_paragraph()
@@ -356,7 +398,7 @@ local function prepare_lang_entry(val)
     if #res > 0 then table.insert(res, "") end
 
     if reindent then
-      local words = {}
+      local words = {} ---@type string[]
       for _, line in ipairs(paragraph) do
         local words_in_line = line:split(" ")()
         for _, word in ipairs(words_in_line) do
@@ -364,7 +406,7 @@ local function prepare_lang_entry(val)
         end
       end
 
-      local line = {}
+      local line = {} ---@type string[]
       local len = 0
       local function push_line()
         table.insert(res, table.concat(line, " "))
@@ -414,13 +456,20 @@ local function prepare_lang_entry(val)
   return table.concat(res, "\\n")
 end
 
+---@class Lang
+---@field [string] Lang | string
 local Lang = {}
+
+---@param key string
+---@return Lang
 function Lang:__index(key)
   local val = {}
   setmetatable(val, Lang)
   rawset(self, key, val)
   return val
 end
+---@param key string
+---@param val string
 function Lang:__newindex(key, val)
   if type(val) == "table" then
     local current_val = self[key]
@@ -434,15 +483,20 @@ function Lang:__newindex(key, val)
   end
 end
 
+---@param l table
+---@return Lang
 function mu.lang(l)
   l = l or {}
   setmetatable(l, Lang)
   return l
 end
 
+---@param l Lang
 function mu.print_lang(l)
+  ---@param node Lang
+  ---@param prefix string?
   local function walk(node, prefix)
-    local keys = table.keys(node)
+    local keys = table.keys(node) ---@type string[]
     table.sort(keys)
 
     for _, k in ipairs(keys) do
@@ -504,6 +558,18 @@ end
   > v"something including {named}" --> "something including a"
 ]]
 
+---@class Var
+---@field [1] string[]
+---@field [integer|string] any[]?
+
+---@class Variant
+---@field name string
+---@field [string] any
+---@field [integer] {[integer|string]: any}
+
+---@param name string
+---@param ... Var
+---@return Variant[]
 function mu.variants(name, ...)
   local vars = {...}
 
@@ -553,6 +619,8 @@ function mu.variants(name, ...)
   return variants
 end
 
+---@param tbl {[1]: string?, [2]: string?, [string]: any}?
+---@return Var
 function mu.var_expr(tbl)
   tbl = tbl or {}
   local res = {
@@ -608,7 +676,69 @@ end
   > }
 ]]
 
+---@class _FlagOrExpr
+---@field [1|"bool"] string?
+---@field set string?
+---@field name string?
+---@field default string?
+---@field desc string?
+---@field invert string?
+---@field invertFlag boolean?
+---@field defaultInvert boolean?
+
+---@class _Builder_UseRawDeltaTime
+---@field [1|"default"] boolean?
+---@field name string?
+---@field desc string?
+
+---@alias _Builder_PositionMode {name: string?, desc: string?}
+---@alias _Builder_AngleFormat {name: string?, desc: string?}
+
+---@class _Builder_Placement
+---@field [1] string?
+---@field name string?
+---@field desc string?
+---@field data {[string]: any}?
+
+---@class _Builder_Call
+---@field [integer] _Builder_Placement
+---@field [string] any
+
+---@class Builder
+---@field _lang    fun(self: Builder, key: string): Builder
+---@field _xy      fun(self: Builder): Builder
+---@field _rect    fun(self: Builder): Builder
+---@field _depth   fun(self: Builder, depth: integer|false?): Builder
+---@field _tags    fun(self: Builder, tags: string[]|false?): Builder
+---@field _assoc   fun(self: Builder, tbl: {[string]: boolean}): Builder
+---@field _extra   fun(self: Builder, tbl: {[string]: any}): Builder
+---@field _texture fun(self: Builder, tex: string|table?): Builder
+---@field _flag_or_expr   fun(self: Builder, tbl: _FlagOrExpr): Builder
+---@field _raw_delta_time fun(self: Builder, tbl: _Builder_UseRawDeltaTime?): Builder
+---@field _position_mode  fun(self: Builder, tbl: _Builder_PositionMode?): Builder
+---@field _angle_format   fun(self: Builder, tbl: _Builder_AngleFormat?): Builder
+---@field _placement fun(self: Builder, tbl: _Builder_Placement?): Builder
+---@operator call(_Builder_Call): table
+---
+---@field package name        string
+---@field package _base_name  string
+---@field package _name       string?
+---@field package _desc       string?
+---@field package _fields     {[string]: any}
+---@field package _order      string[]
+---@field package _order_set  {[string]: true?}
+---@field package _info       {[string]: table?}
+---@field package _assoc_mods {[string]: boolean?}
+---@field package _data       {[string]: any}
+---@field package _placements table[]
+---
+---@field [string] Field
 local Builder = {}
+
+---@class Field
+---@field package _builder Builder
+---@field package _field string
+---@operator call(any): Field
 local Field = {}
 
 function Builder:__index(key)
@@ -654,35 +784,44 @@ end
 function Builder:_tags(tags)
   if tags == false then return self end
   tags = tags or {"PauseUpdate", "FrozenUpdate", "TransitionUpdate"}
-  self.tags = ""
-  self.tags.info = {
-    fieldType = "list",
-    elementSeparator = ",",
-    elementOptions = {
-      options = tags,
-      warningValidator = function(v)
-        v = v:gsub("^%s*", ""):gsub("%s+$", "")
-        for _, t in ipairs(tags) do
-          if v == t then return true end
-        end
-        return false
-      end
-    },
-    valueTransformer = function(vs)
-      local tags = {}
-      local tags_set = {}
-      local vt = string.split(vs, ",")()
-      for _, v in pairs(vt) do
-        v = v:gsub("^%s*", ""):gsub("%s+$", "")
-        if not tags_set[v] then
-          table.insert(tags, v)
-          tags_set[v] = true
-        end
-      end
-      return table.concat(tags, ",")
+
+  ---@param v string
+  local function warningValidator(v)
+    v = v:gsub("^%s*", ""):gsub("%s+$", "")
+    for _, t in ipairs(tags) do
+      if v == t then return true end
     end
-  }
-  self.tags.desc = "Additional tags for this entity."
+    return false
+  end
+
+  ---@param vs string
+  local function valueTransformer(vs)
+    local t = {} ---@type string[]
+    local tags_set = {} ---@type {[string]: true?}
+    local vt = string.split(vs, ",")()
+    table.sort(vt)
+    for _, v in ipairs(vt) do
+      v = v:gsub("^%s*", ""):gsub("%s+$", "")
+      if not tags_set[v] then
+        table.insert(t, v)
+        tags_set[v] = true
+      end
+    end
+    return table.concat(t, ",")
+  end
+
+  self.tags:_""
+    :info {
+      fieldType = "list",
+      elementSeparator = ",",
+      elementOptions = {
+        options = tags,
+        warningValidator = warningValidator
+      },
+      valueTransformer = valueTransformer
+    }
+    :desc "Additional tags for this entity."
+
   return self
 end
 function Builder:_assoc(tbl)
@@ -716,17 +855,18 @@ function Builder:_flag_or_expr(tbl)
   tbl.bool = tbl.bool or tbl[1] or "flag"
   local expr = tbl.bool == "expression"
   tbl.set = tbl.set or (expr and "truthy" or "set")
-  tbl.format = tbl.format or "If present, only {imperative} when this {bool} is {set}."
+  tbl.desc = tbl.desc or "If present, only {imperative} when this {bool} is {set}."
   mu.fmt(tbl)
 
-  local name = tbl.name and tbl(tbl.name) or tbl.bool
-  local invert = tbl.invert and tbl(tbl.invert) or "invertFlag"
+  local name = tbl.name or tbl.bool
+  local invert = tbl.invert or "invertFlag"
   local defaultInvert = false
   if tbl.defaultInvert ~= nil then defaultInvert = tbl.defaultInvert end
 
-  self[name] = tbl.default or ""
-  self[name].desc = tbl.desc or tbl(tbl.format)
-  if not expr and (tbl.invertFlag ~= false) then self[invert] = defaultInvert end
+  self[name]
+    :default(tbl.default or "")
+    :desc(tbl(tbl.desc))
+  if not expr and (tbl.invertFlag ~= false) then self[invert]:default(defaultInvert) end
 
   self:_assoc {expr = expr}
 
@@ -744,11 +884,42 @@ function Builder:_raw_delta_time(tbl)
   self[tbl.name](tbl.default):desc(tbl.desc)
   return self
 end
+function Builder:_position_mode(tbl)
+  tbl = tbl or {}
+  tbl.name = tbl.name or "direction"
+  tbl.desc = tbl.desc or "" -- todo
+
+  local f = self[tbl.name]
+  if not f:has_default() then f:default "LeftToRight" end
+  f:list(celeste_enums.trigger_position_modes)
+    :name(tbl.name)
+    :desc(tbl.desc)
+
+  return self
+end
+function Builder:_angle_format(tbl)
+  tbl = tbl or {}
+  tbl.name = tbl.name or "format"
+  tbl.desc = tbl.desc or "Format to use for the angle."
+
+  tbl.desc = tbl.desc .. [[
+
+    \b
+    ZeroToOne: Fraction of a turn around a full circle, in [0.0, 1.0).
+    Radians: Angle in radians, in [0.0, 2*pi).
+    Radians: Angle in degrees, in [0.0, 360.0).
+  ]]
+
+  local f = self[tbl.name]
+  if not f:has_default() then f:default "ZeroToOne" end
+  f:name "Angle Format"
+    :desc(tbl.desc)
+    :list {"ZeroToOne", "Radians", "Degrees"}
+
+  return self
+end
 
 Field.__index = Field
-function Field:__call(default)
-  return self:default(default)
-end
 function Field:__newindex(k, v)
   local f = Field[k]
   if not f then error(("attempt to set %s on field %s"):format(k, self._field)) end
@@ -758,18 +929,25 @@ function Field:default(default)
   self._builder[self._field] = default
   return self
 end
+Field.__call = Field.default
+function Field:has_default()
+  return self._builder._fields[self._field] ~= nil
+end
+---@param name string
 function Field:name(name)
   if mu.preprocess then
     self._builder._lang.attributes.name[self._field] = name
   end
   return self
 end
+---@param desc string
 function Field:desc(desc)
   if mu.preprocess then
     self._builder._lang.attributes.description[self._field] = desc
   end
   return self
 end
+---@param info table
 function Field:info(info)
   local i = self._builder._info[self._field] or {}
   for k, v in pairs(info) do
@@ -778,10 +956,12 @@ function Field:info(info)
   self._builder._info[self._field] = i
   return self
 end
+---@param val function
 function Field:validator(val)
   return self:info{validator = val}
 end
 function Field:nonempty()
+  -- todo: number allowEmpty
   return self:validator(mu.validate_nonempty)
 end
 function Field:optional()
@@ -790,6 +970,12 @@ end
 function Field:int()
   return self:info {fieldType = "integer"}
 end
+---@param min number
+---@param max number
+function Field:range(min, max)
+  return self:info {minimumValue = min, maximumValue = max}
+end
+---@param tbl {[integer]: string, editable: boolean?}
 function Field:list(tbl)
   local options = {}
   for i, o in ipairs(tbl) do options[i] = o end
@@ -802,6 +988,7 @@ function Field:list(tbl)
   }
 end
 
+---@param name string
 local function default_placement_name(name)
   return name
     :gsub("^" .. mu.modname .. "/", "")
@@ -809,6 +996,7 @@ local function default_placement_name(name)
     :gsub("^.", string.lower)
 end
 
+---@param name string
 local function group_name(name)
   return name
     :gsub("_.*", "")
@@ -877,6 +1065,7 @@ function Builder:__call(tbl)
   return result
 end
 
+---@param name string
 local function prepare_name(name)
   if not name:match("^" .. mu.modname .. "/")  then
     name = mu.modname .. "/" .. name
@@ -884,10 +1073,17 @@ local function prepare_name(name)
   return name
 end
 
+---@param name string
 local function unprepare_name(name)
   return name:gsub("^" .. mu.modname .. "/", ""):gsub("_.*", "")
 end
 
+---@param tbl {
+---  [1]: string,
+---  name: string?,
+---  desc: string?,
+---}
+---@return Builder
 function mu.builder(tbl)
   local name = prepare_name(tbl[1])
   local base_name = unprepare_name(name)
@@ -908,6 +1104,13 @@ function mu.builder(tbl)
   setmetatable(builder, Builder)
   return builder
 end
+---@param tbl {
+---  [1]: string,
+---  name: string?,
+---  desc: string?,
+---  depth: false | integer?,
+---  tags: false | table?,
+---}
 function mu.entity(tbl)
   return mu.builder(tbl)
     :_lang("entities")
@@ -915,7 +1118,15 @@ function mu.entity(tbl)
     :_depth(tbl.depth)
     :_tags(tbl.tags)
 end
+---@param tbl {
+---  [1]: string,
+---  name: string?,
+---  desc: string?,
+---  tags: false | table?,
+---  texture: string | table?,
+---}
 function mu.controller(tbl)
+  ---@diagnostic disable-next-line: param-type-mismatch
   local self = mu.entity(tbl)
   self:_extra {depth = -1000000}
 
@@ -927,12 +1138,17 @@ function mu.controller(tbl)
 
   return self
 end
+---@param tbl {
+---  [1]: string,
+---  name: string?,
+---  desc: string?,
+---  tags: false | table?,
+---}
 function mu.trigger(tbl)
   return mu.builder(tbl)
     :_lang("triggers")
     :_rect()
+    :_tags(tbl.tags)
 end
-
----
 
 return mu

@@ -10,7 +10,7 @@ for i, v in ipairs(variants) do
     name = v"Camera Zoom Controller ({Float})",
     desc = v"Sets the camera zoom based on the value of {a float}."
   }
-  self:_flag_or_expr {v.noun, imperative = "affect the zoom"} 
+  self:_flag_or_expr {v.noun, imperative = "affect the zoom"}
 
   self.focusX "160.0"
     :nonempty()

@@ -47,7 +47,7 @@ for i, v in ipairs(variants) do
     desc = "Keep track of an entity, and put its position or size into sliders."
   }
 
-  local function triggerText(room, trigger)
+  local function triggerText(_, trigger)
     return (
       name .. " - "
       .. trigger.sliderPrefix
@@ -68,15 +68,7 @@ for i, v in ipairs(variants) do
   }
 
   self.target "Actor"
-    :info {
-      options = {
-        "Player",
-        "Actor",
-        "NonPlayerActor",
-        "Solid"
-      },
-      editable = false
-    }
+    :list {"Player", "Actor", "NonPlayerActor", "Solid"}
     :desc [[
       What type of entity to track.
 
@@ -88,30 +80,13 @@ for i, v in ipairs(variants) do
     ]]
 
   self.detection "Within"
-    :info {
-      options = {
-        "Within",
-        "Intersecting",
-        "Nearest"
-      },
-      editable = false
-    }
+    :list {"Within", "Intersecting", "Nearest"}
     :desc [[
       Whether an entity must be entirely within the region; just intersecting the region; or anywhere.
     ]]
 
   self.stickiness "Soulbond"
-    :info {
-      options = {
-        "Free",
-        "Transient",
-        "UntilNewMatch",
-        "UntilDeath",
-        "Lifelink",
-        "Soulbond"
-      },
-      editable = false
-    }
+    :list {"Free", "Transient", "UntilNewMatch", "UntilDeath", "Lifelink", "Soulbond"}
     :desc [[
       What to do once an entity is targetted.
 
@@ -125,18 +100,7 @@ for i, v in ipairs(variants) do
     ]]
 
   self.tracking "Position"
-    :info {
-      options = {
-        "Position",
-        "Center",
-        "TopCenter",
-        "BottomCenter",
-        "CenterLeft",
-        "CenterRight",
-        "Size"
-      },
-      editable = false
-    }
+    :list {"Position", "Center", "TopCenter", "BottomCenter", "CenterLeft", "CenterRight", "Size"}
     :desc 'What position to track; or "Size" for width/height.'
 
   self.sliderPrefix "trackedPosition"
@@ -146,6 +110,8 @@ for i, v in ipairs(variants) do
   self.targettingFlag ""
     :desc "If present, set flag with this name when a target is found."
 
-  result[i] = self()
+  result[i] = self {
+    triggerText = triggerText
+  }
 end
 return result

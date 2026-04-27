@@ -17,7 +17,7 @@ for i, v in ipairs(variants) do
 
   self.isAmbience(false)
     :desc "If checked, set an ambience param; otherwise, set a music param."
-  self.param("")
+  self.param ""
     :desc "Name of the param to set."
   self.value "0.0"
     :nonempty()

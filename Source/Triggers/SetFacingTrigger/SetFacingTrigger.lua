@@ -1,30 +1,16 @@
 local variants = mu.variants(
   "SetFacingTrigger",
-  {
-    {"", "Expression"},
-    noun = {"flag", "expression"},
-    Noun = {"Flag", "Expression"},
-    adj = {"set", "truthy"},
-    nadj = {"unset", "falsy"},
-    par = {"", ", Expression"},
-    p = {"", ", Expr"},
-  }
+  mu.var_expr()
 )
 
 local abbreviations = {
-  direction = {
-    Left = "L",
-    Right = "R",
-  },
-  invert = {
-    [false] = "",
-    [true] = "i",
-  },
-  continuous = {
-    [false] = "",
-    [true] = "c",
-  }
+  direction = {Left = "L", Right = "R"},
+  invert = {[false] = "", [true] = "i"},
+  continuous = {[false] = "", [true] = "c"},
+  expression = {[false] = "", [true] = "e"},
 }
+
+local directions = mu.vary {dir = {"left", "right"}}
 
 local function abbr(str, options)
   return options[str] or "?"
@@ -38,53 +24,42 @@ for i, v in ipairs(variants) do
     desc = "Causes the player to face either left or right."
   }
 
-  self.direction(nil)
-    :info {
-      options = {
-        "Left",
-        "Right"
-      },
-      editable = false
-    }
+  self.direction
+    :list {"Left", "Right"}
     :desc "Direction to make the player face."
 
-  self:_flag_or_expr {v.noun, imperative = "make the player face that direction"}
+  self:_flag_or_expr {v.bool, imperative = "make the player face that direction"}
 
   self.invertIfUnset(false)
-    :name(v"Invert if {nadj}")
-    :desc(v"If the {noun} is {nadj}, make the player face the other way.")
+    :name(v"Invert if {unset}")
+    :desc(v"If the {bool} is {unset}, make the player face the other way.")
 
   self.continuous(true)
     :desc [[
       Continue to set the player's facing direction the whole time they're in the trigger, instead of once on entry.
     ]]
 
-  local function placementName(dir)
-    return "Set Player Facing (" .. dir .. v.par .. ")"
-  end
-
-  local function triggerText(room, trigger)
+  local function triggerText(_, trigger)
     return (
       "Set Facing ("
       .. abbr(trigger.direction, abbreviations.direction)
       .. abbr(trigger.invertIfUnset, abbreviations.invert)
       .. abbr(trigger.continuous, abbreviations.continuous)
-      .. v.p
+      .. abbr(v.bool == "expression", abbreviations.expression)
       .. ")"
     )
   end
 
+  for _, d in ipairs(directions) do
+    d(v)
+    self:_placement {
+      d.dir,
+      name = d"Set Player Facing {(Dir, Expr?)}",
+      data = {direction = d.Dir}
+    }
+  end
+
   result[i] = self {
-    {
-      "left",
-      name = "Set Player Facing (Left{par})",
-      data = { direction = "Left" }
-    },
-    {
-      "right",
-      name = "Set Player Facing (Right{par})",
-      data = { direction = "Right" }
-    },
     triggerText = triggerText
   }
 end

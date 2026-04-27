@@ -13,7 +13,7 @@ local rgba = mu.vary {
 local hsl = mu.vary {col = {"h", "s", "l"}, cname = {"hue", "saturation", "lightness"}}
 local hsv = mu.vary {col = {"h", "s", "v"}, cname = {"hue", "saturation", "value"}}
 
-local variants = mu.variants(
+local variants = mu.variants( ---@type {channels: table<string, string>[], [string]: string}[]
   "ColorPacker",
   {
     {"Float", "Int", "HSL", "HSV"},
@@ -53,6 +53,7 @@ for i, v in ipairs(variants) do
     v.source = v.float
     v.l = "0.0" v.u = "1.0"
   end
+  ---@diagnostic disable-next-line: param-type-mismatch
   for _, c in ipairs(v.channels) do
     c(v)
     c.range = c.col == "h" and " (see Angle Format)" or v", in {[l, u]}"
@@ -63,23 +64,21 @@ for i, v in ipairs(variants) do
       :desc(c"{Source} for the {cname} component{range}.")
   end
 
-  self.alpha = "1.0"
+  self.alpha "1.0"
   if v[1][1] == "Float" or v[1][1] == "Int" then
-    self.alpha.desc = v[[
+    self.alpha:desc(v[[
       {Float} for an additional alpha multiplier.
 
       If you don't know what premultiplied alpha means, use this instead.
-    ]]
+    ]])
   else
-    self.alpha.desc = v"{Float} for the alpha multiplier."
+    self.alpha.desc(v"{Float} for the alpha multiplier.")
   end
 
   if v.channels[1].col == "h" then
+    self:_angle_format()
     self.format "ZeroToOne"
-      :info {
-        options = {"ZeroToOne", "Radians", "Degrees"},
-        editable = false
-      }
+      :list {"ZeroToOne", "Radians", "Degrees"}
       :name "Angle Format"
       :desc "Format to use for the hue component."
   end
