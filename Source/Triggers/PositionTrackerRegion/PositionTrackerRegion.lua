@@ -1,12 +1,6 @@
 local variants = mu.variants(
   "PositionTrackerRegion",
-  {
-    {"", "Expression"},
-    noun = {"flag", "expression"},
-    Noun = {"Flag", "Expression"},
-    adj = {"set", "truthy"},
-    par = {"", " (Expression)"},
-  }
+  mu.var_expr()
 )
 
 local abbreviations = {
@@ -46,7 +40,7 @@ end
 
 local result = {}
 for i, v in ipairs(variants) do
-  local name = v"Position Tracker Region ({Noun})"
+  local name = v"Position Tracker Region {(Expr?)}"
   local self = mu.trigger {
     v.name,
     name = name,
@@ -67,10 +61,10 @@ for i, v in ipairs(variants) do
   end
 
   self:_flag_or_expr {
-    v.noun,
+    v.bool,
     imperative = "allow changing targets",
-    name = "retargetIf{Noun}",
-    invert = "invertRetargetIf{Noun}"
+    name = v"retargetIf{Bool}",
+    invert = v"invertRetargetIf{Bool}"
   }
 
   self.target "Actor"

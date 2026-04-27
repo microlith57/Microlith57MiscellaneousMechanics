@@ -3,7 +3,6 @@ local variants = mu.variants(
   {
     {"", "Expression"},
     noun = {"flag", "expression"},
-    Noun = {"Flag", "Expression"},
     adj = {"set", "truthy"},
     par = {"", " (Expression)"},
   }

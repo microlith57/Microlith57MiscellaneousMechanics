@@ -1,11 +1,15 @@
-package.path = "?.lua;selene/selene/lib/?.lua;selene/selene/lib/?/init.lua;../Source/Loenn/libraries/?.lua;../Source/?.lua" .. package.path
+package.path = "?.lua;selene/selene/lib/?.lua;selene/selene/lib/?/init.lua;../Source/Loenn/libraries/?.lua;../Source/?.lua;" .. package.path
 
 local selene = require("selene")
 selene.load(nil, true)
 
+local serialize = require("utils.serialize").serialize
+
 mu = {
   preprocess = {
     incremental = false,
+    dryrun = false,
+    timer = true,
     feature = {},
     lang = nil,
     everestignore = nil,
@@ -29,7 +33,7 @@ if env_dryrun == "true" then
   mu.preprocess.dryrun = true
 end
 
-local env_timer = os.getenv(env_prefix .. "TIMER") or "true"
+local env_timer = os.getenv(env_prefix .. "TIMER") or "false"
 if env_timer == "true" then
   mu.preprocess.timer = true
 end
@@ -310,6 +314,11 @@ local function preprocess_feature(infos)
       local path = table.concat(info.full_path, "/"):gsub(".lua$", "")
       local res = require(path)
       -- mu.pp(res, "res")
+
+      local _, ser = serialize {result = res}
+      local f = io.open("../tmp/" .. info.file, "w")
+      f:write(ser)
+      f:close()
     end
   end
 
@@ -351,8 +360,8 @@ local function preprocess_features(by_feature)
 end
 
 local luas = {}
-find_luas("DecalRegistry", luas)
-find_luas("Entities", luas)
+--find_luas("DecalRegistry", luas)
+--find_luas("Entities", luas)
 find_luas("Triggers", luas)
 
 local by_feature = describe_many(luas)

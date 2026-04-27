@@ -1,12 +1,12 @@
 local variants = mu.variants(
   "LockPauseController",
-  {
-    {"", "Expression"},
-    noun = {"flag", "expression"},
-    adj = {"set", "truthy"},
-    par = {"", "Expression; "}
-  }
+  mu.var_expr()
 )
+
+local placements = mu.vary {
+  mode = {"lockRetry", "lockSaveQuit", "lockPauseMenu"},
+  modename = {"Disable Retry", "Disable Save+Quit", "Disable Menu"}
+}
 
 local result = {}
 for i, v in ipairs(variants) do
@@ -50,22 +50,15 @@ for i, v in ipairs(variants) do
       WARNING: This disables a softlock prevention mechanism! Use with care!
     ]]
 
-  result[i] = self {
-    {
-      "lockRetryController",
-      name = v"Lock Pause Controller ({par}Disable Retry)",
-      data = {mode = "LockRetry"}
-    },
-    {
-      "lockSaveQuitController",
-      name = v"Lock Pause Controller ({par}Disable Save+Quit)",
-      data = {mode = "LockSaveQuit"}
-    },
-    {
-      "lockPauseController",
-      name = v"Lock Pause Controller ({par}Disable Menu)",
-      data = {mode = "LockPause"}
+  for _, p in ipairs(placements) do
+    p(v)
+    self:_placement {
+      p"{mode}Controller",
+      name = p"Lock Pause Controller {(modename; Expr?)}",
+      data = {mode = p.Mode},
     }
-  }
+  end
+
+  result[i] = self()
 end
 return result

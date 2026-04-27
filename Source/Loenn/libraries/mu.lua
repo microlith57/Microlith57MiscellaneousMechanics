@@ -1,6 +1,6 @@
 local mu = (mu and mu.preprocess and mu) or {}
 
-local serialize = require("utils.serialize").serialize
+--local serialize = require("utils.serialize").serialize
 
 --[[
   miscellaneous utilities.
@@ -139,42 +139,117 @@ end
 ]]
 
 local Fmt = {}
-Fmt.__index = Fmt
 function Fmt:__call(o)
   if type(o) == "string" then
-    return Fmt._format(self, o)
+    return self:_format(o)
   elseif type(o) == "table" then
-    return Fmt._merge(self, o)
+    return self:_merge(o)
   end
   return o
 end
 function Fmt:__index(key)
+  local meta = rawget(Fmt, key)
+  if meta then return meta end
   local val = rawget(self, key)
   if val then return val end
 
   if type(key) ~= "string" then return end
 
-  local Key = key:gsub("%u", string.lower, 1)
-  if Key == key then return end
+  local upper = false
+  key = key:gsub("%a", function(a)
+    if a:match("%u") then upper = true end
+    return a:lower()
+  end, 1)
 
-  local Val = rawget(self, Key)
-  if Val then return tostring(Val):gsub("%l", string.upper, 1) end
-end
-function Fmt:_format(s)
-  -- todo: "{{a}}" -> "{a}"
-  -- todo: error messages
+  local a = false
+  key = key:gsub("^an? ", function()
+    a = true;
+    return ""
+  end)
 
-  local function replace(match)
-    local key = match:sub(2, -2)
-    local val = self[key]
-    if val then
-      return tostring(val)
-    else
-      return match
-    end
+  local val = rawget(self, key)
+  if not val then return end
+  val = tostring(val)
+
+  if a then
+    local vowel = val:match("^[aeiou]")
+    val = (vowel and "an " or "a ") .. val
   end
 
-  return s:gsub("{[%a%d]+}", replace)
+  if upper then
+    val = val:gsub("%l", string.upper, 1)
+  end
+
+  return val
+end
+local punct_precedence = {[","] = 1, [";"] = 2, ["-"] = 3}
+function Fmt:_format_one(s)
+  local open = s:match("^%s*[%(%)%[%]]*") or ""
+  local close = s:match("[%(%)%[%]]*%s*$") or ""
+  local c = s:sub(#open + 1, -1 - #close)
+  
+  local res = {}
+  local i = 1
+  local punct = ""
+  while true do
+    local next = c:find("[,;-]", i)
+    local j = next and next - 1 or #c
+    local key = c:sub(i, j):gsub("^%s+", ""):gsub("%s+$", "")
+    local val = self[key]
+    if val == nil then error(("key %s not found in format string"):format(key)) end
+
+    local found = val ~= ""
+    if found then
+      local p = punct
+      if punct ~= "" then p = p .. " " end
+      if punct == "-" then p = " " .. p end
+      if #res > 0 then table.insert(res, p) end
+      table.insert(res, val)
+    end
+
+    i = j + 2
+    if i > #c then break end
+
+    local next_punct = next and c:sub(next, next) or ""
+    local prev_prec = punct_precedence[punct] or -2
+    local next_prec = punct_precedence[next_punct] or -1
+    if found or next_prec > prev_prec then
+      punct = next_punct
+    end
+  end
+  if #res > 0 then
+    return open .. table.concat(res) .. close
+  else
+    return ""
+  end
+end
+function Fmt:_format(s)
+  local res = {}
+  local i = 1
+  while true do
+    local open = s:find("{", i)
+    if not open then
+      local t = s:sub(i):gsub("}}", "}")
+      table.insert(res, t)
+      break
+    elseif s[open + 1] == "{" then
+      local t = s:sub(i, open - 1)
+      table.insert(res, "{")
+      i = open + 2
+    else
+      if open > i then
+        local t = s:sub(i, open - 1):gsub("}}", "}")
+        table.insert(res, t)
+      end
+      local close = s:find("}", open + 1)
+      if not close then error(("unbalanced curly braces in format string, starting at %d"):format(open)) end
+      if open == close then error(("empty format specifier at %d"):format(open)) end
+      local contents = s:sub(open + 1, close - 1)
+      table.insert(res, self:_format_one(contents))
+      i = close + 1
+    end
+  end
+  return table.concat(res)
 end
 function Fmt:_merge(t)
   for k, v in pairs(t) do
@@ -419,7 +494,7 @@ end
   you can name properties:
   > local variants = mu.variants(
   >   "Example2",
-  >   { {"A", "B"}, named = {"a", "b"} })
+  >   {{"A", "B"}, named = {"a", "b"}})
   > )
 
   and then retrieve these named properties in several ways:
@@ -476,6 +551,29 @@ function mu.variants(name, ...)
   end
 
   return variants
+end
+
+function mu.var_expr(tbl)
+  tbl = tbl or {}
+  local res = {
+    {tbl[1] or "", tbl[2] or "Expression"},
+    bool = {"flag", "expression"},
+    set = {"set", "truthy"},
+    unset = {"unset", "falsy"},
+    int = {"counter", "expression"},
+    float = {"slider", "expression"},
+    containing = {"containing", "yielding"},
+    ["expr?"] = {"", "expression"},
+    ["exp?"] = {"", "expr"},
+  }
+
+  for k, v in pairs(tbl) do
+    if type(k) == "string" then
+      res[k] = v
+    end
+  end
+
+  return res
 end
 
 ---
@@ -615,13 +713,13 @@ function Builder:_texture(tex)
   return self
 end
 function Builder:_flag_or_expr(tbl)
-  tbl.noun = tbl.noun or tbl[1] or "flag"
-  local expr = tbl.noun == "expression"
-  tbl.adj = tbl.adj or (expr and "truthy" or "set")
-  tbl.format = tbl.format or "If present, only {imperative} when this {noun} is {adj}."
+  tbl.bool = tbl.bool or tbl[1] or "flag"
+  local expr = tbl.bool == "expression"
+  tbl.set = tbl.set or (expr and "truthy" or "set")
+  tbl.format = tbl.format or "If present, only {imperative} when this {bool} is {set}."
   mu.fmt(tbl)
 
-  local name = tbl.name and tbl(tbl.name) or tbl.noun
+  local name = tbl.name and tbl(tbl.name) or tbl.bool
   local invert = tbl.invert and tbl(tbl.invert) or "invertFlag"
   local defaultInvert = false
   if tbl.defaultInvert ~= nil then defaultInvert = tbl.defaultInvert end
@@ -692,6 +790,17 @@ end
 function Field:int()
   return self:info {fieldType = "integer"}
 end
+function Field:list(tbl)
+  local options = {}
+  for i, o in ipairs(tbl) do options[i] = o end
+
+  local editable = tbl.editable or false
+
+  return self:info {
+    options = options,
+    editable = editable,
+  }
+end
 
 local function default_placement_name(name)
   return name
@@ -722,17 +831,28 @@ function Builder:_placement(tbl)
   for k, v in pairs(tbl.data or {}) do
     data[k] = v
   end
-  return {
+  local res = {
     name = name,
     data = data,
     ext_group = group_name(self.name)
   }
+  table.insert(self._placements, res)
+  return self
 end
 function Builder:__call(tbl)
   tbl = tbl or {}
+
+  if tbl[1] then
+    for _, p in ipairs(tbl) do
+      self:_placement(p)
+    end
+  elseif #self._placements == 0 then
+    self:_placement()
+  end
+
   local result = {
     name = self.name,
-    placements = {},
+    placements = self._placements,
     fieldInformation = self._info,
     fieldOrder = self._order,
     associatedMods = mu.assoc(self._assoc_mods)
@@ -745,14 +865,6 @@ function Builder:__call(tbl)
         print(("plugin %s: undocumented field %s"):format(self.name, f))
       end
     end
-  end
-
-  if tbl[1] then
-    for _, p in ipairs(tbl) do
-      table.insert(result.placements, self:_placement(p))
-    end
-  else
-    table.insert(result.placements, self:_placement())
   end
 
   for k, v in pairs(self._data) do result[k] = v end
@@ -791,6 +903,7 @@ function mu.builder(tbl)
     _info = {},
     _assoc_mods = {},
     _data = {},
+    _placements = {},
   }
   setmetatable(builder, Builder)
   return builder

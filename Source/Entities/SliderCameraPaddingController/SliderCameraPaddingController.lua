@@ -1,26 +1,22 @@
 local variants = mu.variants(
   "SliderCameraPaddingController",
-  {
-    {"", "Expression"},
-    noun = {"flag", "expression"},
-    Noun = {"Flag", "Expression"},
-    adj = {"set", "truthy"},
-  }
+  mu.var_expr()
 )
 
 local result = {}
 for i, v in ipairs(variants) do
-  local self = mu.entity {
+  local self = mu.controller {
     v.name,
-    name = v"Camera Padding Controller ({Noun})",
-    desc = "Sets the camera padding (eg. used in the player seeker cutscene) based on a slider value."
+    name = v"Camera Padding Controller ({Float})",
+    desc = v"Sets the camera padding (eg. used in the player seeker cutscene) based on the value of {a float}."
   }
   self:_flag_or_expr {v.noun, imperative = "affect the padding"}
 
   self.amount "32.0"
     :nonempty()
     :desc(v[[
-      {Noun} containing the amount to pad the screen by, in [0.0, ∞). The amount in the vanilla player seeker cutscene is 32.0.
+      {Float} containing the amount to pad the screen by, in [0.0, ∞).
+      The amount in the vanilla player seeker cutscene is 32.0.
     ]])
 
   result[i] = self()

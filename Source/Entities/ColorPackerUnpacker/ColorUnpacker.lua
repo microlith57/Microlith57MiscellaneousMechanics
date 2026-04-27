@@ -9,12 +9,7 @@ local variants = mu.variants(
     tex = {"", "", "_HSL", "_HSV"},
     format = {false, false, true, true},
   },
-  {
-    {"", "Expression"},
-    parfrom = {"Counter", "Expression"},
-    noun = {"flag", "expression"},
-    cont = {"containing", "yielding"},
-    adj = {"set", "truthy"},
+  mu.var_expr {
     packedColor = {"color", "#color"},
   }
 )
@@ -23,17 +18,17 @@ local result = {}
 for i, v in ipairs(variants) do
   local self = mu.controller {
     v.name,
-    name = v"Colour Unpacker ({parfrom} to {parto})",
+    name = v"Colour Unpacker ({Int} to {parto})",
     desc = "Unpacks a counter representing a colour value into several per-component values.",
     texture = v"ColorUnpacker{tex}",
   }
-  self:_flag_or_expr {v.noun, imperative = v"update the {output}"}
+  self:_flag_or_expr {v.bool, imperative = v"update the {output}"}
 
   self.packedColor(v.packedColor)
     :nonempty()
     :name "Packed Colour"
     :desc(v[[
-      {parfrom} {cont} the packed colour that will be unpacked.
+      {Int} {containing} the packed colour that will be unpacked.
 
       Packing a colour means casting Color.PackedValue to int.
     ]])

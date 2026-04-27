@@ -1,19 +1,14 @@
 local variants = mu.variants(
   "SliderColorgradeController",
-  {
-    {"", "Expression"},
-    noun = {"flag", "expression"},
-    Noun = {"Flag", "Expression"},
-    adj = {"set", "truthy"},
-  }
+  mu.var_expr()
 )
 
 local result = {}
 for i, v in ipairs(variants) do
-  local self = mu.entity {
+  local self = mu.controller {
     v.name,
-    name = v"Colourgrade Controller ({Noun})",
-    desc = "Interpolates between colourgrades based on a slider value."
+    name = v"Colourgrade Controller ({Float})",
+    desc = v"Interpolates between colourgrades based on the value of {a float}."
   }
   self:_flag_or_expr {v.noun, imperative = "set the colourgrade"}
 
@@ -30,7 +25,7 @@ for i, v in ipairs(variants) do
 
   self.lerp "colorgradeLerp"
     :nonempty()
-    :desc(v"{Noun} for the linear interpolation factor, in [0.0, 1.0].")
+    :desc(v"{Float} {containing} the linear interpolation factor, in [0.0, 1.0].")
 
   result[i] = self()
 end

@@ -3,9 +3,8 @@ local variants = mu.variants(
   {
     {"", "Button", "Expression"},
     typ  = {"Slider", "Button", "Expression"},
-    noun = {"flag", "flag", "expression"},
-    Noun = {"Flag", "Flag", "Expression"},
-    adj  = {"set", "set", "truthy"}
+    bool = {"flag", "flag", "expression"},
+    set  = {"set", "set", "truthy"}
   }
 )
 
@@ -15,7 +14,7 @@ for i, v in ipairs(variants) do
     v.name,
     name = v"Focus Controller ({typ})"
   }
-  self:_flag_or_expr {v.noun, imperative = "allow focusing", name = "enabled{Noun}", invert = "invertEnabled{Noun}"}
+  self:_flag_or_expr {v.bool, imperative = "allow focusing", name = "enabled{Bool}", invert = "invertEnabled{Bool}"}
 
   if v.typ == "Flag" then
     self.activeFlag "tryingToFocus"

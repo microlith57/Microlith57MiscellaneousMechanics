@@ -1,8 +1,25 @@
 local enums = require("consts.celeste_enums")
 
-local nonEmptyValidator = function(s)
-  return s ~= ""
+local variants = mu.variants(
+  "SliderCameraOffsetTrigger",
+  mu.var_expr()
+)
+
+local result = {}
+for i, v in ipairs(variants) do
+  local name = v"Camera Target ({Float})"
+  local self = mu.trigger {
+    v.name,
+    name = name,
+    desc = v"Sets the camera target based on {float} values."
+  }
+
+  result[i] = self {
+
+  }
 end
+return result
+
 
 local fieldInformation = {
   positionMode = {

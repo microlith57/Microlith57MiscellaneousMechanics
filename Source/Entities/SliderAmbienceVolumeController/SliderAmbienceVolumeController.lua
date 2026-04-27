@@ -1,24 +1,19 @@
 local variants = mu.variants(
   "SliderAmbienceVolumeController",
-  {
-    {"", "Expression"},
-    typ  = {"Slider", "Expression"},
-    noun = {"flag", "expression"},
-    adj  = {"set", "truthy"}
-  }
+  mu.var_expr()
 )
 
 local result = {}
 for i, v in ipairs(variants) do
   local self = mu.controller {
     v.name,
-    name = v"Ambience Volume Controller ({typ})"
+    name = v"Ambience Volume Controller ({Float})"
   }
-  self:_flag_or_expr {v.noun, imperative = "set the volume"}
+  self:_flag_or_expr {v.bool, imperative = "set the volume"}
 
   self.volume "1.0"
     :nonempty()
-    :desc(v"{typ} to set the volume to.")
+    :desc(v"{Float} to set the volume to.")
 
   result[i] = self()
 end

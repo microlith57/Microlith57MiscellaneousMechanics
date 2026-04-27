@@ -7,19 +7,11 @@ local par = {
 
 local rgba = mu.vary {
   col = {"r", "g", "b", "a"},
-  Cname = {"Red", "Green", "Blue", "Premult Alpha"},
   cname = {"red", "green", "blue", "premultiplied alpha"},
+  Cname = {"Red", "Green", "Blue", "Premult Alpha"},
 }
-
-local hsl = mu.vary {
-  col = {"h", "s", "l"},
-  cname = {"hue", "saturation", "lightness"},
-}
-
-local hsv = mu.vary {
-  col = {"h", "s", "v"},
-  cname = {"hue", "saturation", "value"},
-}
+local hsl = mu.vary {col = {"h", "s", "l"}, cname = {"hue", "saturation", "lightness"}}
+local hsv = mu.vary {col = {"h", "s", "v"}, cname = {"hue", "saturation", "value"}}
 
 local variants = mu.variants(
   "ColorPacker",
@@ -28,11 +20,8 @@ local variants = mu.variants(
     channels = {rgba, rgba, hsl, hsv},
     tex = {"", "", "_HSL", "_HSV"},
   },
-  {
-    {"", "Expression"},
+  mu.var_expr {
     parj = {1, 2},
-    noun = {"flag", "expression"},
-    adj = {"set", "truthy"},
   }
 )
 
@@ -46,7 +35,7 @@ for i, v in ipairs(variants) do
     desc = "Packs per-component values into a single counter representing a colour value.",
     texture = v"ColorPacker{tex}",
   }
-  self:_flag_or_expr {v.noun, imperative = "update the counter"}
+  self:_flag_or_expr {v.bool, imperative = "update the counter"}
 
   self.packedColor "color"
     :nonempty()
@@ -58,29 +47,31 @@ for i, v in ipairs(variants) do
     ]]
 
   if v[1][1] == "Int" then
+    v.source = v.int
     v.l = "0" v.u = "255"
   else
+    v.source = v.float
     v.l = "0.0" v.u = "1.0"
   end
   for _, c in ipairs(v.channels) do
     c(v)
-    c.range = c.col == "h" and " (see Angle Format)" or v", in [{l}, {u}]"
+    c.range = c.col == "h" and " (see Angle Format)" or v", in {[l, u]}"
 
     self[c.col]
       :default(c.col == "h" and "0.0" or v.h)
       :name(c.Cname)
-      :desc(c"{Noun} for the {cname} component{range}.")
+      :desc(c"{Source} for the {cname} component{range}.")
   end
 
   self.alpha = "1.0"
   if v[1][1] == "Float" or v[1][1] == "Int" then
     self.alpha.desc = v[[
-      {Noun} for an additional alpha multiplier.
+      {Float} for an additional alpha multiplier.
 
       If you don't know what premultiplied alpha means, use this instead.
     ]]
   else
-    self.alpha.desc = v"{Noun} for the alpha multiplier."
+    self.alpha.desc = v"{Float} for the alpha multiplier."
   end
 
   if v.channels[1].col == "h" then

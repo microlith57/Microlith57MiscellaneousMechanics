@@ -7,21 +7,14 @@ local variants = mu.variants(
     speed   = {"units/sec", "", "max stamina/sec"},
     default = {"customResource", "stamina", "maxStamina"}
   },
-  {
-    {"", "Expression"},
-    typ = {"Slider", "Expression"},
-    adj = {"set", "truthy"}
-  }
+  mu.var_expr()
 )
 
 local result = {}
 for i, v in ipairs(variants) do
-  local bracketed = v.res
-  if v.typ == "Expression" then bracketed = bracketed .. "; " .. v.typ end
-
   local self = mu.controller {
     v.name,
-    name = ("Consumable Resource (%s)"):format(bracketed),
+    name = v"Consumable Resource {(res; Expr?)}",
   }
   -- todo desc
   self:_assoc {expr = v.typ == "Expression"}
@@ -46,17 +39,17 @@ for i, v in ipairs(variants) do
       ]]
   end
 
-  self["instantRefill" .. v.typ]("")
+  self["instantRefill" .. v.Bool]("")
     :desc(v[[
-      When {adj}, instantly refill {thing} to its maximum.
+      When {set}, instantly refill {thing} to its maximum.
 
-      May have unintended effects if {adj} for more than a frame.
+      May have unintended effects if {set} for more than a frame.
     ]])
-  self["instantDrain" .. v.typ]("")
+  self["instantDrain" .. v.Bool]("")
     :desc(v[[
-      When {adj}, instantly set {thing} to 0.
+      When {set}, instantly set {thing} to 0.
 
-      May have unintended effects if {adj} for more than a frame.
+      May have unintended effects if {set} for more than a frame.
     ]])
   if v.typ == "Flag" then
     self.invertInstantRefillFlag = false

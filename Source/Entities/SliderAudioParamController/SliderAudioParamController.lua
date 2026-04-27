@@ -1,19 +1,17 @@
 local variants = mu.variants(
   "SliderAudioParamController",
-  {
-    {"", "Expression"},
-    noun = {"flag", "expression"},
-    Noun = {"Flag", "Expression"},
-    adj = {"set", "truthy"},
-  }
+  mu.var_expr()
 )
+
+local placements = mu.vary {
+  mode = {"music", "ambience"}
+}
 
 local result = {}
 for i, v in ipairs(variants) do
   local self = mu.controller {
     v.name,
-    name = v"Audio Param Controller ({Noun})",
-    desc = "Sets an audio (music or ambience) param based on a slider value."
+    desc = v"Sets an audio param (music or ambience) based on {a float} value."
   }
   self:_flag_or_expr {v.noun, imperative = "set the param"}
 
@@ -23,21 +21,18 @@ for i, v in ipairs(variants) do
     :desc "Name of the param to set."
   self.value "0.0"
     :nonempty()
-    :desc(v"{Noun} to set the param to.")
+    :desc(v"{Float} to set the param to.")
 
-  result[i] = self {
-    {
-      "music",
-      name = v"Music Param Controller ({Noun})",
-      desc = "Sets a music param based on a slider value.",
-      data = {isAmbience = false},
-    },
-    {
-      "ambience",
-      name = v"Ambience Param Controller ({Noun})",
-      desc = "Sets an ambience param based on a slider value.",
-      data = {isAmbience = true},
+  for _, p in ipairs(placements) do
+    p(v)
+    self:_placement {
+      p.mode,
+      name = p"{Mode} Param Controller ({Float})",
+      data = {isAmbience = p.mode == "ambience"},
     }
-  }
+  end
+
+  result[i] = self()
 end
 return result
+

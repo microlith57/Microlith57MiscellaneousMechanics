@@ -1,11 +1,6 @@
 local variants = mu.variants(
   "SliderStylegroundController",
-  {
-    {"", "Expression"},
-    noun = {"flag", "expression"},
-    Noun = {"Flag", "Expression"},
-    adj = {"set", "truthy"},
-  }
+  mu.var_expr()
 )
 
 local things = {"position", "scroll", "speed"}
@@ -15,8 +10,8 @@ local result = {}
 for i, v in ipairs(variants) do
   local self = mu.entity {
     v.name,
-    name = v"Styleground Controller ({Noun})",
-    desc = "Sets properties on a styleground on a slider value."
+    name = v"Styleground Controller ({Float})",
+    desc = "Sets properties of stylegrounds based on {float} values."
   }
   self:_flag_or_expr {v.noun, imperative = "affect the stylegrounds"}
 
@@ -29,19 +24,19 @@ for i, v in ipairs(variants) do
       c(v); c.thing = t
 
       self[t .. c.A]("")
-        :desc(c"{Noun} to set the {A} {thing} to, or empty to leave it unchanged.")
+        :desc(c"{Float} to set the {A} {thing} to, or empty to leave it unchanged.")
     end
   end
 
   self.packedColor ""
     :name "Packed Colour"
     :desc(v[[
-      {Noun} to use to set the colour, or empty to leave it unchanged.
+      {Float} to use to set the colour, or empty to leave it unchanged.
       Must be packed eg. with the Colour Packer entity.
     ]])
 
   self.alphaMultiplier ""
-    :desc(v"{Noun} to set the alpha multiplier by, or empty to leave it unchanged.")
+    :desc(v"{Float} to set the alpha multiplier to, or empty to leave it unchanged.")
 
   result[i] = self()
 end

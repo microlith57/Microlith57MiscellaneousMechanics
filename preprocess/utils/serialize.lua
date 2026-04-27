@@ -225,9 +225,9 @@ function serialize.serialize(t, pretty, sortKeys, useMetaKeys, seen, depth, succ
 
             local padding = pretty and string.rep(serialize.indent, depth + 1) or ""
             local keyAssign = #key > 0 and key .. serialize.equals or ""
-            local comment = valueType == "table" and v.__comment or keyComments[k]
+            local comment = valueType == "table" and rawget(v, "__comment") or keyComments[k]
 
-            if pretty and useMetaKeys and comment then
+            if pretty and useMetaKeys and type(comment) == "string" then
                 table.insert(lines, serialize.formatComment(comment, padding))
             end
 

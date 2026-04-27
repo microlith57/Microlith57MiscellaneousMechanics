@@ -4,7 +4,7 @@ local self = mu.entity {
 }
 self:_texture()
 
-self.alpha = 1.0
+self.alpha(1.0)
 self.startFade(32):int()
 self.endFade(64):int()
 

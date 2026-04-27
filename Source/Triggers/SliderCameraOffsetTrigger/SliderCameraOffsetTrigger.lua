@@ -15,7 +15,7 @@ for i, v in ipairs(variants) do
   local self = mu.trigger {
     v.name,
     name = name,
-    desc = "Sets the camera offset based on a slider value."
+    desc = v"Sets the camera offset based on {noun} values."
   }
   self:_flag_or_expr {v.noun, imperative = "apply the camera offset"}
 
