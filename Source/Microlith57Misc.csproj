@@ -17,6 +17,10 @@
         <DefineConstants>$(DefineConstants);FEATURE_FLAG_BOX;FEATURE_FLAG_RECORDINGS</DefineConstants>
     </PropertyGroup>
 
+    <ItemGroup>
+        <Compile Remove="**/*.Rysy.cs" />
+    </ItemGroup>
+
     <!--Disable "Copy Local" for all references-->
     <ItemDefinitionGroup>
         <PackageReference PrivateAssets="all" ExcludeAssets="runtime" />
