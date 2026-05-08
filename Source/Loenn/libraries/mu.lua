@@ -114,24 +114,18 @@ function mu.plan_move_self(a)
   return mu.plan_move(tbl)
 end
 
----@param dst string
-function mu.plan_only_editor(dst)
-  if not mu.preprocess then return end
-
-  mu.preprocess.everestignore[dst] = true
-end
-
 ---@param tbl {[1]: string, [2]: string, atlas: string?, only_editor: boolean?}
 function mu.texture(tbl)
   local src = tbl[1]
   local dst = tbl[2]
   if not dst then dst = "objects/" .. mu.modpathsegment .. "/" .. src end
 
+  if tbl.only_editor then dst = dst .. "-editor" end
+
   local atlas = tbl.atlas or "Gameplay"
   local abs_dst = "Graphics/Atlases/" .. atlas .. "/" .. dst .. ".png"
 
   mu.plan_move {src .. ".png", abs_dst}
-  if tbl.only_editor then mu.plan_only_editor(abs_dst) end
 
   return dst
 end
@@ -492,7 +486,14 @@ function mu.lang(l)
 end
 
 ---@param l Lang
-function mu.print_lang(l)
+function mu.print_lang(l, f)
+  local write
+  if f then
+    function write(s) f:write(s) f:write("\n") end
+  else
+    function write(s) print(s) end
+  end
+
   ---@param node Lang
   ---@param prefix string?
   local function walk(node, prefix)
@@ -509,7 +510,7 @@ function mu.print_lang(l)
       if type(v) == "table" then
         walk(v, pfx)
       elseif type(v) == "string" then
-        print(pfx .. "=" .. v)
+        write(pfx .. "=" .. v)
       end
     end
   end
@@ -633,6 +634,7 @@ function mu.var_expr(tbl)
     containing = {"containing", "yielding"},
     ["expr?"] = {"", "expression"},
     ["exp?"] = {"", "expr"},
+    ["e?"] = {"", "e"},
   }
 
   for k, v in pairs(tbl) do
@@ -642,6 +644,51 @@ function mu.var_expr(tbl)
   end
 
   return res
+end
+
+---
+
+---@class Typology
+---@field _build fun(self: Typology): fun(table): string
+---@field [string] TypologyTyp
+local Typology = {}
+
+---@class TypologyTyp
+---@field private _typology Typology
+---@field private _key any
+---@operator call(table<any, string>): Typology
+local TypologyTyp = {}
+
+function Typology:__index(k)
+  local meta = Typology[k]
+  if meta then return meta end
+  return setmetatable({_typology = self, _key = k}, TypologyTyp)
+end
+function Typology:_build()
+  ---@param tbl table<string, any>
+  return function(tbl)
+    local res = {}
+    for _, data in ipairs(self) do
+      local key = tbl[data._key]
+      local val = data[key]
+      if val == nil then val = "?" end
+      table.insert(res, val)
+    end
+    return table.concat(res)
+  end
+end
+
+---@param tbl table<any, string>
+function TypologyTyp:__call(tbl)
+  local data = table.shallowcopy(tbl)
+  data._key = self._key
+  table.insert(self._typology, data)
+  return self._typology
+end
+
+---@return Typology
+function mu.typology()
+  return setmetatable({}, Typology)
 end
 
 ---
@@ -810,7 +857,7 @@ function Builder:_tags(tags)
     return table.concat(t, ",")
   end
 
-  self.tags:_""
+  self.tags ""
     :info {
       fieldType = "list",
       elementSeparator = ",",

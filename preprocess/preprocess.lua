@@ -11,7 +11,6 @@ mu = {} ---@type mu
 ---@class mu.preprocess
 ---@field self Info?
 ---@field planned_moves {[string]: PlannedMove?}
----@field everestignore {[string]: boolean?}
 ---@field feature {name: string, defer: (fun():nil)[]}?
 ---@field lang Lang
 local preprocess = {
@@ -299,11 +298,6 @@ local function apply_planned_moves()
   end
 end
 
-local function apply_everestignore()
-  -- todo
-  mu.pp(mu.preprocess.everestignore)
-end
-
 ---@param infos Info[]
 local function preprocess_feature(infos)
   local t_start = mu.preprocess.timer and os.clock()
@@ -327,8 +321,6 @@ local function preprocess_feature(infos)
     defer = {},
   }
   mu.preprocess.planned_moves = {}
-  mu.preprocess.everestignore = {}
-  mu.preprocess.lang = mu.lang {}
 
   for _, info in ipairs(luas) do
     if mu.configuration ~= "release" or not info.private then
@@ -351,14 +343,10 @@ local function preprocess_feature(infos)
   end
 
   apply_planned_moves()
-  -- apply_everestignore()
-
-  -- mu.print_lang(mu.preprocess.lang)
 
   mu.preprocess.self = nil
   mu.preprocess.feature = nil
   mu.preprocess.planned_moves = nil
-  mu.preprocess.everestignore = nil
 
   if mu.preprocess.timer then
     local t_end = os.clock()
@@ -370,11 +358,18 @@ end
 local function preprocess_features(by_feature)
   local t_start = mu.preprocess.timer and os.clock()
 
+  mu.preprocess.lang = mu.lang {}
+
   local features = table.keys(by_feature)
   table.sort(features)
   for _, feature in ipairs(features) do
     preprocess_feature(by_feature[feature])
   end
+
+  local f = io.open("../Loenn/lang/en_gb.lang", "w")
+  f:write(lang_header)
+  mu.print_lang(mu.preprocess.lang, f)
+  f:close()
 
   if mu.preprocess.timer then
     local t_end = os.clock()
@@ -385,8 +380,8 @@ end
 
 local luas = {}
 --find_luas("DecalRegistry", luas)
---find_luas("Entities", luas)
--- find_luas("Triggers", luas)
+find_luas("Entities", luas)
+find_luas("Triggers", luas)
 find_luas("Loenn", luas)
 
 local by_feature = describe_many(luas)

@@ -11,7 +11,7 @@ for i, v in ipairs(variants) do
   local self = mu.entity {
     v.name,
     name = v"Styleground Controller ({Float})",
-    desc = "Sets properties of stylegrounds based on {float} values."
+    desc = v"Sets properties of stylegrounds based on {float} values."
   }
   self:_flag_or_expr {v.noun, imperative = "affect the stylegrounds"}
 

@@ -3,24 +3,19 @@ local variants = mu.variants(
   mu.var_expr()
 )
 
-local abbreviations = {
-  direction = {Left = "L", Right = "R"},
-  invert = {[false] = "", [true] = "i"},
-  continuous = {[false] = "", [true] = "c"},
-  expression = {[false] = "", [true] = "e"},
-}
+local typ = mu.typology()
+  :direction     {Left = "L", Right = "R"}
+  :invertIfUnset {[false] = "", [true] = "i"}
+  :continuous    {[false] = "", [true] = "c"}
+  :_build()
 
 local directions = mu.vary {dir = {"left", "right"}}
-
-local function abbr(str, options)
-  return options[str] or "?"
-end
 
 local result = {}
 for i, v in ipairs(variants) do
   local self = mu.trigger {
     v.name,
-    name = v"Set Player Facing ({Noun})",
+    name = v"Set Player Facing {(Expr?)}",
     desc = "Causes the player to face either left or right."
   }
 
@@ -39,15 +34,9 @@ for i, v in ipairs(variants) do
       Continue to set the player's facing direction the whole time they're in the trigger, instead of once on entry.
     ]]
 
+  local expr = v["e?"]
   local function triggerText(_, trigger)
-    return (
-      "Set Facing ("
-      .. abbr(trigger.direction, abbreviations.direction)
-      .. abbr(trigger.invertIfUnset, abbreviations.invert)
-      .. abbr(trigger.continuous, abbreviations.continuous)
-      .. abbr(v.bool == "expression", abbreviations.expression)
-      .. ")"
-    )
+    return table.concat {"Set Facing (", typ(trigger), expr, ")"}
   end
 
   for _, d in ipairs(directions) do

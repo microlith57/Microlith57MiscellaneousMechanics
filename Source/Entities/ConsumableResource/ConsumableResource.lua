@@ -30,7 +30,7 @@ for i, v in ipairs(variants) do
   if v.res == "Custom" then
     self.lowThreshold(20)
       :desc "Amount of the resource that's considered low."
-    self.maximum:_(110)
+    self.maximum(110)
       :desc "Maximum possible amount of the resource."
   elseif v.res == "MaxStamina" then
     self.lowThreshold(20)

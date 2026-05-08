@@ -72,7 +72,7 @@ for i, v in ipairs(variants) do
       If you don't know what premultiplied alpha means, use this instead.
     ]])
   else
-    self.alpha.desc(v"{Float} for the alpha multiplier.")
+    self.alpha:desc(v"{Float} for the alpha multiplier.")
   end
 
   if v.channels[1].col == "h" then

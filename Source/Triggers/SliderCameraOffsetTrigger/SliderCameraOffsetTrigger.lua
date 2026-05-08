@@ -1,5 +1,3 @@
-local enums = require("consts.celeste_enums")
-
 local variants = mu.variants(
   "SliderCameraOffsetTrigger",
   {

@@ -3,40 +3,36 @@ local variants = mu.variants(
   mu.var_expr()
 )
 
-local abbreviations = {
-  target = {
+local typ = mu.typology()
+  :target {
     Player = "P",
     Actor = "A",
     NonPlayerActor = "N",
-    Solid = "S",
-  },
-  detection = {
+    Solid = "S"
+  }
+  :detection {
     Within = "W",
     Intersecting = "I",
-    Nearest = "N",
-  },
-  stickiness = {
+    Nearest = "N"
+  }
+  :stickiness {
     Free = "F",
     Transient = "T",
     UntilNewMatch = "N",
     UntilDeath = "D",
     Lifelink = "L",
-    Soulbond = "S",
-  },
-  tracking = {
+    Soulbond = "S"
+  }
+  :tracking {
     Position = "P",
     Center = "C",
     TopCenter = "T",
     BottomCenter = "B",
     CenterLeft = "L",
     CenterRight = "R",
-    Size = "S",
-  },
-}
-
-local function abbr(str, options)
-  return options[str] or "?"
-end
+    Size = "S"
+  }
+  :_build()
 
 local result = {}
 for i, v in ipairs(variants) do
@@ -46,19 +42,6 @@ for i, v in ipairs(variants) do
     name = name,
     desc = "Keep track of an entity, and put its position or size into sliders."
   }
-
-  local function triggerText(_, trigger)
-    return (
-      name .. " - "
-      .. trigger.sliderPrefix
-      .. " ("
-      .. abbr(trigger.target, abbreviations.target)
-      .. abbr(trigger.detection, abbreviations.detection)
-      .. abbr(trigger.stickiness, abbreviations.stickiness)
-      .. abbr(trigger.tracking, abbreviations.tracking)
-      .. ")"
-    )
-  end
 
   self:_flag_or_expr {
     v.bool,
@@ -109,6 +92,10 @@ for i, v in ipairs(variants) do
 
   self.targettingFlag ""
     :desc "If present, set flag with this name when a target is found."
+
+  local function triggerText(_, trigger)
+    return table.concat {name, " - ", trigger.sliderPrefix, "(", typ(trigger), ")"}
+  end
 
   result[i] = self {
     triggerText = triggerText

@@ -9,10 +9,10 @@ local result = {}
 for i, v in ipairs(variants) do
   local self = mu.trigger {
     v.name,
-    name = v"Holdable Bouyancy Region ({Float})",
-    desc = "Causes holdables (and maybe the player) to experience a bouyancy force."
+    name = v"Holdable Buoyancy Region ({Float})",
+    desc = "Causes holdables (and maybe the player) to experience a buoyancy force."
   }
-  self:_flag_or_expr {v.noun, imperative = "apply bouyancy"}
+  self:_flag_or_expr {v.noun, imperative = "apply buoyancy"}
 
   self.minForce "0.0"
     :nonempty()
@@ -30,7 +30,7 @@ for i, v in ipairs(variants) do
     :desc "If set, the player will float as well as holdables."
 
   result[i] = self {
-    triggerText = v"Holdable Bouyancy Region{par}"
+    triggerText = v"Holdable Buoyancy Region{ (Expr?)}"
   }
 end
 return result

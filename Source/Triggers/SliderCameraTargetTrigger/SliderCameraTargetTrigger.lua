@@ -13,9 +13,12 @@ for i, v in ipairs(variants) do
     name = name,
     desc = v"Sets the camera target based on {float} values."
   }
+  self:_flag_or_expr {v.noun, imperative = "apply the camera target"}
+
 
   result[i] = self {
-
+    category = "camera",
+    triggerText = name,
   }
 end
 return result
