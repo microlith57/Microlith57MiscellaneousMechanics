@@ -1,6 +1,7 @@
 {
     "ignoreDir": [
-        "!/Source"
+        "/Loenn",
+        "/tmp"
     ],
     "diagnostics.globals": [
         "mu",
