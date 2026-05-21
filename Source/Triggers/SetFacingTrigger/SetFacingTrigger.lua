@@ -23,7 +23,7 @@ for i, v in ipairs(variants) do
     :list {"Left", "Right"}
     :desc "Direction to make the player face."
 
-  self:_flag_or_expr {v.bool, imperative = "make the player face that direction"}
+  self:_flag_or_expr {v.bool, action = "make the player face that direction"}
 
   self.invertIfUnset(false)
     :name(v"Invert if {unset}")

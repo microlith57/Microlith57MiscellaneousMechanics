@@ -45,7 +45,7 @@ for i, v in ipairs(variants) do
 
   self:_flag_or_expr {
     v.bool,
-    imperative = "allow changing targets",
+    action = "allow changing targets",
     name = v"retargetIf{Bool}",
     invert = v"invertRetargetIf{Bool}"
   }

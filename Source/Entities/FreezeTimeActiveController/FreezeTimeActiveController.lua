@@ -10,7 +10,7 @@ for i, v in ipairs(variants) do
     name = v"Freeze TimeActive Controller {(Expr?)}",
     desc = "Freezes the Scene.TimeActive field; has some wacky effects."
   }
-  self:_flag_or_expr {v.bool, imperative = "freeze", default = "freezeTimeActive"}
+  self:_flag_or_expr {v.bool, action = "freeze", default = "freezeTimeActive"}
 
   result[i] = self()
 end

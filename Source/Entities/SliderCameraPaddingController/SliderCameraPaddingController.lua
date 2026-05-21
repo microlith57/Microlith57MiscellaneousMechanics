@@ -10,7 +10,7 @@ for i, v in ipairs(variants) do
     name = v"Camera Padding Controller ({Float})",
     desc = v"Sets the camera padding (eg. used in the player seeker cutscene) based on the value of {a float}."
   }
-  self:_flag_or_expr {v.noun, imperative = "affect the padding"}
+  self:_flag_or_expr {v.noun, action = "affect the padding"}
 
   self.amount "32.0"
     :nonempty()

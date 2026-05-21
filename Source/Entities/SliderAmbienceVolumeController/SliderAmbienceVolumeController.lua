@@ -9,7 +9,7 @@ for i, v in ipairs(variants) do
     v.name,
     name = v"Ambience Volume Controller ({Float})"
   }
-  self:_flag_or_expr {v.bool, imperative = "set the volume"}
+  self:_flag_or_expr {v.bool, action = "set the volume"}
 
   self.volume "1.0"
     :nonempty()

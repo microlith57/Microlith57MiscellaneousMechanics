@@ -44,7 +44,6 @@ public sealed class SliderCameraTargetTrigger : CameraAdvanceTargetTrigger {
         Snap = data.Enum("snapMode", SnapMode.NeverSnap);
     }
 
-
     public static SliderCameraTargetTrigger CreateFlag(Level level, LevelData _, Vector2 offset, EntityData data)
         => new(
             data, offset,

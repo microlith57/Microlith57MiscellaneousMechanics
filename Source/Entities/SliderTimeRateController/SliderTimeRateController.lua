@@ -10,7 +10,7 @@ for i, v in ipairs(variants) do
     name = v"Time Rate Controller ({Float})",
     desc = v"Modifies how fast time progresses based on the value of {a float}."
   }
-  self:_flag_or_expr {v.bool, imperative = "affect the time rate"}
+  self:_flag_or_expr {v.bool, action = "affect the time rate"}
 
   self.multiplier "1.0"
     :nonempty()

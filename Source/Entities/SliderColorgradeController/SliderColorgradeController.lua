@@ -10,7 +10,7 @@ for i, v in ipairs(variants) do
     name = v"Colourgrade Controller ({Float})",
     desc = v"Interpolates between colourgrades based on the value of {a float}."
   }
-  self:_flag_or_expr {v.noun, imperative = "set the colourgrade"}
+  self:_flag_or_expr {v.noun, action = "set the colourgrade"}
 
   local ab = mu.vary {
     ab = {"A", "B"},

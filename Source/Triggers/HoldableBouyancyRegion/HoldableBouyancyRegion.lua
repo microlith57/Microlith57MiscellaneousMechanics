@@ -12,7 +12,7 @@ for i, v in ipairs(variants) do
     name = v"Holdable Buoyancy Region ({Float})",
     desc = "Causes holdables (and maybe the player) to experience a buoyancy force."
   }
-  self:_flag_or_expr {v.noun, imperative = "apply buoyancy"}
+  self:_flag_or_expr {v.noun, action = "apply buoyancy"}
 
   self.minForce "0.0"
     :nonempty()

@@ -302,7 +302,7 @@ function mu.vary(tbl)
   local result = {} ---@type Fmt[]
   local _, ref = next(tbl)
   if not ref then error("must have at least one variant!") end
-  for i, _ in ipairs(ref) do
+  for i = 1, #ref do
     local r = mu.fmt {}
     for k, v in pairs(tbl) do
       r[k] = v[i]
@@ -764,6 +764,7 @@ end
 ---@field _raw_delta_time fun(self: Builder, tbl: _Builder_UseRawDeltaTime?): Builder
 ---@field _position_mode  fun(self: Builder, tbl: _Builder_PositionMode?): Builder
 ---@field _angle_format   fun(self: Builder, tbl: _Builder_AngleFormat?): Builder
+---@field _interleave     fun(self: Builder, things: Fmt[], fields: string[])
 ---@field _placement fun(self: Builder, tbl: _Builder_Placement?): Builder
 ---@operator call(_Builder_Call): table
 ---
@@ -902,7 +903,7 @@ function Builder:_flag_or_expr(tbl)
   tbl.bool = tbl.bool or tbl[1] or "flag"
   local expr = tbl.bool == "expression"
   tbl.set = tbl.set or (expr and "truthy" or "set")
-  tbl.desc = tbl.desc or "If present, only {imperative} when this {bool} is {set}."
+  tbl.desc = tbl.desc or "If present, only {action} when this {bool} is {set}."
   mu.fmt(tbl)
 
   local name = tbl.name or tbl.bool
@@ -933,14 +934,16 @@ function Builder:_raw_delta_time(tbl)
 end
 function Builder:_position_mode(tbl)
   tbl = tbl or {}
-  tbl.name = tbl.name or "direction"
-  tbl.desc = tbl.desc or "" -- todo
+  tbl[1] = tbl[1] or "direction"
+  tbl.name = tbl.name or "Direction"
+  tbl.desc = tbl.desc or "Determines how the player's position within the trigger will {action}."
+  mu.fmt(tbl)
 
-  local f = self[tbl.name]
+  local f = self[tbl[1]]
   if not f:has_default() then f:default "LeftToRight" end
   f:list(celeste_enums.trigger_position_modes)
     :name(tbl.name)
-    :desc(tbl.desc)
+    :desc(tbl(tbl.desc))
 
   return self
 end
@@ -964,6 +967,14 @@ function Builder:_angle_format(tbl)
     :list {"ZeroToOne", "Radians", "Degrees"}
 
   return self
+end
+function Builder:_interleave(things, fields)
+  for _, f in ipairs(fields) do
+    for _, t in ipairs(things) do
+      local field = t(f)
+      self[field]()
+    end
+  end
 end
 
 Field.__index = Field
@@ -1095,8 +1106,11 @@ function Builder:__call(tbl)
 
   if mu.preprocess then
     for _, f in ipairs(self._order) do
-      local doc = type(self._lang.attributes.description[f]) == "string"
-      if not doc and not allowed_undoc[f] and not (f:match("^invert")) then
+      local desc = self._lang.attributes.description[f]
+      local is_documented = type(desc) == "string" and not desc:match("^%s*$")
+      local allowed_undocumented = allowed_undoc[f] or f:match("^invert")
+
+      if not is_documented and not allowed_undocumented then
         print(("plugin %s: undocumented field %s"):format(self.name, f))
       end
     end

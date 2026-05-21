@@ -14,7 +14,12 @@ for i, v in ipairs(variants) do
     v.name,
     name = v"Focus Controller ({typ})"
   }
-  self:_flag_or_expr {v.bool, imperative = "allow focusing", name = v"enabled{Bool}", invert = v"invertEnabled{Bool}"}
+  self:_flag_or_expr {
+    v.bool,
+    action = "allow focusing",
+    name = v"enabled{Bool}",
+    invert = v"invertEnabled{Bool}"
+  }
 
   if v.typ == "Flag" then
     self.activeFlag "tryingToFocus"

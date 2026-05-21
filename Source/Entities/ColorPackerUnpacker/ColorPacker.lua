@@ -35,7 +35,7 @@ for i, v in ipairs(variants) do
     desc = "Packs per-component values into a single counter representing a colour value.",
     texture = v"ColorPacker{tex}",
   }
-  self:_flag_or_expr {v.bool, imperative = "update the counter"}
+  self:_flag_or_expr {v.bool, action = "update the counter"}
 
   self.packedColor "color"
     :nonempty()

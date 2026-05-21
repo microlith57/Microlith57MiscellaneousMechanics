@@ -3,8 +3,8 @@ local variants = mu.variants(
   mu.var_expr()
 )
 
-local things = {"position", "scroll", "speed"}
-local coords = mu.vary {a = {"x", "y"}} ---@type table<string, string>[]
+local fields = {"position", "scroll", "speed"}
+local coords = mu.vary {axis = {"x", "y"}} ---@type table<string, string>[]
 
 local result = {}
 for i, v in ipairs(variants) do
@@ -13,19 +13,19 @@ for i, v in ipairs(variants) do
     name = v"Styleground Controller ({Float})",
     desc = v"Sets properties of stylegrounds based on {float} values."
   }
-  self:_flag_or_expr {v.noun, imperative = "affect the stylegrounds"}
+  self:_flag_or_expr {v.noun, action = "affect the stylegrounds"}
 
   self.tag ""
     :nonempty()
     :desc "Affect stylegrounds with this tag."
 
-  for _, t in ipairs(things) do
+  for _, t in ipairs(fields) do
     for _, c in ipairs(coords) do
-      c(v); c.thing = t
+      c(v); c.field = t
 
-      self[t .. c.A]
+      self[t .. c.Axis]
         :default ""
-        :desc(c"{Float} to set the {A} {thing} to, or empty to leave it unchanged.")
+        :desc(c"{Float} to set the {Axis} {field} to, or empty to leave it unchanged.")
     end
   end
 

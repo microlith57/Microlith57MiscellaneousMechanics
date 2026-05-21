@@ -13,7 +13,7 @@ for i, v in ipairs(variants) do
     v.name,
     desc = v"Sets an audio param (music or ambience) based on {a float} value."
   }
-  self:_flag_or_expr {v.noun, imperative = "set the param"}
+  self:_flag_or_expr {v.noun, action = "set the param"}
 
   self.isAmbience(false)
     :desc "If checked, set an ambience param; otherwise, set a music param."

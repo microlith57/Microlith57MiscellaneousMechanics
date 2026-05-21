@@ -22,7 +22,7 @@ for i, v in ipairs(variants) do
     desc = "Unpacks a counter representing a colour value into several per-component values.",
     texture = v"ColorUnpacker{tex}",
   }
-  self:_flag_or_expr {v.bool, imperative = v"update the {output}"}
+  self:_flag_or_expr {v.bool, action = v"update the {output}"}
 
   self.packedColor
     :default(v.packedColor)

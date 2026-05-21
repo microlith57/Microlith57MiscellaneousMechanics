@@ -15,7 +15,7 @@ for i, v in ipairs(variants) do
     name = name,
     desc = v"Sets the camera offset based on {noun} values."
   }
-  self:_flag_or_expr {v.noun, imperative = "apply the camera offset"}
+  self:_flag_or_expr {v.noun, action = "set the camera offset"}
 
   self.offsetFromX "0.0"
     :nonempty()
@@ -31,7 +31,7 @@ for i, v in ipairs(variants) do
     :nonempty()
     :desc "Slider for the second Y position of the camera offset."
 
-  self:_position_mode {desc = "Determines which direction the player position will affect the offset in."}
+  self:_position_mode {action = "apply the offset"}
 
   self.coarse(true)
     :desc [[
