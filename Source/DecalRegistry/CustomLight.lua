@@ -1,0 +1,24 @@
+-- self.offsetX = 0
+-- self.offsetY = 0
+
+-- self.color(nil)
+--   :name "Colour"
+--   :desc = [[
+--     Colour to tint the light with. If unset, use the decal's colour.
+--   ]]
+-- self.alpha(1)
+
+-- self.path ""
+--   :desc = [[
+--     If set, use a different path for the light as compared to the decal.
+--     This is relative to Gameplay (so if you want a decal, it has to start with 'decals/'.)
+--   ]]
+-- self.frames(nil)
+--   :desc = [[
+--     Set of frames to use for the light part of the decal.
+--     If path is set, it will use the frames at that path; otherwise it will use whatever frames are available when this is applied.
+--   ]]
+-- self.replace(false)
+--   :desc [[
+--     If set, hides the original decal, leaving only the light.
+--   ]]

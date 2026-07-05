@@ -6,8 +6,13 @@
 .git/
 .vscode/
 Source/
+Rysy/
+
 .editorconfig
 .gitignore
+
 Microlith57Misc.sln
 README.md
 Microlith57MiscellaneousMechanics*.zip
+
+*-editor.*

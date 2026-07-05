@@ -1,0 +1,19 @@
+MICROLITH57_MISC_TEST_REDACTED_TEXT=
+    {disable_skip}
+    unredacted text unredacted text {#000000}particularly long redacted text here{#} unredacted text
+
+    unredacted text  {ph_highlight ffffff}                          {ph_highlight}  unredacted
+
+    {flag test}
+    {counter test_counter}
+    {slider test_slider 0.5}
+
+    [MADELINE left normal]
+    unredacted text unredacted text {ph_highlight 000000}{#000000 0}particularly long redacted text here{#}{ph_highlight} unredacted text
+
+    {flag test false}
+    {slider test_slider 0}
+
+MICROLITH57_MISC_MINIREDACTED=
+    [MADELINE left normal]
+    i'm having such a {ph_highlight ffffff}{#ffffff 0.0}redacted{#}{ph_highlight} day!
