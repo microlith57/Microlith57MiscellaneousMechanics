@@ -27,7 +27,7 @@ public sealed class SliderCameraPositionGetter : Entity {
         Session.Slider sliderX, Session.Slider sliderY,
         ConditionSource enabledSource
     ) : base(Vector2.Zero) {
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         SliderX = sliderX;
         SliderY = sliderY;

@@ -55,7 +55,7 @@ public sealed class SliderSoundSource : Entity {
 
         Tag |= Tags.TransitionUpdate;
         Depth = -8500;
-        this.SetDepthAndTags(data);
+        this.ProcessCommonFields(data);
 
         bool positionRelative = data.Bool("positionRelative", true);
         if (positionRelative)
