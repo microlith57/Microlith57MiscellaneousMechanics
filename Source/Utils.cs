@@ -1,7 +1,6 @@
 namespace Celeste.Mod.Microlith57Misc;
 
 public static partial class Utils {
-
     public static float SoftCap(this float num, float magnitude, float softness) {
         var excess = Math.Max(Math.Abs(num) - magnitude, 0f);
         return num - Math.Sign(num) * excess * (1f - softness);
@@ -173,5 +172,9 @@ public static partial class Utils {
 
         return self;
     }
+}
 
+public enum FlagOrExpr : byte {
+    Flag = 0,
+    Expr = 1,
 }

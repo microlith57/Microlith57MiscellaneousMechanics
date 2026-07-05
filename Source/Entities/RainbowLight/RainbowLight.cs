@@ -1,7 +1,7 @@
 namespace Celeste.Mod.Microlith57Misc;
 
 [CustomEntity("Microlith57Misc/RainbowLight")]
-public sealed class RainbowLight : Entity {
+public sealed class RainbowLight: Entity {
 
     #region --- State, Init, Behaviour ---
 

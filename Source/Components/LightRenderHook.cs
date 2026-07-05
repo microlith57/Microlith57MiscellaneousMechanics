@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Celeste.Mod.Microlith57Misc.Components;
 
 [Tracked]
-public class LightRenderHook() : Component(false, false) {
+public class LightRenderHook(): Component(false, false) {
 
     public Action? OnRenderLight;
 

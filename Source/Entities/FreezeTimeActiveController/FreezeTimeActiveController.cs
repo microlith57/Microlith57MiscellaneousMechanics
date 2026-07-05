@@ -1,54 +1,22 @@
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
 
-using static Celeste.Mod.Microlith57Misc.Components.ConditionSource;
-
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity(
-    "Microlith57Misc/FreezeTimeActiveController=Create",
-    "Microlith57Misc/FreezeTimeActiveController_Expression=CreateExpr"
-)]
-[Tracked]
-public sealed class FreezeTimeActiveController : Entity {
+[GeneratedEntity] [Tracked]
+public sealed partial class FreezeTimeActiveController(
+    EntityData data, Vector2 offset,
+    FlagOrExpr conditionType
+): Controller(data.Position + offset) {
 
-    #region --- State ---
-
-    private readonly ConditionSource Condition;
+    [AddComponent]
+    private readonly ConditionSource EnabledCondition = ConditionSource.From(conditionType, data, ifAbsent: "freezeTimeActive", @default: true);
     public bool FreezeActive => Condition.Value;
-
-    #endregion State
-    #region --- Init ---
-
-    public FreezeTimeActiveController(
-        EntityData data, Vector2 position,
-        ConditionSource condition
-    ) : base(position) {
-        Add(Condition = condition);
-    }
-
-    public static FreezeTimeActiveController Create(Level _, LevelData __, Vector2 offset, EntityData data)
-        => new FreezeTimeActiveController(
-                data, data.Position + offset,
-                new Flag(data, ifAbsent: "freezeTimeActive") { Default = true }
-            ).ProcessCommonFields(data);
-
-    public static FreezeTimeActiveController CreateExpr(Level _, LevelData __, Vector2 offset, EntityData data)
-        => new(
-                data, data.Position + offset,
-                new Expr(data, ifAbsent: "freezeTimeActive") { Default = true }
-            );
-
-    #endregion Init
-    #region --- Behaviour ---
 
     private static bool AppliesTo(Scene scene)
         => scene is Level level
         && level.Tracker.GetEntities<FreezeTimeActiveController>()
             .Any(c => c is FreezeTimeActiveController ctrl && ctrl.FreezeActive);
-
-    #endregion Behaviour
-    #region --- Hook ---
 
     [OnLoad] internal static void Load() => IL.Monocle.Scene.BeforeUpdate += manipSceneBeforeUpdate;
     [OnUnload] internal static void Unload() => IL.Monocle.Scene.BeforeUpdate -= manipSceneBeforeUpdate;
@@ -57,12 +25,8 @@ public sealed class FreezeTimeActiveController : Entity {
         ILCursor cursor = new(il);
 
         cursor.GotoNext(MoveType.After, instr => instr.MatchLdfld<Scene>("Paused"));
-
         cursor.Emit(OpCodes.Ldarg_0);
         cursor.EmitDelegate(AppliesTo);
         cursor.Emit(OpCodes.Or);
     }
-
-    #endregion Hook
-
 }

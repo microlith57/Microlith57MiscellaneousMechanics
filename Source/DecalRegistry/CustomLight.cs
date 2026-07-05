@@ -3,7 +3,7 @@ using Celeste.Mod.Registry.DecalRegistryHandlers;
 
 namespace Celeste.Mod.Microlith57Misc.DecalRegistryExt;
 
-public class CustomLight : LightRenderHook {
+public class CustomLight: LightRenderHook {
     public Vector2 Offset;
     public Color Color;
     private List<MTexture> Textures;
@@ -34,7 +34,7 @@ public class CustomLight : LightRenderHook {
             Textures[(int) frame].DrawCentered(Decal.Position + Offset, Color, Decal.scale, Decal.Rotation);
     }
 
-    internal sealed class Handler : DecalRegistryHandler {
+    internal sealed class Handler: DecalRegistryHandler {
         private float _offX, _offY;
         private Color? _color;
         private float _alpha;

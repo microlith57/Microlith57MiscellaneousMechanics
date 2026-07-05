@@ -1,33 +1,19 @@
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
-[CustomEntity("Microlith57Misc/PlayerStateNameToCounterController")]
-public sealed class PlayerStateNameToCounterController : Entity {
+[GeneratedEntity]
+public sealed class PlayerStateNameToCounterController(EntityData data, Vector2 offset): Controller(data.Position + offset) {
+    public readonly string StateName = Format(data.Attr("stateName", "StNormal").Trim());
+    public readonly string Counter = data.Attr("counter", "stNormal");
 
-    public readonly string StateName;
-    public readonly string Counter;
-
-    public readonly string Flag;
-    public readonly bool InvertFlag;
-
-    private Player? Player => Scene.Tracker.GetEntity<Player>();
+    public readonly string Flag = data.Attr("inStateFlag", "stNormal");
+    public readonly bool InvertFlag = data.Bool("invertFlag");
 
     private int StateIndex;
-
-    public PlayerStateNameToCounterController(
-        EntityData data, Vector2 offset
-    ) : base(data.Position + offset) {
-        this.ProcessCommonFields(data);
-        StateName = Format(data.Attr("stateName", "StNormal").Trim());
-        Counter = data.Attr("counter", "stNormal");
-        Flag = data.Attr("inStateFlag", "stNormal");
-        InvertFlag = data.Bool("invertFlag");
-    }
-
+    private Player? Player => Scene.Tracker.GetEntity<Player>();
     private bool InState => Player?.StateMachine.State == StateIndex;
 
     public override void Awake(Scene scene) {
         base.Awake(scene);
-
         if (Player is not Player player) goto notFound;
 
         try {
@@ -45,17 +31,11 @@ public sealed class PlayerStateNameToCounterController : Entity {
         RemoveSelf();
     }
 
-    public override void Update() {
-        base.Update();
-
-        (Scene as Level)!.Session.SetFlag(Flag, InState ^ InvertFlag);
-    }
+    public override void OnUpdate() => (Scene as Level)!.Session.SetFlag(Flag, InState ^ InvertFlag);
 
     private static string Format(string name) {
         if (name.StartsWith("St", StringComparison.InvariantCultureIgnoreCase))
             name = name[2..];
-
         return name;
     }
-
 }
