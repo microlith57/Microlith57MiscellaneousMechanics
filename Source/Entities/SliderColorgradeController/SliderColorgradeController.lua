@@ -26,6 +26,7 @@ for i, v in ipairs(variants) do
 
   self.lerp "colorgradeLerp"
     :nonempty()
+    :name "Colourgrade Lerp"
     :desc(v"{Float} {containing} the linear interpolation factor, in [0.0, 1.0].")
 
   result[i] = self()
