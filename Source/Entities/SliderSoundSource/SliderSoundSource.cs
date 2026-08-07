@@ -1,29 +1,20 @@
-using FMOD.Studio;
+using Microsoft.Xna.Framework;
+using Monocle;
+using Celeste.Mod.Entities;
+
+using Celeste.Mod.Microlith57Misc.Components;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(
     "Microlith57Misc/SliderSoundSource=Create",
-    "Microlith57Misc/SliderSoundSource_Expression=CreateExpr",
-    "Microlith57Misc/SliderSoundSource_CustomListener=Create",
-    "Microlith57Misc/SliderSoundSource_CustomListener_Expression=CreateExpr"
+    "Microlith57Misc/SliderSoundSource_Expression=CreateExpr"
 )]
 [Tracked]
-public class SliderSoundSource : Entity {
-
-    public enum ListenerMode {
-        Origin,
-        VanillaCamera,
-        TrueCamera,
-        Player,
-        Arbitrary,
-    }
-
-    public enum ListenerMirrorMode {
-        Ignore,
-        Vanilla,
-        Bidirectional
-    }
+public sealed class SliderSoundSource : Entity {
 
     #region --- State ---
 
@@ -40,13 +31,6 @@ public class SliderSoundSource : Entity {
 
     private Vector2Source PositionSource;
     private Vector2 SoundPosition => PositionSource.Value;
-
-    private bool RelativeToSource;
-    private ListenerMode Listener;
-    private ListenerMirrorMode Mirror;
-    private Vector2Source ListenerSource;
-    private Vector2 ListenerPosition => ListenerSource.Value;
-    private Vector2 LastKnownListenerPos = default;
 
     private List<(string param, FloatSource valueSource)> ParamSources;
     private IEnumerable<(string param, float value)> Params
@@ -65,23 +49,23 @@ public class SliderSoundSource : Entity {
         ConditionSource enabledSource,
         ConditionSource playingSource,
         Vector2Source positionSource,
-        Vector2Source listenerSource,
         IEnumerable<(string param, FloatSource valueSource)> paramSources,
         FloatSource volumeSource
-    ) : base(data.Position + offset) {
+    ) : base(Vector2.Zero) {
 
         Tag |= Tags.TransitionUpdate;
         Depth = -8500;
         this.ProcessCommonFields(data);
 
-        RelativeToSource = data.Bool("positionRelative", true);
-        Listener = data.Enum("positionListener", ListenerMode.VanillaCamera);
-        Mirror = data.Enum("mirror", ListenerMirrorMode.Bidirectional);
+        bool positionRelative = data.Bool("positionRelative", true);
+        if (positionRelative)
+            Position = data.Position + offset;
+        else
+            positionSource.Default = data.Position + offset;
 
         Add(EnabledSource = enabledSource);
         Add(PlayingSource = playingSource);
         this.Add(PositionSource = positionSource);
-        this.Add(ListenerSource = listenerSource);
 
         foreach (var (_, valueSource) in ParamSources = paramSources.ToList())
             Add(valueSource);
@@ -99,7 +83,6 @@ public class SliderSoundSource : Entity {
             new ConditionSource.Flag(data, "enableFlag", invertName: "invertEnable") { Default = true },
             new ConditionSource.Flag(data, "playingFlag", invertName: "invertPlaying") { Default = true },
             Vector2Source.SliderSource(level.Session, data, "position"),
-            Vector2Source.SliderSource(level.Session, data, "listener"),
             UnpackParamAttr(data.Attr("params"), s => new FloatSource.Slider(level.Session.GetSliderObject(s))),
             new FloatSource.Slider(level.Session, data, "volume") { Default = 1f }
         );
@@ -110,7 +93,6 @@ public class SliderSoundSource : Entity {
             new ConditionSource.Expr(data, "enableExpression") { Default = true },
             new ConditionSource.Expr(data, "playingExpression") { Default = true },
             Vector2Source.ExprSource(data, "position"),
-            Vector2Source.ExprSource(data, "listener"),
             UnpackParamAttr(data.Attr("params"), s => new FloatSource.Expr(s)),
             new FloatSource.Expr(data, "volume") { Default = 1f }
         );
@@ -153,28 +135,8 @@ public class SliderSoundSource : Entity {
     }
 
     public override void Update() {
-        if (Scene is not Level level) return;
-
-        switch (Listener) {
-            case ListenerMode.VanillaCamera:
-                LastKnownListenerPos = level.Camera.Position + new Vector2(320f, 180f) / 2f;
-                break;
-            case ListenerMode.TrueCamera:
-                if (level.Camera is Camera camera)
-                    LastKnownListenerPos = new Vector2((camera.Left + camera.Right) / 2f, (camera.Top + camera.Bottom) / 2f);
-                break;
-            case ListenerMode.Player:
-                if (level.Tracker.GetEntity<Player>() is Player player)
-                    LastKnownListenerPos = player.Position;
-                break;
-            case ListenerMode.Arbitrary:
-                LastKnownListenerPos = ListenerPosition;
-                break;
-        }
-
         Apply();
         base.Update();
-        SetPosition();
     }
 
     private void Apply() {
@@ -196,46 +158,6 @@ public class SliderSoundSource : Entity {
             Source.Param(param, value);
 
         Source.instance?.setVolume(Volume);
-    }
-
-    private void SetPosition() {
-        if (Scene is not Level level || level.Camera is not Camera camera || Source?.instance is not EventInstance instance) return;
-
-        /*
-          the interesting part of Audio.Position is:
-
-            Vector2 cam = Vector2.Zero;
-            if (currentCamera != null)
-                cam = currentCamera.Position + new Vector2(320f, 180f) / 2f;       // [1]
-
-            float px = position.X - cam.X;
-            if (SaveData.Instance != null && SaveData.Instance.Assists.MirrorMode)
-                px = 0f - px;                                                      // [2]
-
-            attributes3d.position.x = px;
-            attributes3d.position.y = position.Y - cam.Y;
-            attributes3d.position.z = 0f;
-            instance.set3DAttributes(attributes3d);
-
-          so we need to preemptively cancel out modifications [1] and [2], and reimplement them
-          ourselves.
-        */
-
-        if (Source?.instance is not null && Source.Is3D) {
-            var pos = SoundPosition - LastKnownListenerPos;
-            if (RelativeToSource)
-                pos += Position;
-
-            // todo mirror mode, extvars vertical mirror
-
-            var cam = Audio.currentCamera;
-            Audio.currentCamera = null;
-            try {
-                Audio.Position(instance, pos);
-            } finally {
-                Audio.currentCamera = cam;
-            }
-        }
     }
 
     #endregion Behaviour

@@ -627,10 +627,13 @@ function mu.var_expr(tbl)
   local res = {
     {tbl[1] or "", tbl[2] or "Expression"},
     bool = {"flag", "expression"},
+    bools = {"flags", "expressions"},
     set = {"set", "truthy"},
     unset = {"unset", "falsy"},
     int = {"counter", "expression"},
+    ints = {"counters", "expressions"},
     float = {"slider", "expression"},
+    floats = {"sliders", "expressions"},
     containing = {"containing", "yielding"},
     ["expr?"] = {"", "expression"},
     ["exp?"] = {"", "expr"},
@@ -726,6 +729,7 @@ end
 ---@class _FlagOrExpr
 ---@field [1|"bool"] string?
 ---@field set string?
+---@field unset string?
 ---@field name string?
 ---@field default string?
 ---@field desc string?
@@ -830,6 +834,7 @@ function Builder:_depth(depth)
   return self
 end
 function Builder:_tags(tags)
+  -- TODO custom field type
   if tags == false then return self end
   tags = tags or {"PauseUpdate", "FrozenUpdate", "TransitionUpdate"}
 
@@ -903,6 +908,7 @@ function Builder:_flag_or_expr(tbl)
   tbl.bool = tbl.bool or tbl[1] or "flag"
   local expr = tbl.bool == "expression"
   tbl.set = tbl.set or (expr and "truthy" or "set")
+  tbl.unset = tbl.unset or (expr and "falsy" or "unset")
   tbl.desc = tbl.desc or "If present, only {action} when this {bool} is {set}."
   mu.fmt(tbl)
 
@@ -1170,7 +1176,7 @@ end
 ---  name: string?,
 ---  desc: string?,
 ---  depth: false | integer?,
----  tags: false | table?,
+---  tags: false | string[]?,
 ---}
 function mu.entity(tbl)
   return mu.builder(tbl)
