@@ -14,32 +14,27 @@ mu = {} ---@type mu
 ---@field feature {name: string, defer: (fun():nil)[]}?
 ---@field lang Lang
 local preprocess = {
-  incremental = false,
+  configuration = "release",
   dryrun = false,
-  timer = true,
+  timer = false,
 }
 
 mu.preprocess = preprocess
 
 local env_prefix = "MICROLITH67_MISC_"
 
-local env_configuration = os.getenv(env_prefix .. "CONFIGURATION") or "release"
-mu.configuration = env_configuration == "release" and "release" or "debug"
-mu[mu.configuration] = true
-
-local env_incremental = os.getenv(env_prefix .. "INCREMENTAL") or "false"
-if env_incremental == "true" then
-  mu.preprocess.incremental = true
-end
+local env_configuration = os.getenv(env_prefix .. "CONFIGURATION") or mu.preprocess.configuration
+mu.preprocess.configuration = env_configuration == "release" and "release" or "debug"
+mu.configuration = mu.preprocess.configuration; mu[mu.configuration] = true
 
 local env_dryrun = os.getenv(env_prefix .. "DRYRUN") or "false"
-if env_dryrun == "true" then
-  mu.preprocess.dryrun = true
-end
+if env_dryrun == "true" then mu.preprocess.dryrun = true end
 
 local env_timer = os.getenv(env_prefix .. "TIMER") or "false"
-if env_timer == "true" then
-  mu.preprocess.timer = true
+if env_timer == "true" then mu.preprocess.timer = true end
+
+function mu.library(lib)
+  require("mu_" .. lib)(mu)
 end
 
 require("mu")
@@ -53,6 +48,7 @@ local function run(cmd)
   end
 
   local res = io.popen(cmd)
+  if not res then error("failed to read output of command: " .. cmd) end
   res:read("*a")
   res:close()
 end
@@ -68,9 +64,9 @@ local lua_header = [[
 -- for the most part this should be the same as the source, but there may be some differences.
 -- see also the preprocess directory (also in the source) for how this happens.
 
+local mu = mu
 if not mu then
-  local mods = require("mods")
-  local mu = mods.requireFromPlugin("libraries.utils")
+  mu = require("mods").requireFromPlugin("libraries.mu")
 end
 
 ]]
@@ -322,6 +318,8 @@ local function preprocess_feature(infos)
   }
   mu.preprocess.planned_moves = {}
 
+  -- TODO: make this a bit cleaner
+  run("mkdir -p ../info")
   for _, info in ipairs(luas) do
     if mu.configuration ~= "release" or not info.private then
       mu.preprocess.self = info
@@ -332,7 +330,7 @@ local function preprocess_feature(infos)
       -- mu.pp(res, "res")
 
       local _, ser = serialize {result = res}
-      local f = io.open("../tmp/" .. info.file, "w")
+      local f = io.open("../tmp/" .. info.file .. ".dump", "w")
       f:write(ser)
       f:close()
     end
@@ -366,6 +364,7 @@ local function preprocess_features(by_feature)
     preprocess_feature(by_feature[feature])
   end
 
+  run("mkdir -p ../Loenn/lang")
   local f = io.open("../Loenn/lang/en_gb.lang", "w")
   f:write(lang_header)
   mu.print_lang(mu.preprocess.lang, f)

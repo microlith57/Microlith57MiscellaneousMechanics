@@ -34,11 +34,11 @@ for i, v in ipairs(variants) do
   self:_position_mode {action = "apply the offset"}
 
   self.coarse(true)
-    :desc [[
+    :desc([[
       If checked, units are in the usual camera offset units. Otherwise they are in pixels.
 
       Camera offset units are 48px in the X direction and 32px in the Y direction.
-    ]]
+    ]])
 
   result[i] = self {
     category = "camera",

@@ -541,8 +541,8 @@ triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.snapMo
 triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.tags=Additional tags for this entity.
 triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.targetX=Slider containing the X coordinate of the camera target. If absent, uses the X\ncoordinate of the node.
 triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.targetY=Slider containing the Y coordinate of the camera target. If absent, uses the Y\ncoordinate of the node.
-triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.xOnly=If set, only affect the camera in the {Axis} axis.
-triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.yOnly=If set, only affect the camera in the {Axis} axis.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.xOnly=If set, only affect the camera in the X axis.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.description.yOnly=If set, only affect the camera in the Y axis.
 triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.name.direction=Direction
 triggers.Microlith57Misc/SliderCameraOffsetTrigger.attributes.name.positionMode=Direction
 triggers.Microlith57Misc/SliderCameraOffsetTrigger.placements.description.sliderCameraOffsetTrigger=Sets the camera target based on slider values.
@@ -562,8 +562,8 @@ triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.descrip
 triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.tags=Additional tags for this entity.
 triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.targetX=Expression yielding the X coordinate of the camera target. If absent, uses the\nX coordinate of the node.
 triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.targetY=Expression yielding the Y coordinate of the camera target. If absent, uses the\nY coordinate of the node.
-triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.xOnly=If set, only affect the camera in the {Axis} axis.
-triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.yOnly=If set, only affect the camera in the {Axis} axis.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.xOnly=If set, only affect the camera in the X axis.
+triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.description.yOnly=If set, only affect the camera in the Y axis.
 triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.name.direction=Direction
 triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.attributes.name.positionMode=Direction
 triggers.Microlith57Misc/SliderCameraOffsetTrigger_Expression.placements.description.sliderCameraOffsetTrigger=Sets the camera target based on expression values.

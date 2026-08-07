@@ -65,11 +65,11 @@ for i, v in ipairs(variants) do
     :desc "The sound event that will be played."
 
   self.globalRoomCompat(false)
-    :desc [[
+    :desc([[
       Enable this if placing the sound source in a global room.
 
       If this is ticked, when transitioning between two rooms with the same sound source (i.e. both with this ticked, and with the same event name), the transition will be seamless.
-    ]]
+    ]])
 
   result[i] = self()
 end

@@ -30,9 +30,9 @@ for i, v in ipairs(variants) do
     :desc(v"If the {bool} is {unset}, make the player face the other way.")
 
   self.continuous(true)
-    :desc [[
+    :desc([[
       Continue to set the player's facing direction the whole time they're in the trigger, instead of once on entry.
-    ]]
+    ]])
 
   local expr = v["e?"]
   local function triggerText(_, trigger)

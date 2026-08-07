@@ -34,10 +34,10 @@ for i, v in ipairs(variants) do
       :desc "Maximum possible amount of the resource."
   elseif v.res == "MaxStamina" then
     self.lowThreshold(20)
-      :desc [[
+      :desc([[
         Amount of max stamina that's considered low.
         Distinct from the low threshold for stamina itself, which is always 20.
-      ]]
+      ]])
   end
 
   self["instantRefill" .. v.Bool]
@@ -70,11 +70,11 @@ for i, v in ipairs(variants) do
   -- todo enforce nonnegative
   if v.res == "Custom" then
     self.flashRate(0.05)
-      :desc [[
+      :desc([[
         Period in seconds for the "Flash" flag to flash at, in [0, ∞).
 
         By default this is 0.05sec, which is the same as the player at low stamina.
-      ]]
+      ]])
   end
   if v.res ~= "Stamina" then
     self:_raw_delta_time()

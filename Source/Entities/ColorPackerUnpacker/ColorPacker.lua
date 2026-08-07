@@ -40,11 +40,11 @@ for i, v in ipairs(variants) do
   self.packedColor "color"
     :nonempty()
     :name "Packed Colour"
-    :desc [[
+    :desc([[
       Counter that will be set to the packed colour.
 
       Packing a colour means casting Color.PackedValue to int.
-    ]]
+    ]])
 
   if v[1][1] == "Int" then
     v.source = v.int

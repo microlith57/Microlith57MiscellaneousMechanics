@@ -1,3 +1,3 @@
----@type mu
+---@class mu
 ---@diagnostic disable-next-line: missing-fields
 mu = {}

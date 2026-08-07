@@ -28,7 +28,7 @@ for i, v in ipairs(variants) do
 
     self[c"{axis}Only"]
       :default(false)
-      :desc("If set, only affect the camera in the {Axis} axis.")
+      :desc(c"If set, only affect the camera in the {Axis} axis.")
 
     self[c"target{Axis}"]
       :default ""
@@ -49,7 +49,7 @@ for i, v in ipairs(variants) do
       "AlwaysSnap",
       "AlwaysSnapIgnoringRoomBounds"
     }
-    :desc [[
+    :desc([[
       When to snap the camera so its position exactly matches the target (rather than trying to catch up to it).
       This takes into account lerp; so if you want to snap the camera exactly to the specified position you need lerp strength 1.
 
@@ -57,7 +57,7 @@ for i, v in ipairs(variants) do
       SnapWhenInitiallyEnabled: Snap when the trigger becomes enabled (where the previous frame it wasn't).
       AlwaysSnap: Snap every frame.
       AlwaysSnapIgnoringRoomBounds: Snap every frame, unconstrained by the room's bounds.
-    ]]
+    ]])
 
   result[i] = self {
     category = "camera",

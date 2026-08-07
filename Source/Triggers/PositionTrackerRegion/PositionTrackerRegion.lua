@@ -52,7 +52,7 @@ for i, v in ipairs(variants) do
 
   self.target "Actor"
     :list {"Player", "Actor", "NonPlayerActor", "Solid"}
-    :desc [[
+    :desc([[
       What type of entity to track.
 
       \b
@@ -60,17 +60,17 @@ for i, v in ipairs(variants) do
       Actor: Players, holdables, and similar entities.
       NonPlayerActor: Holdables and similar entities.
       Solid: Solid entities of any kind.
-    ]]
+    ]])
 
   self.detection "Within"
     :list {"Within", "Intersecting", "Nearest"}
-    :desc [[
+    :desc([[
       Whether an entity must be entirely within the region; just intersecting the region; or anywhere.
-    ]]
+    ]])
 
   self.stickiness "Soulbond"
     :list {"Free", "Transient", "UntilNewMatch", "UntilDeath", "Lifelink", "Soulbond"}
-    :desc [[
+    :desc([[
       What to do once an entity is targetted.
 
       \b
@@ -80,7 +80,7 @@ for i, v in ipairs(variants) do
       UntilDeath: Only retarget once entity is removed.
       Lifelink: Keep entity targeted until it is removed, at which point also remove the region.
       Soulbond: Ensure entity exists when region is created, and remove region when entity is removed.
-    ]]
+    ]])
 
   self.tracking "Position"
     :list {"Position", "Center", "TopCenter", "BottomCenter", "CenterLeft", "CenterRight", "Size"}
