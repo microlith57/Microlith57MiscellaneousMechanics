@@ -2,7 +2,7 @@ local self = mu.entity {
   "RainbowLight",
   name = "Rainbow Light",
 }
-self:_texture()
+self:_texture {only_editor = true}
 
 self.alpha(1.0)
   :desc "How strong the light is overall, in [0.0, 1.0], where 0.0 means invisible and 1.0 means fully lit."

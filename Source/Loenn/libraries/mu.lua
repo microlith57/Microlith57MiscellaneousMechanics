@@ -120,7 +120,9 @@ function mu.texture(tbl)
   local dst = tbl[2]
   if not dst then dst = "objects/" .. mu.modpathsegment .. "/" .. src end
 
-  if tbl.only_editor then dst = dst .. "-editor" end
+  if tbl.only_editor then
+    dst = dst:gsub("/[^/]+$", function(part) return part:gsub("/", "/@", 1) end)
+  end
 
   local atlas = tbl.atlas or "Gameplay"
   local abs_dst = "Graphics/Atlases/" .. atlas .. "/" .. dst .. ".png"
