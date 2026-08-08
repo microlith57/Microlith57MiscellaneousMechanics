@@ -29,9 +29,9 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
 
-   - uses: leafo/gh-actions-lua@v13
-     with:
-     luaVersion: "luajit-2.1"
+    - uses: leafo/gh-actions-lua@v13
+      with:
+      luaVersion: "luajit-2.1"
 
     - name: Build
       run: dotnet cake.cs -- --configuration Release --target Copy
