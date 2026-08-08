@@ -143,7 +143,7 @@ local TypologyTyp = {}
 function Typology:__index(k)
   local meta = Typology[k]
   if meta then return meta end
-  return setmetatable({_typology = self, _key = k}, TypologyTyp)
+  return setmetatable({_key = k}, TypologyTyp)
 end
 function Typology:_build()
   ---@param tbl table<string, any>
@@ -160,11 +160,11 @@ function Typology:_build()
 end
 
 ---@param tbl table<any, string>
-function TypologyTyp:__call(tbl)
+function TypologyTyp.__call(self, typology, tbl)
   local data = table.shallowcopy(tbl)
   data._key = self._key
-  table.insert(self._typology, data)
-  return self._typology
+  table.insert(typology, data)
+  return typology
 end
 
 ---@return Typology

@@ -36,7 +36,7 @@ local typ = mu.typology()
 
 local result = {}
 for i, v in ipairs(variants) do
-  local name = v"Position Tracker Region {(Expr?)}"
+  local name = v"Position Tracker Region{ (Expr?)}"
   local self = mu.trigger {
     v.name,
     name = name,
@@ -94,7 +94,7 @@ for i, v in ipairs(variants) do
     :desc "If present, set flag with this name when a target is found."
 
   local function triggerText(_, trigger)
-    return table.concat {name, " - ", trigger.sliderPrefix, "(", typ(trigger), ")"}
+    return table.concat {name, " - ", trigger.sliderPrefix, " (", typ(trigger), ")"}
   end
 
   result[i] = self {
