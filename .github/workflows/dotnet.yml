@@ -10,10 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
 
     - name: Download Everest stripped lib
-      uses: robinraju/release-downloader@v1.4
+      uses: robinraju/release-downloader@v1.13
       with:
         repository: EverestAPI/Everest
         latest: true
@@ -23,7 +25,7 @@ jobs:
       run: unzip lib-stripped.zip
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: 10.x
     - name: Install dependencies
@@ -39,7 +41,7 @@ jobs:
         CelestePrefix: ${{ github.workspace }}/lib-stripped
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: Microlith57MiscellaneousMechanics
         path: artifact/*
