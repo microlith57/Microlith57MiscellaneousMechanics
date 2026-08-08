@@ -1,7 +1,6 @@
 namespace Celeste.Mod.Microlith57Misc.Components;
 
 public class ConditionSource(bool invert = false) : Component(active: false, visible: false) {
-
     public virtual bool? RawValue => null;
 
     public bool Default = false;
@@ -9,15 +8,20 @@ public class ConditionSource(bool invert = false) : Component(active: false, vis
     public bool Value => RawValue.HasValue ? RawValue.Value ^ Invert : Default;
 
     public class Function(Func<bool> func, bool invert = false) : ConditionSource(invert) {
-
         private readonly Func<bool> _Func = func;
         public override bool? RawValue => _Func() ^ Invert;
-
     }
 
-    public class Flag(string flag, bool invert = false) : ConditionSource(invert) {
+    public class Flag : ConditionSource {
+        public readonly string _Flag;
 
-        public readonly string _Flag = flag;
+        public Flag(string flag, bool invert = false) : base(invert) {
+            if (flag.StartsWith('!')) {
+                flag = flag.Substring(1);
+                Invert = !Invert;
+            }
+            _Flag = flag;
+        }
 
         public Flag(
             EntityData data,
@@ -33,11 +37,9 @@ public class ConditionSource(bool invert = false) : Component(active: false, vis
             (_Flag == "" || Scene is not Level level)
                 ? null
                 : level.Session.GetFlag(_Flag);
-
     }
 
     public class Expr : ConditionSource {
-
         private readonly object? _Expr;
 
         public Expr(
@@ -62,7 +64,5 @@ public class ConditionSource(bool invert = false) : Component(active: false, vis
             (_Expr == null || Scene is not Level level)
                 ? null
                 : Imports.FrostHelper.GetBoolSessionExpressionValue(_Expr, level.Session);
-
     }
-
 }

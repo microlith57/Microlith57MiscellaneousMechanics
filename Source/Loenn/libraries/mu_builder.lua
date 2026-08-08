@@ -216,7 +216,15 @@ function Builder:_flag_or_expr(tbl)
   local expr = tbl.bool == "expression"
   tbl.set = tbl.set or (expr and "truthy" or "set")
   tbl.unset = tbl.unset or (expr and "falsy" or "unset")
-  tbl.desc = tbl.desc or "If present, only {action} when this {bool} is {set}."
+  tbl.desc = tbl.desc or [[
+    If present, only {action} when this {bool} is {set}.
+  ]]
+  if not expr then
+    tbl.desc = tbl.desc .. [[
+
+      Prefix the flag with '!' to invert it.
+    ]]
+  end
   mu.fmt(tbl)
 
   local name = tbl.name or tbl.bool
