@@ -17,6 +17,7 @@ local preprocess = {
   configuration = "release",
   dryrun = false,
   timer = false,
+  dump = false,
 }
 
 mu.preprocess = preprocess
@@ -32,6 +33,9 @@ if env_dryrun == "true" then mu.preprocess.dryrun = true end
 
 local env_timer = os.getenv(env_prefix .. "TIMER") or "false"
 if env_timer == "true" then mu.preprocess.timer = true end
+
+local env_dump = os.getenv(env_prefix .. "DUMP") or "false"
+if env_dump == "true" then mu.preprocess.dump = true end
 
 function mu.library(lib)
   require("mu_" .. lib)
@@ -332,7 +336,9 @@ local function preprocess_feature(infos)
   mu.preprocess.planned_moves = {}
 
   -- TODO: make this a bit cleaner
-  run("mkdir -p ../info")
+  if mu.preprocess.dump then
+    run("mkdir -p ../tmp")
+  end
   for _, info in ipairs(luas) do
     if mu.configuration ~= "release" or not info.private then
       mu.preprocess.self = info
@@ -343,9 +349,12 @@ local function preprocess_feature(infos)
       -- mu.pp(res, "res")
 
       local _, ser = serialize {result = res}
-      local f = io.open("../tmp/" .. info.file .. ".dump", "w")
-      f:write(ser)
-      f:close()
+
+      if mu.preprocess.dump then
+        local f = io.open("../tmp/" .. info.file .. ".dump", "w")
+        f:write(ser)
+        f:close()
+      end
     end
   end
 
