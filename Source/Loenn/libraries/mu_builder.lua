@@ -31,6 +31,8 @@ return function(mu)
 
   local celeste_enums = require("consts.celeste_enums") -- see we're countercultural here. snake_case instead of camelCase
 
+  function mu.validate_nonempty(s) return s ~= "" end
+
   ---@class _FlagOrExpr
   ---@field [1|"bool"] string?
   ---@field set string?

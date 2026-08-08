@@ -36,8 +36,6 @@ end
 mu.modname = "Microlith57Misc"
 mu.modpathsegment = "microlith57/misc"
 
-function mu.validate_nonempty(s) return s ~= "" end
-
 ---@param o table
 function mu.pp(o)
   local _, val = serialize(o)
