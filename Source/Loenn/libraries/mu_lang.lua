@@ -124,7 +124,8 @@ function Lang:__newindex(key, val)
   elseif val == nil then
     rawset(self, key, nil)
   else
-    rawset(self, key, prepare_lang_entry(val))
+    local entry = prepare_lang_entry(val)
+    rawset(self, key, entry)
   end
 end
 
