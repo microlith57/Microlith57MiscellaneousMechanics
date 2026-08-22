@@ -311,11 +311,32 @@ function Field:__newindex(k, v)
   if not f then error(("attempt to set %s on field %s"):format(k, self._field)) end
   f(self, v)
 end
+function Field.__call(self, arg)
+  if type(arg) == "table" then
+    -- TODO
+
+    -- if arg[1] then self:default(arg[1]) end
+    -- if arg[2] and arg[3] then
+    --   self:name(arg[2])
+    --   self:desc(arg[3])
+    -- elseif arg[2] then
+    --   self:desc(arg[2])
+    -- end
+    -- for k, v in pairs(arg) do
+    --   if type(k) ~= "number" and Field[k] then
+    --     Field[k](v)
+    --   end
+    -- end
+    error("not yet implemented")
+  else
+    self:default(arg)
+  end
+  return self
+end
 function Field:default(default)
   self._builder[self._field] = default
   return self
 end
-Field.__call = Field.default
 function Field:has_default()
   return self._builder._fields[self._field] ~= nil
 end
