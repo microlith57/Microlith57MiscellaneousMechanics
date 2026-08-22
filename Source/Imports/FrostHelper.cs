@@ -3,7 +3,7 @@ using ModInteropImportGenerator;
 
 namespace Celeste.Mod.Microlith57Misc.Imports;
 
-[GenerateImports("FrostHelper")]
+[GenerateImports("FrostHelper", RequiredDependency = false)]
 public static partial class FrostHelper {
     /// <summary>
     /// Creates an object which can evaluate a Session Expression.
@@ -15,7 +15,7 @@ public static partial class FrostHelper {
     /// Returns the current value of a Session Expression.
     /// The object passed as the 1st argument needs to be created via <see cref="TryCreateSessionExpression"/>
     /// </summary>
-    public static partial object GetSessionExpressionValue(object expression, Session session);
+    // public static partial object GetSessionExpressionValue(object expression, Session session);
 
     /// <summary>
     /// Returns the current value of a Session Expression as a bool, coercing if needed.
@@ -39,7 +39,7 @@ public static partial class FrostHelper {
     /// Returns the type that the given session expression will return, or typeof(object) if that's unknown.
     /// The object passed as the 1st argument needs to be created via <see cref="TryCreateSessionExpression"/>
     /// </summary>
-    public static partial Type GetSessionExpressionReturnedType(object expression);
+    // public static partial Type GetSessionExpressionReturnedType(object expression);
 
     /// <summary>
     /// Registers a simple Session Expression command, which will be accessible via $modName.cmdName in Session Expressions.
@@ -47,7 +47,7 @@ public static partial class FrostHelper {
     /// <param name="modName">Name of the mod which registers this command. Will be used to prefix the command name</param>
     /// <param name="cmdName">Name of the command</param>
     /// <param name="func">Function called each time the command needs to be evaluated</param>
-    public static partial void RegisterSimpleSessionExpressionCommand(string modName, string cmdName, Func<Session, object> func);
+    // public static partial void RegisterSimpleSessionExpressionCommand(string modName, string cmdName, Func<Session, object> func);
 
     [OnLoad] internal static void OnLoad() => Load();
 }

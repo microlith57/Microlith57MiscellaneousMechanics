@@ -111,8 +111,7 @@ public sealed class SliderSoundSource : Entity {
     public override void Awake(Scene scene) {
         if (GlobalRoomCompat) {
             var bind = scene.Tracker
-                .GetEntities<SliderSoundSource>()
-                .Cast<SliderSoundSource>()
+                .GetEntities<SliderSoundSource>().Cast<SliderSoundSource>()
                 .Where(s => s.GlobalRoomCompat
                          && s.Source != null
                          && s.Event == Event)

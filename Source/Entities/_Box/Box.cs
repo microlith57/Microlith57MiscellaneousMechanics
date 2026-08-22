@@ -35,10 +35,10 @@ public partial class Box : Actor {
 
             var boxes = (
                 from e in Scene.Tracker.GetEntities<Box>()
-                let box = (Box)e
-                where !box.Hold.IsHeld
-                orderby box.LastInteraction
-                select box
+                let      box = (Box)e
+                where   !box.Hold.IsHeld
+                orderby  box.LastInteraction
+                select   box
             ).ToList();
 
             foreach (var box in boxes)

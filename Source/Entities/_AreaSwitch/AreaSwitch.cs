@@ -306,10 +306,8 @@ public sealed class AreaSwitch : Entity {
 
     private int InactiveUpdate() => StInactive;
     private void OnDeactivated() {
+        if (Scene is not Level level) return;
         Icon.Rate = 1f;
-
-        if (Scene is not Level level)
-            return;
 
         for (var i = 0; i < 24; i++) {
             var dir = Calc.Random.NextFloat((float)Math.PI * 2f);
@@ -335,16 +333,13 @@ public sealed class AreaSwitch : Entity {
 
     private int ActiveUpdate() => StActive;
     private void OnActivated() {
+        if (Scene is not Level level) return;
         Icon.Rate = 4f;
-
         Wiggler.Start();
-
-        if (Scene is not Level)
-            return;
 
         for (var i = 0; i < 32; i++) {
             var dir = Calc.Random.NextFloat((float)Math.PI * 2f);
-            (Scene as Level)!.Particles.Emit(P_FireActive, Position + Calc.AngleToVector(dir, 6f), ActiveColor, dir);
+            level.Particles.Emit(P_FireActive, Position + Calc.AngleToVector(dir, 6f), ActiveColor, dir);
         }
 
         TouchSfx.Play("event:/game/04_cliffside/arrowblock_side_depress");
@@ -355,15 +350,11 @@ public sealed class AreaSwitch : Entity {
     #region > Finished
 
     public void Finish() {
-        if (Finished) return;
-
-        if (Scene is not Level level) return;
-
+        if (Finished || Scene is not Level level) return;
         if (Persistent)
             level.Session.SetFlag(Label);
 
-        foreach (var s in Siblings)
-            s.Finished = true;
+        foreach (var s in Siblings) s.Finished = true;
 
         foreach (FlagSwitchGate gate in level.Tracker.GetEntities<FlagSwitchGate>())
             if (gate.Flag == Label)
@@ -399,9 +390,7 @@ public sealed class AreaSwitch : Entity {
 
         for (; fac < 0.4f; fac += Engine.DeltaTime / 1.95f) {
             Icon.Rate = Calc.ClampedMap(fac, 0f, 1f, 4f, 0.1f);
-
             if (box != null) AttractBox(box, fac);
-
             yield return null;
         }
 
@@ -409,9 +398,7 @@ public sealed class AreaSwitch : Entity {
 
         for (; fac < 1f; fac += Engine.DeltaTime / 1.95f) {
             Icon.Rate = Calc.ClampedMap(fac, 0f, 1f, 4f, 0.1f);
-
             if (box != null) AttractBox(box, fac);
-
             yield return null;
         }
 

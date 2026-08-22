@@ -4,12 +4,6 @@
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Debug");
 
- var luajit = new CommandSettings {
-     ToolName = "LuaJIT",
-     ToolExecutableNames = new[] { "luajit", "luajit.exe" },
-     WorkingDirectory = "./preprocess",
- };
-
 Task("CleanCode")
     .Does(() => {
         CleanDirectories("./{Code,Source,Rysy}/{bin,obj}");
@@ -32,10 +26,14 @@ Task("Build")
 Task("Preprocess")
     .IsDependentOn("CleanAssets")
     .Does(() => {
-        Command(
-            luajit,
-            new ProcessArgumentBuilder().Append("preprocess.lua")
-        );
+        var luajit = new CommandSettings()
+            .WithToolName("LuaJIT")
+            .WithExecutableNames(new string[] {"luajit", "luajit.exe" })
+            .WithWorkingDirectory("./preprocess")
+            .WithEnvironmentVariable("MICROLITH57_MISC_CONFIGURATION", configuration.ToLower());
+        var arg = new ProcessArgumentBuilder().Append("preprocess.lua");
+
+        Command(luajit, arg);
     });
 
 static FilePathCollection ToPackage()
