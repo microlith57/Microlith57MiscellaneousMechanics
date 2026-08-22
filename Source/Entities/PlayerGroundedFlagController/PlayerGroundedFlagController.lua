@@ -7,6 +7,6 @@ local self = mu.controller {
 self.flag "playerGrounded"
   :nonempty()
   :desc("Flag to set when the player is on the ground.")
-self.invertFlag(false)
+self.invertFlag(false):undesc()
 
 return self()

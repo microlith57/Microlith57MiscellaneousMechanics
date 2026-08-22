@@ -164,8 +164,9 @@ function mu.fmt(t)
 end
 
 ---@param tbl {[string]: any[]}
-function mu.vary(tbl)
-  local result = {} ---@type Fmt[]
+---@param result Fmt[]?
+function mu.vary(tbl, result)
+  result = result or {} ---@type Fmt[]
   local _, ref = next(tbl)
   if not ref then error("must have at least one variant!") end
   for i = 1, #ref do

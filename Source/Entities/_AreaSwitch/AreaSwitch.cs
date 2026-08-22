@@ -166,7 +166,8 @@ public sealed class AreaSwitch : Entity {
 
         Radius = data.Float("radius", 32f);
         AwarenessRange = data.Float("awareness", 32f);
-        NumLines = (int)(Calc.Circle * Radius / 3.6f);
+        var spacing = data.Float("spacing", 3.6f);
+        NumLines = (int)(Calc.Circle * Radius / spacing);
 
         InactiveColor = Calc.HexToColor(data.Attr("inactiveColor", "5FCDE4"));
         ActiveColor = Calc.HexToColor(data.Attr("activeColor", "FFFFFF"));

@@ -89,6 +89,7 @@ function mu.validate_nonempty(s) return s ~= "" end
 ---@field package _ignore     {[string]: boolean?}
 ---@field package _assoc_mods {[string]: boolean?}
 ---@field package _data       {[string]: any}
+---@field package _undesc     {[string]: boolean?}
 ---@field package _placements table[]
 ---
 ---@field [string] Field
@@ -118,10 +119,13 @@ function Builder:__newindex(key, val)
     self._order_set[key] = true
     table.insert(self._order, key)
   end
-  if self._fields[key] then
-    print(("plugin %s: replacing key %s from %s to %s"):format(self.name, key, self._fields[key], val))
+  if val ~= nil then
+    local prev = self._fields[key]
+    if prev ~= nil then
+      print(("plugin %s: replacing key %s from %s to %s"):format(self.name, key, prev, val))
+    end
+    self._fields[key] = val
   end
-  self._fields[key] = val
 end
 function Builder:_lang(key)
   if mu.preprocess then
@@ -354,6 +358,14 @@ function Field:desc(desc)
   end
   return self
 end
+---@param undesc boolean?
+function Field:undesc(undesc)
+  if mu.preprocess then
+    if undesc == nil then undesc = true end
+    self._builder._undesc[self._field] = undesc
+  end
+  return self
+end
 ---@param info table
 function Field:info(info)
   local i = self._builder._info[self._field] or {}
@@ -383,8 +395,8 @@ end
 function Field:int()
   return self:info {fieldType = "integer"}
 end
----@param min number
----@param max number
+---@param min number?
+---@param max number?
 function Field:range(min, max)
   return self:info {minimumValue = min, maximumValue = max}
 end
@@ -400,6 +412,10 @@ function Field:list(tbl)
     editable = editable,
   }
 end
+function Field:color()
+  return self:info {fieldType = "color"}
+end
+
 
 ---@param name string
 local function default_placement_name(name)
@@ -471,7 +487,7 @@ function Builder:__call(tbl)
     for _, f in ipairs(self._order) do
       local desc = self._lang.attributes.description[f]
       local is_documented = type(desc) == "string" and not desc:match("^%s*$")
-      local allowed_undocumented = allowed_undoc[f] or f:match("^invert")
+      local allowed_undocumented = allowed_undoc[f] or self._ignore[f] or self._undesc[f]
 
       if not is_documented and not allowed_undocumented then
         print(("plugin %s: undocumented field %s"):format(self.name, f))
@@ -522,6 +538,7 @@ function mu.builder(tbl)
     _order_set = {},
     _info = {},
     _ignore = {},
+    _undesc = {},
     _assoc_mods = {},
     _data = {},
     _placements = {},
