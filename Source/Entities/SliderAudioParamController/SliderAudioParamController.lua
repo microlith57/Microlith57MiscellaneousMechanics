@@ -16,9 +16,9 @@ for i, v in ipairs(variants) do
   self:_flag_or_expr {v.noun, action = "set the param"}
 
   self.isAmbience(false)
-    :desc "If checked, set an ambience param; otherwise, set a music param."
+    :desc("If checked, set an ambience param; otherwise, set a music param.")
   self.param ""
-    :desc "Name of the param to set."
+    :desc("Name of the param to set.")
   self.value "0.0"
     :nonempty()
     :desc(v"{Float} to set the param to.")
@@ -35,4 +35,3 @@ for i, v in ipairs(variants) do
   result[i] = self()
 end
 return result
-

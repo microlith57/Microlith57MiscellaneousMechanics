@@ -6,7 +6,7 @@ local self = mu.controller {
 self:_flag_or_expr {"flag", action = "set update the slider values"}
 
 self.sliderPrefix "cameraPosition"
-  :desc "X and Y will be appended to this value to get the slider names for the position."
+  :desc("X and Y will be appended to this value to get the slider names for the position.")
 
 self.tracking "Position"
   :list {
@@ -18,6 +18,6 @@ self.tracking "Position"
     "TopRight",
     "Center",
   }
-  :desc "What position to track."
+  :desc("What position to track.")
 
 return self()

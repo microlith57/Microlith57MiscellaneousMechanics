@@ -27,7 +27,7 @@ for i, v in ipairs(variants) do
     :desc(v"{Float} for the coefficient controlling how much motion is slowed in the region; acts like viscosity.")
 
   self.alsoAffectPlayer(false)
-    :desc "If set, the player will float as well as holdables."
+    :desc("If set, the player will float as well as holdables.")
 
   result[i] = self {
     triggerText = v"Holdable Buoyancy Region{ (Expr?)}"

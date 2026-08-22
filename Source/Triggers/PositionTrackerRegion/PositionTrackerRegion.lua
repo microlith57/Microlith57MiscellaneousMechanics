@@ -84,14 +84,14 @@ for i, v in ipairs(variants) do
 
   self.tracking "Position"
     :list {"Position", "Center", "TopCenter", "BottomCenter", "CenterLeft", "CenterRight", "Size"}
-    :desc 'What position to track; or "Size" for width/height.'
+    :desc('What position to track; or "Size" for width/height.')
 
   self.sliderPrefix "trackedPosition"
     :nonempty()
-    :desc "Set sliders whose names start with this and end in X and Y."
+    :desc("Set sliders whose names start with this and end in X and Y.")
 
   self.targettingFlag ""
-    :desc "If present, set flag with this name when a target is found."
+    :desc("If present, set flag with this name when a target is found.")
 
   local function triggerText(_, trigger)
     return table.concat {name, " - ", trigger.sliderPrefix, " (", typ(trigger), ")"}

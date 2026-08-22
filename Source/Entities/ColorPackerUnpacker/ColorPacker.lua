@@ -39,7 +39,7 @@ for i, v in ipairs(variants) do
 
   self.packedColor "color"
     :nonempty()
-    :name "Packed Colour"
+    :name("Packed Colour")
     :desc([[
       Counter that will be set to the packed colour.
 
@@ -76,11 +76,9 @@ for i, v in ipairs(variants) do
   end
 
   if v.channels[1].col == "h" then
-    self:_angle_format()
-    self.format "ZeroToOne"
-      :list {"ZeroToOne", "Radians", "Degrees"}
-      :name "Angle Format"
-      :desc "Format to use for the hue component."
+    self:_angle_format {
+      desc = "Format to use for the hue component."
+    }
   end
 
   result[i] = self()

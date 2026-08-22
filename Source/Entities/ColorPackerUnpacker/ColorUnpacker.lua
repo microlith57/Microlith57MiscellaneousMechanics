@@ -27,7 +27,7 @@ for i, v in ipairs(variants) do
   self.packedColor
     :default(v.packedColor)
     :nonempty()
-    :name "Packed Colour"
+    :name("Packed Colour")
     :desc(v[[
       {Int} {containing} the packed colour that will be unpacked.
 
@@ -36,7 +36,7 @@ for i, v in ipairs(variants) do
 
   self.unpackedColorPrefix "unpackedColor"
     :nonempty()
-    :name "Unpacked Colour Prefix"
+    :name("Unpacked Colour Prefix")
     :desc(v[[
       {suffixes} will be appended to this value to get the {output} names for the {nsuffixes} components of the colour. Alpha is ignored.
     ]])
@@ -44,8 +44,8 @@ for i, v in ipairs(variants) do
   if v.format then
     self.format "ZeroToOne"
       :list {"ZeroToOne", "Radians", "Degrees"}
-      :name "Angle Format"
-      :desc "Format to use for the hue component."
+      :name("Angle Format")
+      :desc("Format to use for the hue component.")
   end
 
   result[i] = self()

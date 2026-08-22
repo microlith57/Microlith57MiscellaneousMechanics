@@ -22,16 +22,16 @@ for i, v in ipairs(variants) do
   self.resource
     :default(v.defaultRes)
     :nonempty()
-    :desc "Name of this Consumable Resource entity; and also of the slider it uses."
+    :desc("Name of this Consumable Resource entity; and also of the slider it uses." )
 
   self.flagPrefix ""
-    :desc 'If present, used as a prefix to generate "Any" / "Full" / "Low" / "Flash" flags.'
+    :desc('If present, used as a prefix to generate "Any" / "Full" / "Low" / "Flash" flags.')
 
   if v.res == "Custom" then
     self.lowThreshold(20)
-      :desc "Amount of the resource that's considered low."
+      :desc("Amount of the resource that's considered low.")
     self.maximum(110)
-      :desc "Maximum possible amount of the resource."
+      :desc("Maximum possible amount of the resource.")
   elseif v.res == "MaxStamina" then
     self.lowThreshold(20)
       :desc([[

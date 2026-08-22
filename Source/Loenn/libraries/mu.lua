@@ -40,6 +40,7 @@ mu.modpathsegment = "microlith57/misc"
 function mu.pp(o)
   local _, val = serialize(o)
   print(val)
+  return o
 end
 
 mu.library "assoc"

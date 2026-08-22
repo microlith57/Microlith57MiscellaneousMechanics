@@ -19,17 +19,17 @@ for i, v in ipairs(variants) do
 
   self.offsetFromX "0.0"
     :nonempty()
-    :desc "Slider for the first X position of the camera offset."
+    :desc("Slider for the first X position of the camera offset.")
   self.offsetFromY "0.0"
     :nonempty()
-    :desc "Slider for the first Y position of the camera offset."
+    :desc("Slider for the first Y position of the camera offset.")
 
   self.offsetToX "0.0"
     :nonempty()
-    :desc "Slider for the second X position of the camera offset."
+    :desc("Slider for the second X position of the camera offset.")
   self.offsetToY "0.0"
     :nonempty()
-    :desc "Slider for the second Y position of the camera offset."
+    :desc("Slider for the second Y position of the camera offset.")
 
   self:_position_mode {action = "apply the offset"}
 

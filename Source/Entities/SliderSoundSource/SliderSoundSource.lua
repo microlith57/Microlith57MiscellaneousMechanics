@@ -10,6 +10,8 @@ for i, v in ipairs(variants) do
     name = v"Slider Sound Source ({Float})",
     desc = "Plays a sound, with position / volume / parameters controlled by sliders."
   }
+    :_extra {depth = -1000000}
+    :_texture {only_editor = true}
   -- TODO common fields
 
   self:_flag_or_expr {
@@ -40,7 +42,7 @@ for i, v in ipairs(variants) do
     :desc(v"{Float} {containing} the Y position of the sound.")
 
   self.positionRelative(true)
-    :desc "If enabled, coordinates will be relative to the sound source. Otherwise, they will be in map coordinates."
+    :desc("If enabled, coordinates will be relative to the sound source. Otherwise, they will be in map coordinates.")
 
   self.params ""
     :info {
@@ -62,7 +64,7 @@ for i, v in ipairs(variants) do
     :desc(v"{Float} to set the sound's volume.")
 
   self.sound ""
-    :desc "The sound event that will be played."
+    :desc("The sound event that will be played.")
 
   self.globalRoomCompat(false)
     :desc([[

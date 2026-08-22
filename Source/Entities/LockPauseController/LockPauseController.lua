@@ -30,7 +30,7 @@ for i, v in ipairs(variants) do
     ]])
 
   self.unlockWhenControllerRemoved(true)
-    :desc "Whether to reenable the locked features when the controller is removed (eg. when transitioning into a different room)."
+    :desc("Whether to reenable the locked features when the controller is removed (eg. when transitioning into a different room).")
 
   self.inhibitGBJPrevention(false)
     :desc([[

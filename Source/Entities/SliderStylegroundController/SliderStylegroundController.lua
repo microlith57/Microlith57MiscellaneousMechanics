@@ -17,7 +17,7 @@ for i, v in ipairs(variants) do
 
   self.tag ""
     :nonempty()
-    :desc "Affect stylegrounds with this tag."
+    :desc("Affect stylegrounds with this tag.")
 
   for _, t in ipairs(fields) do
     for _, c in ipairs(coords) do
@@ -30,7 +30,7 @@ for i, v in ipairs(variants) do
   end
 
   self.packedColor ""
-    :name "Packed Colour"
+    :name("Packed Colour")
     :desc(v[[
       {Float} to use to set the colour, or empty to leave it unchanged.
       Must be packed eg. with the Colour Packer entity.

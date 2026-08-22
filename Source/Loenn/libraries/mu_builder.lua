@@ -118,6 +118,9 @@ function Builder:__newindex(key, val)
     self._order_set[key] = true
     table.insert(self._order, key)
   end
+  if self._fields[key] then
+    print(("plugin %s: replacing key %s from %s to %s"):format(self.name, key, self._fields[key], val))
+  end
   self._fields[key] = val
 end
 function Builder:_lang(key)
@@ -180,7 +183,7 @@ function Builder:_tags(tags)
       },
       valueTransformer = valueTransformer
     }
-    :desc "Additional tags for this entity."
+    :desc("Additional tags for this entity.")
 
   return self
 end
@@ -287,9 +290,9 @@ function Builder:_angle_format(tbl)
 
   local f = self[tbl.name]
   if not f:has_default() then f:default "ZeroToOne" end
-  f:name "Angle Format"
-    :desc(tbl.desc)
+  f:name("Angle Format")
     :list {"ZeroToOne", "Radians", "Degrees"}
+    :desc(tbl.desc)
 
   return self
 end
