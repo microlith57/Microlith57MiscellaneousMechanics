@@ -22,7 +22,7 @@ local preprocess = {
 
 mu.preprocess = preprocess
 
-local env_prefix = "MICROLITH67_MISC_"
+local env_prefix = "MICROLITH57_MISC_"
 
 local env_configuration = os.getenv(env_prefix .. "CONFIGURATION") or mu.preprocess.configuration
 mu.preprocess.configuration = env_configuration == "release" and "release" or "debug"
