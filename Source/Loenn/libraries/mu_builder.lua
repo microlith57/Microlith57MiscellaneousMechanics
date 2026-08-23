@@ -305,7 +305,7 @@ function Builder:_angle_format(tbl)
   local f = self[tbl.name]
   if not f:has_default() then f:default "ZeroToOne" end
   f:name("Angle Format")
-    :list {"ZeroToOne", "Radians", "Degrees"}
+    :enum {"ZeroToOne", "Radians", "Degrees"}
     :desc(tbl.desc)
 
   return self
@@ -419,7 +419,7 @@ function Field:range(min, max)
   return self:info {minimumValue = min, maximumValue = max}
 end
 ---@param tbl {[integer]: string, editable: boolean?}
-function Field:list(tbl)
+function Field:enum(tbl)
   local options = {}
   for i, o in ipairs(tbl) do options[i] = o end
 
@@ -434,6 +434,35 @@ function Field:color()
   return self:info {fieldType = "color"}
 end
 
+---@class _List
+---@field [1] any?
+---@field default any?
+---@field sep string?
+---@field options table?
+---@field min number?
+---@field max number?
+---@field count number?
+---@field extra table?
+
+---@param tbl _List
+function mu.list(tbl)
+  local default = tbl[1]
+  if default == nil then default = tbl.default end
+  local res = {
+    fieldType = "list",
+    elementSeparator = tbl.sep or ",",
+    elementDefault = default,
+    elementOptions = tbl.options,
+    minimumElements = tbl.min or tbl.count,
+    maximumElements = tbl.max or tbl.count,
+  }
+  for k, v in pairs(tbl.extra or {}) do res[k] = v end
+  return res
+end
+---@param tbl _List
+function Field:list(tbl)
+  return self:info(mu.list(tbl))
+end
 
 ---@param name string
 local function default_placement_name(name)

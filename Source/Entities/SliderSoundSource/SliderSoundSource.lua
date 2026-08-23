@@ -50,19 +50,14 @@ for i, v in ipairs(variants) do
     :desc("The sound event that will be played.")
 
   self.params ""
-    :info {
-      fieldType = "list",
-      elementSeparator = ",",
-      elementDefault = "param:value",
-      elementOptions = {
-        fieldType = "list",
-        elementSeparator = ":",
-        minimumElements = 2,
-        maximumElements = 2
+    :list {
+      v"param:{float}",
+      options = mu.list {
+        sep = ":",
+        count = 2,
       }
     }
     :desc(v"List of parameter names, and the {floats} to set them to.")
-  -- TODO make a nice helper for this ^_^
 
   self.volume "1.0"
     :nonempty()

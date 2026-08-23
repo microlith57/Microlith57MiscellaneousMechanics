@@ -20,7 +20,7 @@ for i, v in ipairs(variants) do
   }
 
   self.direction
-    :list {"Left", "Right"}
+    :enum {"Left", "Right"}
     :desc("Direction to make the player face.")
 
   self:_flag_or_expr {v.bool, action = "make the player face that direction"}

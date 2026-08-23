@@ -43,7 +43,7 @@ for i, v in ipairs(variants) do
 
   if v.format then
     self.format "ZeroToOne"
-      :list {"ZeroToOne", "Radians", "Degrees"}
+      :enum {"ZeroToOne", "Radians", "Degrees"}
       :name("Angle Format")
       :desc("Format to use for the hue component.")
   end

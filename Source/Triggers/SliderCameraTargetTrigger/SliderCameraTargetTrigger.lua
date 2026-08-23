@@ -43,7 +43,7 @@ for i, v in ipairs(variants) do
   end
 
   self.snapMode "NeverSnap"
-    :list {
+    :enum {
       "NeverSnap",
       "SnapWhenInitiallyEnabled",
       "AlwaysSnap",

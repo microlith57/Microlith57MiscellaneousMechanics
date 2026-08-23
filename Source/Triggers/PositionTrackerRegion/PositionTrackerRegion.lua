@@ -51,7 +51,7 @@ for i, v in ipairs(variants) do
   }
 
   self.target "Actor"
-    :list {"Player", "Actor", "NonPlayerActor", "Solid"}
+    :enum {"Player", "Actor", "NonPlayerActor", "Solid"}
     :desc([[
       What type of entity to track.
 
@@ -63,13 +63,13 @@ for i, v in ipairs(variants) do
     ]])
 
   self.detection "Within"
-    :list {"Within", "Intersecting", "Nearest"}
+    :enum {"Within", "Intersecting", "Nearest"}
     :desc([[
       Whether an entity must be entirely within the region; just intersecting the region; or anywhere.
     ]])
 
   self.stickiness "Soulbond"
-    :list {"Free", "Transient", "UntilNewMatch", "UntilDeath", "Lifelink", "Soulbond"}
+    :enum {"Free", "Transient", "UntilNewMatch", "UntilDeath", "Lifelink", "Soulbond"}
     :desc([[
       What to do once an entity is targetted.
 
@@ -83,7 +83,7 @@ for i, v in ipairs(variants) do
     ]])
 
   self.tracking "Position"
-    :list {"Position", "Center", "TopCenter", "BottomCenter", "CenterLeft", "CenterRight", "Size"}
+    :enum {"Position", "Center", "TopCenter", "BottomCenter", "CenterLeft", "CenterRight", "Size"}
     :desc('What position to track; or "Size" for width/height.')
 
   self.sliderPrefix "trackedPosition"

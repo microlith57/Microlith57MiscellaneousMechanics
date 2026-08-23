@@ -56,11 +56,11 @@ self.persistent(false)
   ]])
 
 self.acceptEntities "Any"
-  :list {"Any", "Player", "Box"}
+  :enum {"Any", "Player", "Box"}
   :desc("The kinds of entity that this switch reacts to.")
 
 self.acceptStates "Any"
-  :list {"Any", "Physical", "Recording"}
+  :enum {"Any", "Physical", "Recording"}
   :desc([[
     The "states of matter" that this switch reacts to.
 

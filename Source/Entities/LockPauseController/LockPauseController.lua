@@ -17,7 +17,7 @@ for i, v in ipairs(variants) do
   self:_flag_or_expr {v.bool, action = "lock", default = "lockPause"}
 
   self.mode
-    :list {"LockRetry", "LockSaveQuit", "LockRetryAndSaveQuit", "LockPauseMenu", "LockRetrySaveQuitAndPauseMenu"}
+    :enum {"LockRetry", "LockSaveQuit", "LockRetryAndSaveQuit", "LockPauseMenu", "LockRetrySaveQuitAndPauseMenu"}
     :desc([[
       What to lock.
 

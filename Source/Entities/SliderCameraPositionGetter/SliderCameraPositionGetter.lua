@@ -9,7 +9,7 @@ self.sliderPrefix "cameraPosition"
   :desc("X and Y will be appended to this value to get the slider names for the position.")
 
 self.tracking "Position"
-  :list {
+  :enum {
     "Position",
     "Origin",
     "BottomLeft",
