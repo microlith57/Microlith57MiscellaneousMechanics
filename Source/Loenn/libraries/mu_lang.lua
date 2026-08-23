@@ -23,15 +23,12 @@
   > }
 ]]
 
--- todo: deal with case where same entry is set twice
-
 local indent_ruler = 80
 
 ---@param val string
 local function prepare_lang_entry(val)
   local lines = tostring(val):split("\n")() ---@type string[]
   if #lines == 0 then return "" end
-  local indent = #(lines[1]:match("^%s*"))
 
   local res = {} ---@type string[]
   local paragraph = {} ---@type string[]
@@ -84,9 +81,6 @@ local function prepare_lang_entry(val)
   end
 
   for _, line in ipairs(lines) do
-    local this_indent = #(line:match("^%s*")) - indent
-    if this_indent < 0 then this_indent = 0 end
-
     line = line:gsub("^%s*", ""):gsub("%s*$", "")
     if line == "\b" or line == "\\b" then
       reindent = false
@@ -102,39 +96,41 @@ local function prepare_lang_entry(val)
 end
 
 ---@class Lang
+---@field package _ table
 ---@field [string] Lang | string
 local Lang = {}
 
 ---@param key string
 ---@return Lang
 function Lang:__index(key)
-  local val = {}
-  setmetatable(val, Lang)
-  rawset(self, key, val)
+  if self._[key] then return self._[key] end
+  local val = mu.lang()
+  self._[key] = val
   return val
 end
 ---@param key string
----@param val string
+---@param val string|table?
 function Lang:__newindex(key, val)
+  local prev = self._[key]
   if type(val) == "table" then
-    local current_val = self[key]
-    for k, v in pairs(val) do
-      current_val[k] = v
-    end
+    prev = self[key]
+    if type(prev) ~= "table" then error("attempted to add more lang keys to a non-table") end
+    for k, v in pairs(val) do prev[k] = v end
   elseif val == nil then
-    rawset(self, key, nil)
+    if prev then print("overwriting", key, prev, "nil") end
+    self._[key] = nil
   else
     local entry = prepare_lang_entry(val)
-    rawset(self, key, entry)
+    if prev and prev ~= entry then print("overwriting", key, prev, entry) end
+    self._[key] = entry
   end
 end
 
----@param l table
+---@param l table?
 ---@return Lang
 function mu.lang(l)
-  l = l or {}
-  setmetatable(l, Lang)
-  return l
+  local inner = l or {}
+  return setmetatable({_ = inner}, Lang)
 end
 
 ---@param l Lang
@@ -149,11 +145,11 @@ function mu.print_lang(l, f)
   ---@param node Lang
   ---@param prefix string?
   local function walk(node, prefix)
-    local keys = table.keys(node) ---@type string[]
+    local keys = table.keys(node._) ---@type string[]
     table.sort(keys)
 
     for _, k in ipairs(keys) do
-      local v = node[k]
+      local v = node._[k]
       local pfx = k
       if prefix then
         pfx = prefix .. "." .. pfx

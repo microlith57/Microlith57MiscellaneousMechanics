@@ -1,13 +1,13 @@
 local variants = mu.variants(
-  "SliderCameraOffsetTrigger",
+  "SliderTrigger",
   mu.var_expr()
 )
 
 local result = {}
 for i, v in ipairs(variants) do
-  local name = v"Camera Target{ (Expr?)}"
+  local name = v"Slider Trigger{ (Expr?)}"
   local self = mu.trigger {
-    "SliderTrigger",
+    v.name,
     name = name,
   }
   self:_flag_or_expr {v.noun, action = "set the slider"}

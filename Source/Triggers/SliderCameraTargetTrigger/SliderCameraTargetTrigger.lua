@@ -1,5 +1,5 @@
 local variants = mu.variants(
-  "SliderCameraOffsetTrigger",
+  "SliderCameraTargetTrigger",
   mu.var_expr()
 )
 
