@@ -10,7 +10,7 @@ local container_names = {
 local containers = {"objects/touchswitch/container"}
 local textures_by_name = {}
 for _, name in ipairs(container_names) do
-  local tex = mu.texture {"container_" .. name}
+  local tex = mu.texture {"container_" .. name, folder = "area_switch"}
 	table.insert(containers, tex)
   textures_by_name[name] = tex
 end

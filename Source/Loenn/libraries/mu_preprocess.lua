@@ -72,11 +72,25 @@ function mu.plan_move_self(a)
   return mu.plan_move(tbl)
 end
 
----@param tbl {[1]: string, [2]: string, atlas: string?, only_editor: boolean?}
+---@class _Texture
+---@field [1] string
+---@field [2] string?
+---@field atlas string?
+---@field only_editor boolean?
+---@field prefix string?
+---@field folder string?
+
+---@param tbl _Texture
 function mu.texture(tbl)
   local src = tbl[1]
   local dst = tbl[2]
-  if not dst then dst = "objects/" .. mu.modpathsegment .. "/" .. src end
+
+  if not dst then
+    local parts = tbl.prefix and {tbl.prefix} or {"objects", mu.modpathsegment}
+    if tbl.folder then table.insert(parts, tbl.folder) end
+    table.insert(parts, src)
+    dst = table.concat(parts, "/")
+  end
 
   if tbl.only_editor then
     dst = dst:gsub("/[^/]+$", function(part) return part:gsub("/", "/@", 1) end)

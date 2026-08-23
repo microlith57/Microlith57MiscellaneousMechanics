@@ -51,6 +51,14 @@ function mu.validate_nonempty(s) return s ~= "" end
 ---@alias _Builder_PositionMode {name: string?, desc: string?}
 ---@alias _Builder_AngleFormat {name: string?, desc: string?}
 
+---@class _Builder_Texture
+---@field [1] string?
+---@field [2] string?
+---@field atlas string?
+---@field only_editor boolean?
+---@field prefix string?
+---@field folder string?
+
 ---@class _Builder_Placement
 ---@field [1] string?
 ---@field name string?
@@ -69,12 +77,13 @@ function mu.validate_nonempty(s) return s ~= "" end
 ---@field _tags    fun(self: Builder, tags: string[]|false?): Builder
 ---@field _assoc   fun(self: Builder, tbl: {[string]: boolean}): Builder
 ---@field _extra   fun(self: Builder, tbl: {[string]: any}): Builder
----@field _texture fun(self: Builder, tex: string|table?): Builder
+---@field _texture fun(self: Builder, tex: string|_Builder_Texture?): Builder
 ---@field _flag_or_expr   fun(self: Builder, tbl: _FlagOrExpr): Builder
 ---@field _raw_delta_time fun(self: Builder, tbl: _Builder_UseRawDeltaTime?): Builder
 ---@field _position_mode  fun(self: Builder, tbl: _Builder_PositionMode?): Builder
 ---@field _angle_format   fun(self: Builder, tbl: _Builder_AngleFormat?): Builder
----@field _interleave     fun(self: Builder, things: Fmt[], fields: string[])
+---@field _interleave     fun(self: Builder, things: Fmt[], fields: string[]): Builder
+---@field _spacer         fun(self: Builder): Builder
 ---@field _placement fun(self: Builder, tbl: _Builder_Placement?): Builder
 ---@operator call(_Builder_Call): table
 ---
@@ -207,6 +216,7 @@ function Builder:_texture(tex)
   local dst
   if type(tex) == "table" then
     tex[1] = tex[1] or self._base_name
+    ---@diagnostic disable-next-line: param-type-mismatch
     dst = mu.texture(tex)
   elseif type(tex) == "string" then
     dst = mu.texture {tex}
@@ -236,7 +246,7 @@ function Builder:_flag_or_expr(tbl)
 
   local name = tbl.name or tbl.bool
   local invert = tbl.invert or "invertFlag"
-  local defaultInvert = false
+  local defaultInvert = nil
   if tbl.defaultInvert ~= nil then defaultInvert = tbl.defaultInvert end
 
   self[name]
@@ -245,7 +255,7 @@ function Builder:_flag_or_expr(tbl)
   if not expr and (tbl.invertFlag ~= false) then
     self[invert]
       :default(defaultInvert)
-      :ignore()
+      :undesc()
   end
 
   self:_assoc {expr = expr}
@@ -307,6 +317,13 @@ function Builder:_interleave(things, fields)
       self[field]()
     end
   end
+  return self
+end
+function Builder:_spacer()
+  table.insert(self._order, "_spacer")
+  self._info._spacer = {fieldType = "spacer"}
+  self._undesc._spacer = true
+  return self
 end
 
 Field.__index = Field
@@ -339,6 +356,7 @@ function Field.__call(self, arg)
 end
 function Field:default(default)
   self._builder[self._field] = default
+  self:info {default = default}
   return self
 end
 function Field:has_default()

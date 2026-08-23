@@ -1,14 +1,14 @@
 local self = mu.entity {
   "Box",
   name = "Box",
-  texture = "base",
   depth = 100,
 }
+self:_texture {"base", folder = "box"}
 
 for _, t in ipairs {"indicator", "playback"} do
   for _, l in ipairs {"", "_locked"} do
     for _, i in ipairs {"00", "01", "02"} do
-      mu.texture {t .. l .. i}
+      mu.texture {t .. l .. i, folder = "box"}
     end
   end
 end

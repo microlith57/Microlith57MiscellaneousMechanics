@@ -44,6 +44,11 @@ for i, v in ipairs(variants) do
   self.positionRelative(true)
     :desc("If enabled, coordinates will be relative to the sound source. Otherwise, they will be in map coordinates.")
 
+  self:_spacer()
+
+  self.sound ""
+    :desc("The sound event that will be played.")
+
   self.params ""
     :info {
       fieldType = "list",
@@ -62,9 +67,6 @@ for i, v in ipairs(variants) do
   self.volume "1.0"
     :nonempty()
     :desc(v"{Float} to set the sound's volume.")
-
-  self.sound ""
-    :desc("The sound event that will be played.")
 
   self.globalRoomCompat(false)
     :desc([[
