@@ -8,7 +8,7 @@ for i, v in ipairs(variants) do
   local self = mu.controller {
     v.name,
     name = v"Freeze TimeActive Controller {(Expr?)}",
-    desc = "Freezes the Scene.TimeActive field; has some wacky effects."
+    desc = "Freezes the Scene.TimeActive field; has some wacky effects, especially with spinners."
   }
   self:_flag_or_expr {v.bool, action = "freeze", default = "freezeTimeActive"}
 

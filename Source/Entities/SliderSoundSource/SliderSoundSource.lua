@@ -21,11 +21,10 @@ for i, v in ipairs(variants) do
     desc = [[
       If present, play when the {bool} is {set} and stop when it is {unset}.
 
-      While stopping, the sound's parameters cannot be changed.
+      Sounds usually take a little while to stop, during which their parameters cannot be changed.
       To stop the sound instantly, you can set its volume to 0 and then stop it on the next frame.
     ]],
   }
-  -- TODO better desc
 
   self:_flag_or_expr {
     v.bool,

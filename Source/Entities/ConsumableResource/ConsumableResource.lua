@@ -12,9 +12,17 @@ local variants = mu.variants( ---@type table<string, string>[]
 
 local result = {}
 for i, v in ipairs(variants) do
+  local desc
+  if v.res ~= "Custom" then
+    desc = v"Allows measuring/controlling the player's {thing} via slider/flags."
+  else
+    desc = v"Creates a custom resource similar to stamina, represented as a slider."
+  end
+
   local self = mu.controller {
     v.name,
     name = v"Consumable Resource {(res; Expr?)}",
+    desc = desc
   }
   -- todo desc
   self:_assoc {expr = v.typ == "Expression"}

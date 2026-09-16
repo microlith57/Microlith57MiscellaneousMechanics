@@ -12,6 +12,8 @@ local result = {}
 for i, v in ipairs(variants) do
   local self = mu.controller {
     v.name,
+    name = "Lock Pause Controller{ (Expr?)}",
+    desc = "Prevent the player from retrying, or save+quitting, or pausing, or a combination of these.",
   }
   -- todo: desc
   self:_flag_or_expr {v.bool, action = "lock", default = "lockPause"}

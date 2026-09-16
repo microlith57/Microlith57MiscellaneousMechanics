@@ -1,4 +1,4 @@
-local self = mu.entity {
+local self = mu.controller {
   "HoldablePriorityController",
   name = "Holdable Priority Controller",
   desc = [[
