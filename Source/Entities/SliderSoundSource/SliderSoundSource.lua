@@ -62,7 +62,8 @@ for i, v in ipairs(variants) do
     :nonempty()
     :desc(v"{Float} to set the sound's volume.")
 
-  self.globalRoomCompat(false)
+  self.globalRoomCompat(nil)
+    :info {fieldType = "boolean"}
     :desc([[
       Enable this if placing the sound source in a global room.
 

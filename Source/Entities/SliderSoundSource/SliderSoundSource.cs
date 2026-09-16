@@ -1,3 +1,5 @@
+using FMOD.Studio;
+
 namespace Celeste.Mod.Microlith57Misc.Entities;
 
 [CustomEntity(
@@ -7,7 +9,19 @@ namespace Celeste.Mod.Microlith57Misc.Entities;
 [Tracked]
 public sealed class SliderSoundSource : Entity {
 
-    #region --- State ---
+    public enum ListenerMode {
+        Origin,
+        VanillaCamera,
+        TrueCamera,
+        Player,
+        // Arbitrary,
+    }
+
+    public enum ListenerMirrorMode {
+        Ignore,
+        Vanilla,
+        // Bidirectional,
+    }
 
     private string Event;
     private SoundSource? Source;
@@ -31,9 +45,6 @@ public sealed class SliderSoundSource : Entity {
     private float Volume => VolumeSource.Value;
 
     private bool GlobalRoomCompat;
-
-    #endregion State
-    #region --- Init ---
 
     public SliderSoundSource(
         EntityData data, Vector2 offset,
@@ -96,9 +107,6 @@ public sealed class SliderSoundSource : Entity {
             .Where(a => a.Length >= 2)
             .Select(a => (a[0], unpacker(a[1])));
 
-    #endregion Init
-    #region --- Behaviour ---
-
     public override void Awake(Scene scene) {
         if (GlobalRoomCompat) {
             var bind = scene.Tracker
@@ -116,11 +124,10 @@ public sealed class SliderSoundSource : Entity {
             }
         }
 
-        Add(Source = new SoundSource() { Position = PositionSource.Default });
+        Add(Source = new SoundSource() { Position = PositionSource.Default, DisposeOnTransition = false });
 
-    added_source:
+        added_source:
         Apply();
-
         base.Awake(scene);
     }
 
@@ -150,6 +157,63 @@ public sealed class SliderSoundSource : Entity {
         Source.instance?.setVolume(Volume);
     }
 
-    #endregion Behaviour
+    private void SetPosition() {
+        if (Scene is not Level level || level.Camera is not Camera camera || Source?.instance is not EventInstance instance) return;
 
+        /*
+          the interesting part of Audio.Position is:
+
+            Vector2 cam = Vector2.Zero;
+            if (currentCamera != null)
+                cam = currentCamera.Position + new Vector2(320f, 180f) / 2f;       // [1]
+
+            float px = position.X - cam.X;
+            if (SaveData.Instance != null && SaveData.Instance.Assists.MirrorMode)
+                px = 0f - px;                                                      // [2]
+
+            attributes3d.position.x = px;
+            attributes3d.position.y = position.Y - cam.Y;
+            attributes3d.position.z = 0f;
+            instance.set3DAttributes(attributes3d);
+
+          so we need to preemptively cancel out modifications [1] and [2], and reimplement them
+          ourselves.
+        */
+
+        if (Source?.instance is not null && Source.Is3D && LastKnownListenerPos.HasValue()) {
+            var pos = SoundPosition - LastKnownListenerPos.Value();
+            if (RelativeToSource)
+                pos += Position;
+
+            // todo mirror mode
+
+            var cam = Audio.currentCamera;
+            Audio.currentCamera = null;
+
+            // var mirror = false;
+            // if ( SaveData.Instance is {Assists: {MirrorMode: true}} save)
+            //     save.Assists.MirrorMode = false;
+
+            try {
+                Audio.Position(instance, pos);
+            } finally {
+                Audio.currentCamera = cam;
+                // if (mirror) SaveData.Instance.Assists.MirrorMode = true;
+            }
+        }
+    }
+
+    public override void DebugRender(Camera camera) {
+		Vector2 position = Position + SoundPosition;
+        Vector2 listener = camera.Position + new Vector2(320 / 2, 180 / 2);
+
+		Draw.HollowRect(Position.X - 2f, Position.Y - 2f, 4f, 4f, Color.Violet * 0.75f);
+		Draw.Line(Position, position, Color.Violet * 0.75f);
+
+		if (Source?.instance != null && Source.Playing)
+			Draw.Circle(position, 4f + Scene.RawTimeActive * 2f % 1f * 16f, Color.BlueViolet, 16);
+		Draw.HollowRect(position.X - 2f, position.Y - 2f, 4f, 4f, Color.BlueViolet);
+
+		Draw.Line(position, listener, Color.BlueViolet * 0.75f);
+	}
 }
