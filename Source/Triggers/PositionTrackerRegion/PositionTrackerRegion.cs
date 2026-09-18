@@ -12,6 +12,7 @@ public sealed class PositionTrackerRegion : Entity {
         Player,
         Actor,
         NonPlayerActor,
+        Holdable,
         Solid,
     }
 
@@ -38,6 +39,12 @@ public sealed class PositionTrackerRegion : Entity {
         CenterLeft,
         CenterRight,
         Size,
+        Speed,
+    }
+
+    private enum CoordinateSpace {
+        World,
+        Room,
     }
 
     private readonly ConditionSource Condition;
@@ -47,6 +54,7 @@ public sealed class PositionTrackerRegion : Entity {
     private DetectionType Detection;
     private StickinessType Stickiness;
     private TrackingType Tracking;
+    private CoordinateSpace CoordSpace;
 
     private Entity? Target;
     private bool EverTargetted = false;
@@ -73,6 +81,7 @@ public sealed class PositionTrackerRegion : Entity {
         Detection = data.Enum("detection", DetectionType.Intersecting);
         Stickiness = data.Enum("stickiness", StickinessType.Lifelink);
         Tracking = data.Enum("tracking", TrackingType.Position);
+        CoordSpace = data.Enum("coordinateSpace", CoordinateSpace.World);
 
         SliderX = sliderX;
         SliderY = sliderY;
@@ -121,7 +130,7 @@ public sealed class PositionTrackerRegion : Entity {
             level.Session.SetFlag(TargettingFlag, Target != null);
     }
 
-    private Vector2? Value {
+    private Vector2? AbsValue {
         get {
             if (Target == null) return null;
             switch (Tracking) {
@@ -133,6 +142,21 @@ public sealed class PositionTrackerRegion : Entity {
                 case TrackingType.CenterRight: return Target.CenterRight;
                 case TrackingType.Size:
                     return new(Target.Collider?.Width ?? 0f, Target.Collider?.Height ?? 0f);
+                case TrackingType.Speed:
+                    if (Target is Player p) return p.Speed;
+                    if (Target.Get<Holdable>() is Holdable h) return h.GetSpeed();
+                    return default;
+                default: throw new UnreachableException();
+            }
+        }
+    }
+    private bool RepresentsPosition => Tracking is not TrackingType.Size or TrackingType.Speed;
+    private Vector2? Value {
+        get {
+            var abs = AbsValue;
+            if (!RepresentsPosition || CoordSpace is CoordinateSpace.World || abs is not Vector2 vec || Scene is not Level level) return abs;
+            switch (CoordSpace) {
+                case CoordinateSpace.Room: return vec - level.LevelOffset;
                 default: throw new UnreachableException();
             }
         }
@@ -195,6 +219,7 @@ public sealed class PositionTrackerRegion : Entity {
                 case TargetType.Player: return Scene.Tracker.GetEntities<Player>();
                 case TargetType.Actor: return Scene.Tracker.GetEntities<Actor>();
                 case TargetType.NonPlayerActor: return Scene.Tracker.GetEntities<Actor>().Where(c => c is not Player);
+                case TargetType.Holdable: return Scene.Tracker.GetComponents<Holdable>().Select(c => c.Entity);
                 case TargetType.Solid: return Scene.Tracker.GetEntities<Solid>();
                 default: throw new UnreachableException();
             }

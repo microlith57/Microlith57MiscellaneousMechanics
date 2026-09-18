@@ -8,6 +8,7 @@ local typ = mu.typology()
     Player = "P",
     Actor = "A",
     NonPlayerActor = "N",
+    Holdable = "H",
     Solid = "S"
   }
   :detection {
@@ -30,7 +31,12 @@ local typ = mu.typology()
     BottomCenter = "B",
     CenterLeft = "L",
     CenterRight = "R",
-    Size = "S"
+    Size = "S",
+    Speed = "V",
+  }
+  :coordinateSpace {
+    World = "",
+    Room = "r",
   }
   :_build()
 
@@ -51,14 +57,15 @@ for i, v in ipairs(variants) do
   }
 
   self.target "Actor"
-    :enum {"Player", "Actor", "NonPlayerActor", "Solid"}
+    :enum {"Player", "Actor", "NonPlayerActor", "Holdables", "Solid"}
     :desc([[
       What type of entity to track.
 
       \b
       Player: Just the player.
       Actor: Players, holdables, and similar entities.
-      NonPlayerActor: Holdables and similar entities.
+      NonPlayerActor: Holdables and similar entities. Uses the fact that they can move.
+      Holdable: Just holdables. Uses the fact that they can be held.
       Solid: Solid entities of any kind.
     ]])
 
@@ -82,9 +89,21 @@ for i, v in ipairs(variants) do
       Soulbond: Ensure entity exists when region is created, and remove region when entity is removed.
     ]])
 
-  self.tracking "Position"
-    :enum {"Position", "Center", "TopCenter", "BottomCenter", "CenterLeft", "CenterRight", "Size"}
-    :desc('What position to track; or "Size" for width/height.')
+  self.tracking "Tracking"
+    :enum {"Position", "Center", "TopCenter", "BottomCenter", "CenterLeft", "CenterRight", "Size", "Speed"}
+    :desc([[
+      What to track. Most of these are positions on the entity's hitbox.
+
+      \b
+      Size: The output is (width, height).
+      Speed: Only works on players and holdables. This is the amount the entity wants to move (px/s), not the amount it actually moves.
+    ]])
+
+  self.coordinateSpace "Relative to"
+    :enum {"World", "Room"}
+    :desc([[
+      What the position should be measured within. Only applies when actually tracking a position.
+    ]])
 
   self.sliderPrefix "trackedPosition"
     :nonempty()
